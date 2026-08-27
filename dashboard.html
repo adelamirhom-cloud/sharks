@@ -3,158 +3,333 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بورصة استثمارات الخدمة | Live Leaderboard</title>
+  <title>شاشة العرض التفاعلية | Live Shark Tank Arena</title>
 
   <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-    
+
     body {
-      background: radial-gradient(circle at top, #0f172a, #030712);
+      background: radial-gradient(circle at top center, #0f172a 0%, #030712 100%);
       color: #fff;
       min-height: 100vh;
-      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       overflow-x: hidden;
+      padding: 14px 20px 0 20px;
+    }
+
+    /* شريط التقدم للتبديل التلقائي */
+    .progress-track {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 4px;
+      background: rgba(255, 255, 255, 0.1);
+      z-index: 100;
+    }
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, #00f2fe, #4facfe);
+      transition: width 0.1s linear;
     }
 
     header {
-      text-align: center;
-      margin-bottom: 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
       border-bottom: 1.5px solid rgba(0, 242, 254, 0.2);
-      padding-bottom: 16px;
+      padding-bottom: 10px;
+      margin-bottom: 12px;
     }
-    h1 {
-      font-size: 2.2rem;
+    .header-title {
+      font-size: 1.6rem;
       font-weight: 900;
       color: #00f2fe;
-      text-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
-      letter-spacing: 1px;
-    }
-    .sub-title {
-      color: #94a3b8;
-      font-size: 1.05rem;
-      font-weight: 700;
-      margin-top: 4px;
+      text-shadow: 0 0 15px rgba(0, 242, 254, 0.6);
+      display: flex;
+      align-items: center;
+      gap: 10px;
     }
 
-    .grid-teams {
+    /* شريط ترتيب الفرق العلوي */
+    .mini-leaderboard {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 20px;
-      max-width: 1400px;
-      margin: 0 auto;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .mini-team-chip {
+      background: rgba(15, 23, 42, 0.7);
+      border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 12px;
+      padding: 8px 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      transition: all 0.3s ease;
+    }
+    .mini-team-chip.active {
+      border-color: #00f2fe;
+      background: rgba(0, 242, 254, 0.15);
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+      transform: translateY(-2px);
+    }
+    .mini-team-name { font-size: 0.88rem; font-weight: 800; color: #f1f5f9; }
+    .mini-team-bal { font-size: 0.82rem; font-weight: 900; color: #f1c40f; }
+
+    /* منطقة التركيز الكبرى على الفريق المعروض */
+    .spotlight-container {
+      flex: 1;
+      display: grid;
+      grid-template-columns: 320px 1fr;
+      gap: 16px;
+      margin-bottom: 12px;
     }
 
-    .team-card {
+    .team-hero-card {
+      background: rgba(15, 23, 42, 0.9);
+      border: 2px solid #00f2fe;
+      border-radius: 20px;
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 20px rgba(0, 242, 254, 0.2);
+    }
+    .hero-name { font-size: 1.5rem; font-weight: 900; color: #38bdf8; margin-bottom: 12px; text-align: right; }
+    .hero-stat-box {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 12px;
+      padding: 10px 12px;
+      margin-bottom: 8px;
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.9rem;
+    }
+
+    /* إنذار الأزمات والهجوم */
+    .attack-alert {
+      background: rgba(255, 8, 68, 0.2);
+      border: 1.5px solid #ff0844;
+      color: #ff0844;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: right;
+      font-size: 0.85rem;
+      font-weight: 800;
+      animation: pulseAlert 1.5s infinite;
+      margin-top: 10px;
+    }
+    @keyframes pulseAlert {
+      0% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+      50% { box-shadow: 0 0 20px rgba(255, 8, 68, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+    }
+
+    /* لوحة تفاصيل الخطة والمواسم */
+    .details-panel {
       background: rgba(15, 23, 42, 0.85);
       border: 1.5px solid rgba(0, 242, 254, 0.3);
       border-radius: 20px;
-      padding: 20px;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 15px rgba(0, 242, 254, 0.1);
-      position: relative;
-      overflow: hidden;
+      padding: 16px 20px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
     }
 
-    .team-card.rank-1 {
-      border-color: #f1c40f;
-      box-shadow: 0 0 25px rgba(241, 196, 15, 0.35);
-    }
-    .team-card.rank-1::before {
-      content: '👑 المتصدر';
-      position: absolute;
-      top: 12px;
-      left: 12px;
-      background: linear-gradient(135deg, #f1c40f, #e67e22);
-      color: #000;
-      font-weight: 900;
-      font-size: 0.75rem;
-      padding: 3px 10px;
-      border-radius: 12px;
-    }
-
-    .team-card.under-attack {
-      border-color: #ff0844;
-      animation: pulseAlert 2s infinite;
-    }
-
-    @keyframes pulseAlert {
-      0% { box-shadow: 0 0 10px rgba(255, 8, 68, 0.4); }
-      50% { box-shadow: 0 0 25px rgba(255, 8, 68, 0.8); }
-      100% { box-shadow: 0 0 10px rgba(255, 8, 68, 0.4); }
-    }
-
-    .team-name {
-      font-size: 1.35rem;
-      font-weight: 900;
-      color: #38bdf8;
-      margin-bottom: 12px;
-      text-align: right;
-    }
-
-    .stat-row {
+    /* أزرار اختيار الربع */
+    .quarter-tabs {
       display: flex;
-      justify-content: space-between;
-      margin-bottom: 8px;
-      font-size: 0.92rem;
-      color: #cbd5e1;
-      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
-      padding-bottom: 6px;
+      gap: 8px;
+      margin-bottom: 12px;
     }
-    .stat-value {
-      font-weight: 900;
+    .q-tab {
+      flex: 1;
+      padding: 6px 0;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(0, 242, 254, 0.2);
+      border-radius: 10px;
+      color: #94a3b8;
+      font-size: 0.82rem;
+      font-weight: 800;
+      text-align: center;
+      cursor: pointer;
+    }
+    .q-tab.active {
+      background: rgba(0, 242, 254, 0.2);
+      border-color: #00f2fe;
       color: #00f2fe;
     }
 
-    .quarters-indicator {
-      display: flex;
-      gap: 6px;
-      margin-top: 12px;
+    /* شبكة الـ 12 أسبوعاً */
+    .weeks-matrix {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+      margin-bottom: 12px;
     }
-    .q-pill {
-      flex: 1;
-      text-align: center;
-      padding: 6px 2px;
-      border-radius: 8px;
-      font-size: 0.75rem;
-      font-weight: 900;
-      background: rgba(255, 255, 255, 0.05);
-      color: #64748b;
-      border: 1px solid rgba(255, 255, 255, 0.1);
-    }
-    .q-pill.done {
-      background: rgba(46, 204, 113, 0.2);
-      color: #2ecc71;
-      border-color: #2ecc71;
-    }
-
-    .attack-banner {
-      background: rgba(255, 8, 68, 0.15);
-      border: 1px dashed #ff0844;
-      color: #ff0844;
-      padding: 6px 10px;
-      border-radius: 8px;
-      font-size: 0.8rem;
-      font-weight: 800;
-      margin-top: 8px;
+    .week-cell {
+      background: rgba(255, 255, 255, 0.03);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 10px;
+      padding: 6px 8px;
       text-align: right;
+      font-size: 0.76rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      min-height: 48px;
+    }
+    .week-cell.booked {
+      background: rgba(0, 242, 254, 0.08);
+      border-color: #00f2fe;
+    }
+    .week-num { font-weight: 900; color: #38bdf8; }
+    .week-val { color: #f1f5f9; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font-weight: 700; }
+    .week-val.empty { color: #64748b; font-style: italic; }
+
+    /* قسم الفعاليات والرحلات */
+    .events-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+    .event-card-item {
+      background: rgba(168, 85, 247, 0.08);
+      border: 1px solid rgba(168, 85, 247, 0.3);
+      border-radius: 10px;
+      padding: 8px 10px;
+      text-align: right;
+      font-size: 0.78rem;
+    }
+    .event-type-badge { font-weight: 900; color: #c084fc; font-size: 0.75rem; margin-bottom: 2px; }
+    .event-desc-text { color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* شريط الأخبار السفلي */
+    .ticker-container {
+      background: rgba(15, 23, 42, 0.95);
+      border-top: 1.5px solid rgba(0, 242, 254, 0.3);
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      margin: 0 -20px;
+    }
+    .ticker-tag {
+      background: #00f2fe;
+      color: #070b19;
+      font-weight: 900;
+      font-size: 0.78rem;
+      padding: 2px 10px;
+      border-radius: 6px;
+      margin-left: 12px;
+      white-space: nowrap;
+    }
+    .ticker-scroll {
+      flex: 1;
+      white-space: nowrap;
+      overflow: hidden;
+      font-size: 0.85rem;
+      color: #cbd5e1;
     }
   </style>
 </head>
 <body>
 
+  <div class="progress-track"><div class="progress-fill" id="timerProgress"></div></div>
+
+  <!-- الهيدر الرئيسي -->
   <header>
-    <h1>🦈 بورصة استثمارات الشاركس المباشرة</h1>
-    <div class="sub-title">المتابعة اللحظية لتمويل ومشتريات خطط الفرق (12 أسبوعاً لكل موسم)</div>
+    <div class="header-title">
+      <span>🦈</span>
+      <span>بورصة استثمارات وتخطيط الخدمة المباشرة</span>
+    </div>
+    <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 700;">
+      🔄 التبديل التلقائي: <span style="color: #00f2fe;" id="autoRotateStatus">نشط (كل 10 ثوانٍ)</span>
+    </div>
   </header>
 
-  <div class="grid-teams" id="teamsDashboardGrid"></div>
+  <!-- شريط الترتيب السريع للفرق الأربعة -->
+  <div class="mini-leaderboard" id="miniLeaderboardContainer"></div>
+
+  <!-- منطقة العرض التفصيلية للفريق النشط -->
+  <div class="spotlight-container">
+    
+    <!-- بطاقة هوية ومحفظة الفريق -->
+    <div class="team-hero-card">
+      <div>
+        <div style="font-size: 0.8rem; color: #94a3b8; text-align: right;">الفريق المعروض حالياً:</div>
+        <div class="hero-name" id="heroTeamName">فريق السيدة العذراء</div>
+
+        <div class="hero-stat-box">
+          <span style="color: #cbd5e1;">الاستثمارات المجمعة:</span>
+          <b style="color: #f1c40f;" id="heroTotalInvested">0 ج.ك</b>
+        </div>
+
+        <div class="hero-stat-box">
+          <span style="color: #cbd5e1;">الرصيد المتبقي بالمحفظة:</span>
+          <b style="color: #00f2fe;" id="heroBalance">0 ج.ك</b>
+        </div>
+
+        <div class="hero-stat-box">
+          <span style="color: #cbd5e1;">إجمالي المصروفات:</span>
+          <b style="color: #ff0844;" id="heroTotalSpent">0 ج.ك</b>
+        </div>
+
+        <div class="hero-stat-box">
+          <span style="color: #cbd5e1;">إجمالي البنود المنجزة:</span>
+          <b style="color: #4ade80;" id="heroItemsCount">0 بنود</b>
+        </div>
+      </div>
+
+      <div id="heroAttackBox" class="attack-alert" style="display: none;">
+        🔥 أزمة طارئة: <span id="heroAttackTitle">-</span>
+      </div>
+    </div>
+
+    <!-- لوحة جدول ومواسم الفريق -->
+    <div class="details-panel">
+      
+      <div>
+        <!-- تبويبات المواسم -->
+        <div class="quarter-tabs">
+          <div class="q-tab active" onclick="setSpotlightQuarter('Q1')">🍂 الربع الأول (Q1)</div>
+          <div class="q-tab" onclick="setSpotlightQuarter('Q2')">❄️ الربع الثاني (Q2)</div>
+          <div class="q-tab" onclick="setSpotlightQuarter('Q3')">🌱 الربع الثالث (Q3)</div>
+          <div class="q-tab" onclick="setSpotlightQuarter('Q4')">☀️ الربع الرابع (Q4)</div>
+        </div>
+
+        <!-- 1. شبكة الـ 12 أسبوعاً للمتكلمين -->
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 6px;">
+          <span style="font-size: 0.82rem; font-weight: 800; color: #38bdf8;">🎙️ جدول المتكلمين (12 أسبوعاً):</span>
+          <span style="font-size: 0.78rem; font-weight: 800; color: #00f2fe;" id="speakersStatBadge">(0/12 أسبوعاً)</span>
+        </div>
+        <div class="weeks-matrix" id="weeksMatrixContainer"></div>
+      </div>
+
+      <!-- 2. الرحلات والفعاليات المحجوزة للموسم -->
+      <div>
+        <div style="font-size: 0.82rem; font-weight: 800; color: #c084fc; margin-bottom: 6px; text-align: right;">🚌 الرحلات والفعاليات والاحتفالات المعتمدة:</div>
+        <div class="events-row" id="eventsMatrixContainer"></div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- شريط الأخبار والتحويلات الحية -->
+  <div class="ticker-container">
+    <div class="ticker-tag">⚡ مباشر القاعة</div>
+    <div class="ticker-scroll" id="tickerContent">في انتظار بدء استثمارات الشاركس وتعاقدات المكاتب...</div>
+  </div>
 
   <script>
     const firebaseConfig = {
@@ -170,107 +345,194 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const teamMeta = {
+    const teamKeys = [
+      "team_virgin_mary",
+      "team_archangel_michael",
+      "team_st_mercurius",
+      "team_anba_rois"
+    ];
+
+    const teamNames = {
       "team_virgin_mary": "فريق السيدة العذراء",
       "team_archangel_michael": "فريق الملاك ميخائيل",
       "team_st_mercurius": "فريق القديس ابو سيفين",
       "team_anba_rois": "فريق الانبا رويس"
     };
 
-    const teamsRef = db.ref('teams');
+    let currentTeamIndex = 0;
+    let activeSpotlightQuarter = "Q1";
+    let allTeamsData = {};
+    let rotateInterval = null;
+    let progressTimer = null;
+    let progressPercent = 0;
+    const ROTATE_INTERVAL_MS = 10000; // تقليب كل 10 ثوانٍ
 
-    teamsRef.on('value', snapshot => {
-      const data = snapshot.val() || {};
-      const container = document.getElementById("teamsDashboardGrid");
+    // الاستماع لقاعدة البيانات
+    db.ref('teams').on('value', snapshot => {
+      allTeamsData = snapshot.val() || {};
+      renderMiniLeaderboard();
+      renderSpotlightTeam();
+      renderTickerNews();
+    });
+
+    // 1. رسم شريط الترتيب السريع
+    function renderMiniLeaderboard() {
+      const container = document.getElementById("miniLeaderboardContainer");
       container.innerHTML = "";
 
-      let teamsList = Object.keys(teamMeta).map(key => {
-        const teamData = data[key] || {};
-        
-        let totalInvested = 0;
-        if (teamData.investments) {
-          totalInvested = teamData.investments.reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
-        }
-        
-        let totalSpent = 0;
-        if (teamData.purchases) {
-          totalSpent = teamData.purchases.reduce((sum, p) => sum + (Number(p.cost) || 0), 0);
-        }
+      teamKeys.forEach((key, idx) => {
+        const tData = allTeamsData[key] || {};
+        const isCurrent = (idx === currentTeamIndex);
+        const bal = Number(tData.balance || 0);
 
-        const plan = teamData.plan || {};
-        const q1Count = (plan.Q1 || []).length;
-        const q2Count = (plan.Q2 || []).length;
-        const q3Count = (plan.Q3 || []).length;
-        const q4Count = (plan.Q4 || []).length;
+        const chip = document.createElement("div");
+        chip.className = `mini-team-chip ${isCurrent ? 'active' : ''}`;
+        chip.onclick = () => { selectTeamManually(idx); };
 
-        return {
-          key: key,
-          name: teamMeta[key],
-          currentBalance: Number(teamData.balance || 0),
-          totalInvested: totalInvested,
-          totalSpent: totalSpent,
-          itemsCount: (teamData.purchases || []).length,
-          activeAttack: teamData.activeAttack || null,
-          qCounts: { Q1: q1Count, Q2: q2Count, Q3: q3Count, Q4: q4Count },
-          qStatus: {
-            Q1: q1Count > 0,
-            Q2: q2Count > 0,
-            Q3: q3Count > 0,
-            Q4: q4Count > 0
-          }
-        };
-      });
-
-      // ترتيب الفرق حسب إجمالي الاستثمارات المجمعة
-      teamsList.sort((a, b) => b.totalInvested - a.totalInvested);
-
-      teamsList.forEach((team, index) => {
-        const isLeader = index === 0 && team.totalInvested > 0;
-        const isAttacked = !!team.activeAttack;
-        const card = document.createElement("div");
-        card.className = `team-card ${isLeader ? 'rank-1' : ''} ${isAttacked ? 'under-attack' : ''}`;
-
-        card.innerHTML = `
-          <div>
-            <div class="team-name">${team.name}</div>
-            
-            <div class="stat-row">
-              <span>إجمالي الاستثمارات المجمعة:</span>
-              <span class="stat-value" style="color: #f1c40f;">${team.totalInvested.toLocaleString()} ج.ك</span>
-            </div>
-
-            <div class="stat-row">
-              <span>الرصيد المتبقي بالمحفظة:</span>
-              <span class="stat-value">${team.currentBalance.toLocaleString()} ج.ك</span>
-            </div>
-
-            <div class="stat-row">
-              <span>المصروفات في السوق:</span>
-              <span class="stat-value" style="color: #ff0844;">${team.totalSpent.toLocaleString()} ج.ك</span>
-            </div>
-
-            <div class="stat-row">
-              <span>إجمالي البنود المنجزة:</span>
-              <span class="stat-value">${team.itemsCount} بنود</span>
-            </div>
-
-            ${isAttacked ? `<div class="attack-banner">🔥 أزمة نشطة: ${team.activeAttack.title}</div>` : ''}
-          </div>
-
-          <div>
-            <div style="font-size: 0.8rem; color: #94a3b8; text-align: right; margin-top: 10px;">إنجاز الـ 4 مواسم:</div>
-            <div class="quarters-indicator">
-              <div class="q-pill ${team.qStatus.Q1 ? 'done' : ''}">Q1 (${team.qCounts.Q1})</div>
-              <div class="q-pill ${team.qStatus.Q2 ? 'done' : ''}">Q2 (${team.qCounts.Q2})</div>
-              <div class="q-pill ${team.qStatus.Q3 ? 'done' : ''}">Q3 (${team.qCounts.Q3})</div>
-              <div class="q-pill ${team.qStatus.Q4 ? 'done' : ''}">Q4 (${team.qCounts.Q4})</div>
-            </div>
-          </div>
+        chip.innerHTML = `
+          <span class="mini-team-name">${teamNames[key]}</span>
+          <span class="mini-team-bal">${bal.toLocaleString()} ج.ك</span>
         `;
-
-        container.appendChild(card);
+        container.appendChild(chip);
       });
-    });
+    }
+
+    // 2. رسم تفاصيل الفريق النشط في شاشة العرض
+    function renderSpotlightTeam() {
+      const activeKey = teamKeys[currentTeamIndex];
+      const tData = allTeamsData[activeKey] || {};
+
+      document.getElementById("heroTeamName").textContent = teamNames[activeKey];
+
+      let totalInv = 0;
+      if (tData.investments) {
+        totalInv = tData.investments.reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
+      }
+      let totalSp = 0;
+      if (tData.purchases) {
+        totalSp = tData.purchases.reduce((sum, p) => sum + (Number(p.cost) || 0), 0);
+      }
+
+      document.getElementById("heroTotalInvested").textContent = totalInv.toLocaleString() + " ج.ك";
+      document.getElementById("heroBalance").textContent = Number(tData.balance || 0).toLocaleString() + " ج.ك";
+      document.getElementById("heroTotalSpent").textContent = totalSp.toLocaleString() + " ج.ك";
+      document.getElementById("heroItemsCount").textContent = `${(tData.purchases || []).length} بنود`;
+
+      // حالة الأزمات
+      const attackBox = document.getElementById("heroAttackBox");
+      if (tData.activeAttack) {
+        attackBox.style.display = "block";
+        document.getElementById("heroAttackTitle").textContent = tData.activeAttack.title;
+      } else {
+        attackBox.style.display = "none";
+      }
+
+      // رسم جدول المتكلمين للـ 12 أسبوعاً
+      const qPlan = (tData.plan && tData.plan[activeSpotlightQuarter]) || [];
+      const weeksContainer = document.getElementById("weeksMatrixContainer");
+      weeksContainer.innerHTML = "";
+
+      let bookedCount = 0;
+      for (let w = 1; w <= 12; w++) {
+        const slotKey = `الأسبوع (${w})`;
+        const found = qPlan.find(item => item.slot === slotKey || (item.name && item.name.includes(slotKey)));
+
+        const cell = document.createElement("div");
+        cell.className = `week-cell ${found ? 'booked' : ''}`;
+
+        if (found) {
+          bookedCount++;
+          const cleanName = found.name.replace(/^الأسبوع \(\d+\)\s*:\s*/, '');
+          cell.innerHTML = `
+            <div class="week-num">أسبوع ${w}</div>
+            <div class="week-val" title="${cleanName}">${cleanName}</div>
+          `;
+        } else {
+          cell.innerHTML = `
+            <div class="week-num" style="color:#64748b;">أسبوع ${w}</div>
+            <div class="week-val empty">شاغر</div>
+          `;
+        }
+        weeksContainer.appendChild(cell);
+      }
+      document.getElementById("speakersStatBadge").textContent = `(${bookedCount}/12 أسبوعاً)`;
+
+      // رسم الرحلات والفعاليات
+      const eventsContainer = document.getElementById("eventsMatrixContainer");
+      eventsContainer.innerHTML = "";
+
+      const nonSpeakers = qPlan.filter(item => !(item.slot && item.slot.startsWith("الأسبوع (")));
+      if (nonSpeakers.length === 0) {
+        eventsContainer.innerHTML = '<div style="color:#64748b; font-size:0.75rem; text-align:center; grid-column:span 3;">لا توجد رحلات أو فعاليات معتمدة لهذا الموسم بعد</div>';
+      } else {
+        nonSpeakers.forEach(item => {
+          const card = document.createElement("div");
+          card.className = "event-card-item";
+          card.innerHTML = `
+            <div class="event-type-badge">${item.slot || 'فعالية'}</div>
+            <div class="event-desc-text" title="${item.name}">${item.name}</div>
+          `;
+          eventsContainer.appendChild(card);
+        });
+      }
+    }
+
+    // 3. شريط الأخبار المتحرك
+    function renderTickerNews() {
+      let newsItems = [];
+      Object.keys(allTeamsData).forEach(key => {
+        const t = allTeamsData[key];
+        const name = teamNames[key];
+        if (t.investments && t.investments.length > 0) {
+          const lastInv = t.investments[t.investments.length - 1];
+          newsItems.push(`💰 الشارك [${lastInv.shark_name}] يضخ ${Number(lastInv.amount).toLocaleString()} ج.ك لـ ${name}`);
+        }
+        if (t.purchases && t.purchases.length > 0) {
+          const lastPur = t.purchases[t.purchases.length - 1];
+          newsItems.push(`🛒 ${name} يعتمد: ${lastPur.item_name} (${Number(lastPur.cost).toLocaleString()} ج.ك)`);
+        }
+      });
+
+      if (newsItems.length > 0) {
+        document.getElementById("tickerContent").textContent = newsItems.join("  |  ");
+      }
+    }
+
+    function setSpotlightQuarter(qId) {
+      activeSpotlightQuarter = qId;
+      document.querySelectorAll('.q-tab').forEach((tab, idx) => {
+        tab.classList.toggle('active', ['Q1', 'Q2', 'Q3', 'Q4'][idx] === qId);
+      });
+      renderSpotlightTeam();
+    }
+
+    function selectTeamManually(idx) {
+      currentTeamIndex = idx;
+      progressPercent = 0;
+      renderMiniLeaderboard();
+      renderSpotlightTeam();
+    }
+
+    // تشغيل التدوير التلقائي
+    function startAutoRotation() {
+      if (rotateInterval) clearInterval(rotateInterval);
+      if (progressTimer) clearInterval(progressTimer);
+
+      progressPercent = 0;
+      progressTimer = setInterval(() => {
+        progressPercent += (100 / (ROTATE_INTERVAL_MS / 100));
+        document.getElementById("timerProgress").style.width = `${Math.min(100, progressPercent)}%`;
+      }, 100);
+
+      rotateInterval = setInterval(() => {
+        currentTeamIndex = (currentTeamIndex + 1) % teamKeys.length;
+        progressPercent = 0;
+        renderMiniLeaderboard();
+        renderSpotlightTeam();
+      }, ROTATE_INTERVAL_MS);
+    }
+
+    startAutoRotation();
   </script>
 </body>
 </html>
