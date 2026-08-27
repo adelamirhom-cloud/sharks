@@ -10,7 +10,7 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
     
     body {
@@ -111,7 +111,6 @@
     .badge-safe { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
     .badge-struck { background: rgba(255, 8, 68, 0.3); color: #ff0844; }
 
-    /* تفاصيل خطوات الفريق بعد التجسس عليه */
     .spy-details-box {
       background: rgba(15, 23, 42, 0.95);
       border: 1.5px solid #00f2fe;
@@ -122,9 +121,8 @@
       display: none;
       animation: fadeIn 0.3s ease;
     }
-    .radar-card.active-spy .spy-details-box {
-      display: block;
-    }
+    .radar-card.active-spy .spy-details-box { display: block; }
+
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-4px); }
       to { opacity: 1; transform: translateY(0); }
@@ -146,6 +144,16 @@
       background: rgba(255, 255, 255, 0.03);
       padding: 4px 8px;
       border-radius: 6px;
+    }
+
+    .section-divider-title {
+      font-size: 0.92rem;
+      font-weight: 900;
+      color: #ff0844;
+      text-align: right;
+      border-right: 3px solid #ff0844;
+      padding-right: 8px;
+      margin: 14px 0 8px 0;
     }
 
     .crisis-preview {
@@ -183,6 +191,19 @@
       box-shadow: 0 0 20px rgba(255, 8, 68, 0.45);
       margin-bottom: 8px;
     }
+    button.btn-cancel-speaker {
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 12px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #e11d48, #be123c);
+      color: #fff;
+      box-shadow: 0 0 15px rgba(225, 29, 72, 0.4);
+      margin-top: 6px;
+    }
     button.btn-lift {
       width: 100%;
       padding: 11px;
@@ -208,14 +229,14 @@
     <div class="card" id="loginScreen">
       <div class="badge-enemy">⚠️ غرفة إدارة الأزمات والحروب</div>
       <h2>👺 بوابة عدو الخير</h2>
-      <p class="desc">أدخل رمز التحكم لرصد خطوات وتحركات الفرق (evil666)</p>
+      <p class="desc">أدخل رمز التحكم لرصد خطوات وتحركات الفرق وإطلاق الأزمات (evil666)</p>
 
       <input type="password" id="enemyPassInput" placeholder="كلمة السر...">
       <button class="btn-attack" onclick="loginEnemy()">دخول غرفة التحكم ↵</button>
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
-    <!-- 2. لوحة التحكم والتجسس على الخطوات -->
+    <!-- 2. لوحة التحكم المتقدمة -->
     <div id="attackScreen" class="hidden">
       
       <!-- رادار التجسس على خطوات الفرق -->
@@ -228,9 +249,45 @@
         </div>
       </div>
 
-      <!-- إطلاق الضربة -->
+      <!-- قسم خاص: إلغاء حجز متكلم واعتذاره بدون استرداد -->
+      <div class="card" style="border-color: #e11d48;">
+        <h2 style="font-size: 1.15rem; color: #fb7185;">🎙️ ضربة اعتذار المتكلم (إلغاء ومصادرة التكلفة)</h2>
+        <p class="desc" style="color: #fca5a5; margin-bottom: 10px;">اختر الفريق والموسم لحذف متكلم محجوز ومصادرة تكلفته دون استرداد</p>
+
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <div style="text-align: right; margin-bottom: 4px; font-size: 0.78rem; color: #fca5a5;">الفريق:</div>
+            <select id="speakerCancelTeamSelect" onchange="loadBookedSpeakersForCancel()">
+              <option value="" disabled selected>-- اختر الفريق --</option>
+              <option value="team_virgin_mary">فريق السيدة العذراء</option>
+              <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
+              <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
+              <option value="team_anba_rois">فريق الانبا رويس</option>
+            </select>
+          </div>
+          <div>
+            <div style="text-align: right; margin-bottom: 4px; font-size: 0.78rem; color: #fca5a5;">الموسم:</div>
+            <select id="speakerCancelQuarterSelect" onchange="loadBookedSpeakersForCancel()">
+              <option value="Q1">🍂 Q1 الخريف</option>
+              <option value="Q2">❄️ Q2 الشتاء</option>
+              <option value="Q3">🌱 Q3 الربيع</option>
+              <option value="Q4">☀️ Q4 الصيف</option>
+            </select>
+          </div>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 4px; font-size: 0.78rem; color: #fca5a5;">المتكلم المحجوز المراد إلغاؤه واعتذاره:</div>
+        <select id="bookedSpeakersDropdown">
+          <option value="" disabled selected>-- اختر الفريق والموسم أولاً --</option>
+        </select>
+
+        <button class="btn-cancel-speaker" onclick="executeSpeakerCancellation()">⚡ إعلان اعتذار المتكلم وإلغاء حجزه فوراً</button>
+        <div id="speakerCancelStatus" class="msg"></div>
+      </div>
+
+      <!-- إطلاق الأزمات العامة والتجميد الروحي -->
       <div class="card">
-        <h2 style="font-size: 1.2rem;">⚡ توجيه أزمة وشرط الحل</h2>
+        <h2 style="font-size: 1.15rem;">⚡ توجيه أزمة وحرب روحية</h2>
         <p class="desc">اختر الفريق المستهدف ونوع الأزمة وشرط فكها الروحي</p>
 
         <div style="text-align: right; margin-bottom: 4px; font-size: 0.8rem; color: #fca5a5;">١. الفريق المستهدف:</div>
@@ -252,11 +309,7 @@
             <option value="food_inflation">🥪 زيادة طارئة في أسعار وجبات الحفل من المورد</option>
           </optgroup>
 
-          <optgroup label="🎙️ أزمة المتكلم الأساسي">
-            <option value="speaker_cancel">🎙️ اعتذار مفاجئ للمتكلم الأساسي قبل الاجتماع</option>
-          </optgroup>
-
-          <optgroup label="❄️ تحديات روحية وعلاقات (حلها الصلاة والافتقاد)">
+          <optgroup label="❄️ تحديات روحية وعلاقات (تجميد الحساب وحلها الصلاة)">
             <option value="apathy_division">💔 خلاف وتحزبات بين الشباب ورفض النزول</option>
             <option value="servants_burnout">🥱 فتور وإحباط جماعي لخدام الأسرة وثقل الخدمة</option>
             <option value="phone_addiction">📵 تشتيت السوشيال ميديا وانشغال الشباب بالموبايل</option>
@@ -278,7 +331,7 @@
 
         <!-- شروط الفك والحل -->
         <div class="solution-box">
-          <div class="solution-header">🕊️ شرط فك الضربة (ما يجب على الفريق فعله):</div>
+          <div class="solution-header">🕊️ شرط فك الضربة وتجميد الحساب (ما يجب فعله):</div>
           <select id="solutionTypeSelect" onchange="handleSolutionTypeChange()">
             <option value="prayer_group">🙏 صلاة جماعية: وقفة صلاة وتضرع لكل أعضاء الفريق لمدة دقيقة</option>
             <option value="psalm_recite">📖 مزمور جماعي: قراءة مزمور (الرب راعيّ / الساكن في عون العلي)</option>
@@ -295,8 +348,8 @@
         <div style="text-align: right; margin-bottom: 4px; font-size: 0.8rem; color: #fca5a5;">٣. خصم مالي كغرامة أزمة إن وُجد:</div>
         <input type="number" id="penaltyAmountInput" placeholder="مبلغ الخصم (0 إذا كان تحدياً روحياً فقط)">
 
-        <button class="btn-attack" onclick="launchAttack()">⚡ إطلاق الأزمة وشرط الحل فوراً</button>
-        <button class="btn-lift" onclick="liftTeamAttack()">🛡️ فك الهجمة (بعد إتمام الصلاة والحل المطلوب)</button>
+        <button class="btn-attack" onclick="launchAttack()">⚡ إطلاق الأزمة وتجميد الحساب فوراً</button>
+        <button class="btn-lift" onclick="liftTeamAttack()">🛡️ فك الهجمة والتجميد (بعد إتمام المطلوب)</button>
         
         <div id="attackStatus" class="msg"></div>
       </div>
@@ -334,7 +387,6 @@
       weather_ruin: { title: "عاصفة جوية وتلف أدوات الكرنفال", desc: "رياح شديدة وأمطار أتلفت الديكورات وشبكات الألعاب بالملعب!", defaultPenalty: 8000, defaultSolution: "thanks_prayer" },
       hall_damage: { title: "غرامة تلفيات بقاعة المسرح", desc: "حدث تلف عفوي بمعدات الإضاءة والصوت أثناء بروفة الحفل!", defaultPenalty: 6000, defaultSolution: "prayer_group" },
       food_inflation: { title: "زيادة طارئة في تكلفة وجبات الحفل", desc: "اعتذر مورد الأكل وطلب المورد البديل زيادة عاجلة!", defaultPenalty: 5000, defaultSolution: "thanks_prayer" },
-      speaker_cancel: { title: "اعتذار مفاجئ لمتكلم اللقاء الأساسي", desc: "المتكلم الأساسي اعتذر لظرف طارئ! مطلوب تجهيز كلمة بديلة فوراً.", defaultPenalty: 0, defaultSolution: "prayer_group" },
       apathy_division: { title: "خلاف وتحزبات بين الشباب", desc: "حالة خلاف وفتور تسببت في مقاطعة نصف المخدومين؛ مطلوب صلاة محبة ومصالحة عاجلة!", defaultPenalty: 0, defaultSolution: "thanks_prayer" },
       servants_burnout: { title: "فتور وإحباط جماعي لخدام الأسرة", desc: "إرهاق وضغوط جعلت الخدام يشعرون بثقل الحمل؛ مطلوب وقفة صلاة وتجديد طاقة الخدمة.", defaultPenalty: 0, defaultSolution: "psalm_recite" },
       phone_addiction: { title: "تشتيت السوشيال ميديا والموبايل", desc: "انشغال الشباب بالهواتف وقت اللقاء؛ مطلوب وقفة صلاة وتنبيه روحي تفاعلي.", defaultPenalty: 0, defaultSolution: "hymn_challenge" },
@@ -358,10 +410,10 @@
       db.ref('teams').on('value', snapshot => {
         cachedTeamsData = snapshot.val() || {};
         renderRadarFeed();
+        loadBookedSpeakersForCancel();
       });
     }
 
-    // رسم رادار كشف الخطوات بالتفصيل
     function renderRadarFeed() {
       const container = document.getElementById("radarContainer");
       container.innerHTML = "";
@@ -381,7 +433,6 @@
           totalSpent = tData.purchases.reduce((sum, p) => sum + (Number(p.cost) || 0), 0);
         }
 
-        // حساب عدد المتكلمين والبنود
         const plan = tData.plan || {};
         const q1Speakers = (plan.Q1 || []).filter(i => i.desk === 'speakers').length;
         const q2Speakers = (plan.Q2 || []).filter(i => i.desk === 'speakers').length;
@@ -419,7 +470,6 @@
             <span>الاستثمارات: <b style="color:#f1c40f;">${totalInvested.toLocaleString()} ج.ك</b></span>
           </div>
 
-          <!-- تفاصيل التجسس المنسدلة -->
           <div class="spy-details-box">
             <div style="font-size: 0.82rem; font-weight: 900; color: #38bdf8; margin-bottom: 6px;">🕵️‍♂️ خطوات ومشتريات الفريق:</div>
             
@@ -448,6 +498,97 @@
       });
     }
 
+    // تحميل المتكلمين الفعليين المحجوزين لدى الفريق
+    function loadBookedSpeakersForCancel() {
+      const teamKey = document.getElementById("speakerCancelTeamSelect").value;
+      const quarter = document.getElementById("speakerCancelQuarterSelect").value;
+      const dropdown = document.getElementById("bookedSpeakersDropdown");
+      dropdown.innerHTML = "";
+
+      if (!teamKey) {
+        dropdown.innerHTML = '<option value="" disabled selected>-- اختر الفريق أولاً --</option>';
+        return;
+      }
+
+      const teamData = cachedTeamsData[teamKey] || {};
+      const plan = (teamData.plan && teamData.plan[quarter]) || [];
+      const speakerItems = plan.filter(item => item.desk === 'speakers' || (item.slot && item.slot.startsWith("الأسبوع (")));
+
+      if (speakerItems.length === 0) {
+        dropdown.innerHTML = '<option value="" disabled selected>لا يوجد متكلمون محجوزون في هذا الموسم</option>';
+        return;
+      }
+
+      speakerItems.forEach((item, index) => {
+        const opt = document.createElement("option");
+        opt.value = item.slot;
+        opt.textContent = `${item.slot} : ${item.name} (${Number(item.cost).toLocaleString()} ج.ك)`;
+        dropdown.appendChild(opt);
+      });
+    }
+
+    // تنفيذ اعتذار وإلغاء المتكلم ومصادرة المبلغ
+    function executeSpeakerCancellation() {
+      const teamKey = document.getElementById("speakerCancelTeamSelect").value;
+      const teamName = document.getElementById("speakerCancelTeamSelect").selectedOptions[0]?.text;
+      const quarter = document.getElementById("speakerCancelQuarterSelect").value;
+      const slot = document.getElementById("bookedSpeakersDropdown").value;
+      const statusEl = document.getElementById("speakerCancelStatus");
+
+      statusEl.style.display = "block";
+
+      if (!teamKey || !slot) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⚠️ برجاء اختيار الفريق والمتكلم المحجوز أولاً!";
+        return;
+      }
+
+      const teamRef = db.ref('teams/' + teamKey);
+
+      teamRef.once('value').then(snapshot => {
+        const teamData = snapshot.val() || { plan: {}, purchases: [] };
+        let planList = (teamData.plan && teamData.plan[quarter]) || [];
+
+        const targetItem = planList.find(p => p.slot === slot || (p.name && p.name.includes(slot)));
+        if (!targetItem) {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "⚠️ لم يتم العثور على هذا الحجز في الخطة!";
+          return;
+        }
+
+        // 1. حذف المتكلم من الخطة ليعود الأسبوع شاغراً
+        teamData.plan[quarter] = planList.filter(p => !(p.slot === slot || (p.name && p.name.includes(slot))));
+
+        // 2. تسجيل اعتذار المتكلم كأزمة حية (بدون رد أي مبلغ للمحفظة)
+        const canceledName = targetItem.name.replace(/^الأسبوع \(\d+\)\s*:\s*/, '');
+        if (!teamData.purchases) teamData.purchases = [];
+        teamData.purchases.push({
+          item_name: `❌ اعتذار متكلم: ${canceledName} [${slot}] (تمت مصادرة ${Number(targetItem.cost).toLocaleString()} ج.ك)`,
+          cost: 0,
+          quarter: quarter,
+          time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+        });
+
+        // 3. وضع إنذار أزمة على الفريق ليعلم بضرورة تعويض المتكلم
+        teamData.activeAttack = {
+          title: `اعتذار متكلم ${slot}`,
+          desc: `المتكلم [${canceledName}] اعتذر لظرف طارئ! تمت مصادرة التكلفة، وأصبح الأسبوع شاغراً ويجب تعويضه بمتكلم جديد فوراً.`,
+          penalty: 0,
+          solution: "صلاة تضرع وتعاقد مع متكلم جديد من مكتب المتكلمين",
+          timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+        };
+
+        teamRef.set(teamData).then(() => {
+          statusEl.style.color = "#22c55e";
+          statusEl.textContent = `✅ تم بنجاح إلغاء متكلم [${slot}] لـ ${teamName}! أصبح الأسبوع شاغراً وتمت مصادرة التكلفة.`;
+          loadBookedSpeakersForCancel();
+        });
+      }).catch(err => {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "❌ خطأ في الاتصال: " + err.message;
+      });
+    }
+
     function handleCrisisChange() {
       const type = document.getElementById("attackTypeSelect").value;
       const customBox = document.getElementById("customCrisisBox");
@@ -464,9 +605,7 @@
         const c = attacksCatalog[type];
         previewBox.innerHTML = `📌 <b>طبيعة الأزمة:</b> ${c.desc}`;
         penaltyInput.value = c.defaultPenalty || 0;
-        if (c.defaultSolution) {
-          solSelect.value = c.defaultSolution;
-        }
+        if (c.defaultSolution) solSelect.value = c.defaultSolution;
       }
       handleSolutionTypeChange();
     }
@@ -512,7 +651,7 @@
       }
 
       statusEl.style.color = "#f1c40f";
-      statusEl.textContent = "جاري توجيه الضربة وإرسال شرط الفك...";
+      statusEl.textContent = "جاري توجيه الضربة وتجميد الحساب...";
 
       const teamRef = db.ref('teams/' + teamKey);
 
@@ -541,7 +680,7 @@
 
         teamRef.set(teamData).then(() => {
           statusEl.style.color = "#22c55e";
-          statusEl.textContent = `🔥 تم إطلاق [${title}] ضد ${teamName}! شرط الفك: [${solutionText}]`;
+          statusEl.textContent = `🔥 تم إطلاق [${title}] وتجميد حساب ${teamName}! شرط الفك: [${solutionText}]`;
         });
       }).catch(err => {
         statusEl.style.color = "#ff0844";
@@ -565,7 +704,7 @@
 
       db.ref('teams/' + teamKey + '/activeAttack').remove().then(() => {
         statusEl.style.color = "#4ade80";
-        statusEl.textContent = `🛡️ تم فك وإلغاء الضربة بنجاح عن ${teamName}! استمروا في الصلاة والخدمة.`;
+        statusEl.textContent = `🛡️ تم فك التجميد وإلغاء الضربة بنجاح عن ${teamName}! استمروا في الصلاة والخدمة.`;
       }).catch(err => {
         statusEl.style.color = "#ff0844";
         statusEl.textContent = "❌ خطأ أثناء فك الضربة: " + err.message;
