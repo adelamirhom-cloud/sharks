@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مكتب الهدايا والحفلات | Event Builder</title>
+  <title>مكتب الهدايا والحفلات والأنشطة | Ministry Events</title>
 
   <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-    
+
     body {
       background: #070b19;
       color: #fff;
@@ -25,7 +25,7 @@
 
     .container {
       width: 100%;
-      max-width: 600px;
+      max-width: 620px;
     }
 
     .card-box {
@@ -38,8 +38,16 @@
       margin-bottom: 16px;
     }
 
-    h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
-    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 14px; }
+    h2 {
+      color: #00f2fe;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+    p.desc {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
 
     .rule-banner {
       background: rgba(168, 85, 247, 0.1);
@@ -48,9 +56,25 @@
       border-radius: 12px;
       padding: 10px 14px;
       font-size: 0.82rem;
-      line-height: 1.4;
+      line-height: 1.45;
       text-align: right;
       margin-bottom: 16px;
+    }
+
+    .frozen-warning-box {
+      background: rgba(255, 8, 68, 0.2);
+      border: 2px solid #ff0844;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      text-align: right;
+      color: #fecaca;
+      animation: alertPulse 1.5s infinite;
+    }
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+      50% { box-shadow: 0 0 18px rgba(255, 8, 68, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
     }
 
     input, select {
@@ -66,8 +90,14 @@
       text-align: center;
       outline: none;
     }
-    select option { background: #0f172a; color: #fff; }
-    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+    select option {
+      background: #0f172a;
+      color: #fff;
+    }
+    input:focus, select:focus {
+      border-color: #00f2fe;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    }
 
     .desk-badge {
       background: rgba(0, 242, 254, 0.1);
@@ -81,16 +111,28 @@
       margin-bottom: 12px;
     }
 
+    .live-balance-tag {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px dashed #00f2fe;
+      color: #38bdf8;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
     .step-section {
       background: rgba(30, 41, 59, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
-      padding: 12px;
+      padding: 12px 14px;
       margin-bottom: 12px;
       text-align: right;
     }
     .step-header {
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 900;
       color: #38bdf8;
       margin-bottom: 8px;
@@ -100,13 +142,24 @@
       background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.05));
       border: 2px solid #00f2fe;
       border-radius: 14px;
-      padding: 12px;
+      padding: 14px;
       margin: 14px 0;
       text-align: right;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
     }
-    .calc-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .calc-net { font-size: 1.15rem; font-weight: 900; color: #00f2fe; border-top: 1px dashed rgba(0, 242, 254, 0.4); padding-top: 6px; margin-top: 6px; }
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .calc-net {
+      font-size: 1.18rem;
+      font-weight: 900;
+      color: #00f2fe;
+      border-top: 1px dashed rgba(0, 242, 254, 0.4);
+      padding-top: 8px;
+      margin-top: 6px;
+    }
 
     .btn-buy {
       width: 100%;
@@ -122,20 +175,20 @@
       transition: transform 0.2s;
     }
     .btn-buy:active { transform: scale(0.97); }
-
-    .live-balance-tag {
-      background: rgba(0, 242, 254, 0.15);
-      border: 1px dashed #00f2fe;
-      color: #38bdf8;
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 900;
-      margin-bottom: 12px;
-      display: inline-block;
+    .btn-buy:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #64748b !important;
+      color: #cbd5e1 !important;
+      box-shadow: none;
     }
 
-    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .msg {
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: none;
+    }
     .hidden { display: none; }
   </style>
 </head>
@@ -145,7 +198,7 @@
     
     <!-- 1. شاشة تسجيل الدخول -->
     <div class="card-box" id="loginScreen">
-      <div class="desk-badge">🎁 مكتب الهدايا والحفلات</div>
+      <div class="desk-badge">🎁 مكتب الهدايا والأنشطة والاحتفالات</div>
       <h2>تسجيل دخول المكتب</h2>
       <p class="desc">أدخل كلمة سر مكتب الهدايا (event303)</p>
 
@@ -159,7 +212,13 @@
       
       <div class="card-box">
         <div class="desk-badge">🎁 حاسبة تجهيز الحفلات والمناسبات</div>
+        <h2 style="font-size: 1.25rem;">إتمام حجز الفعاليات والاحتفالات</h2>
         
+        <div id="freezeWarning" class="frozen-warning-box hidden">
+          ⛔ <b>حساب هذا الفريق مُجمد حالياً بسبب ضربة روحية!</b><br>
+          🙏 <span id="freezeConditionText">المطلوب لفك الحظر: صلاة جماعية</span>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
@@ -186,13 +245,13 @@
         <div id="ruleBannerText" class="rule-banner"></div>
         <div id="liveBalanceBox" class="live-balance-tag hidden">الرصيد المتاح: <span id="currentTeamBalanceDisplay">0</span> ج.ك</div>
 
-        <!-- اختيار نوع الفعالية بناءً على الربع -->
+        <!-- اختيار الفعالية المستهدفة -->
         <div class="step-section">
           <div class="step-header">🎯 الفعالية / الحفلة المستهدفة:</div>
           <select id="eventTypeSelect" onchange="renderEventSteps()"></select>
         </div>
 
-        <!-- الحاوية الديناميكية لخطوات كل حفلة -->
+        <!-- الخطوات المحددة ديناميكياً لكل حفلة -->
         <div id="dynamicStepsContainer"></div>
 
         <!-- ملخص الحساب المالي -->
@@ -201,7 +260,7 @@
           <div class="calc-row calc-net"><span>المطلوب خصمه من رصيد الفريق:</span><b id="netCostDisplay">0 ج.ك</b></div>
         </div>
 
-        <button class="btn-buy" onclick="finalizeBooking()">🛒 اعتماد وحجز الفعالية</button>
+        <button class="btn-buy" id="btnSubmitEvent" onclick="finalizeBooking()">🛒 اعتماد وحجز الفعالية</button>
         <div id="saleStatus" class="msg"></div>
 
       </div>
@@ -224,26 +283,50 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    let isTeamFrozen = false;
+    let currentCalculatedTotal = 0;
+    let currentEventSummary = "";
+
     function loginDesk() {
-      if (document.getElementById("servantPassInput").value.trim().toLowerCase() !== "event303") {
+      const pass = document.getElementById("servantPassInput").value.trim().toLowerCase();
+      if (pass !== "event303") {
         document.getElementById("loginError").style.display = "block";
         return;
       }
+
+      document.getElementById("loginError").style.display = "none";
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
+
       updateQuarterEvents();
     }
 
     function fetchCurrentTeamBalance() {
       const teamKey = document.getElementById("teamTargetSelect").value;
       if (!teamKey) return;
-      db.ref('teams/' + teamKey + '/balance').on('value', snap => {
-        document.getElementById("currentTeamBalanceDisplay").textContent = Number(snap.val() || 0).toLocaleString();
+
+      db.ref('teams/' + teamKey).on('value', snap => {
+        const tData = snap.val() || {};
+        const bal = Number(tData.balance || 0);
+        document.getElementById("currentTeamBalanceDisplay").textContent = bal.toLocaleString();
         document.getElementById("liveBalanceBox").classList.remove("hidden");
+
+        const freezeWarning = document.getElementById("freezeWarning");
+        const attack = tData.activeAttack;
+
+        if (attack && attack.solution && attack.solution.trim() !== "") {
+          isTeamFrozen = true;
+          freezeWarning.classList.remove("hidden");
+          document.getElementById("freezeConditionText").textContent = `المطلوب لفك الحظر: ${attack.solution}`;
+        } else {
+          isTeamFrozen = false;
+          freezeWarning.classList.add("hidden");
+        }
+
+        document.getElementById("btnSubmitEvent").disabled = isTeamFrozen;
       });
     }
 
-    // تهيئة الفعاليات حسب الموسم
     function updateQuarterEvents() {
       const q = document.getElementById("quarterTargetSelect").value;
       const banner = document.getElementById("ruleBannerText");
@@ -251,110 +334,105 @@
       eventSelect.innerHTML = "";
 
       if (q === "Q1") {
-        banner.innerHTML = "🍂 <b>فعاليات الخريف:</b> حفلة تخرج ثانوية عامة + حفلة استقبال أولى ثانوي + أعياد ميلاد الـ 3 شهور المجمعة.";
+        banner.innerHTML = "🍂 <b>فعاليات الخريف:</b> حفلة تخرج ثانوية عامة + حفلة استقبال أولى ثانوي + أعياد ميلاد مجمعة (3 شهور).";
         eventSelect.innerHTML = `
           <option value="grad_party">🎓 حفلة تخرج الدفعة (3 ثانوي)</option>
           <option value="welcome_party">🎉 حفلة استقبال الدفعة الجديدة (1 ثانوي)</option>
           <option value="birthdays_q1">🎂 أعياد ميلاد الخريف المجمعة (3 شهور)</option>
         `;
       } else if (q === "Q2") {
-        banner.innerHTML = "❄️ <b>فعاليات الشتاء:</b> حفلة عيد الميلاد المجيد وهدايا العيد + أعياد ميلاد الشتاء المجمعة.";
+        banner.innerHTML = "❄️ <b>فعاليات الشتاء:</b> حفلة وهدايا عيد الميلاد المجيد + أعياد ميلاد الشتاء المجمعة (3 شهور).";
         eventSelect.innerHTML = `
           <option value="xmas_party">🎄 حفلة وهدايا عيد الميلاد المجيد</option>
           <option value="birthdays_q2">🎂 أعياد ميلاد الشتاء المجمعة (3 شهور)</option>
         `;
       } else if (q === "Q3") {
-        banner.innerHTML = "🌱 <b>فعاليات الربيع:</b> حفلة عيد القيامة وعيد الربيع + أعياد ميلاد الربيع المجمعة.";
+        banner.innerHTML = "🌱 <b>فعاليات الربيع:</b> احتفالية عيد القيامة وعيد الربيع + أعياد ميلاد الربيع المجمعة (3 شهور).";
         eventSelect.innerHTML = `
           <option value="easter_party">🕊️ احتفالية عيد القيامة والربيع</option>
           <option value="birthdays_q3">🎂 أعياد ميلاد الربيع المجمعة (3 شهور)</option>
         `;
       } else {
-        banner.innerHTML = "☀️ <b>فعاليات الصيف:</b> مهرجان الكرنفال والألعاب + أعياد ميلاد الصيف المجمعة.";
+        banner.innerHTML = "☀️ <b>فعاليات الصيف:</b> مهرجان الكرنفال والألعاب الصيفية + أعياد ميلاد الصيف المجمعة (3 شهور).";
         eventSelect.innerHTML = `
           <option value="carnival_party">🎯 مهرجان الكرنفال وتيلي ماتش الصيف</option>
           <option value="birthdays_q4">🎂 أعياد ميلاد الصيف المجمعة (3 شهور)</option>
         `;
       }
-
       renderEventSteps();
     }
 
-    // توليد خطوات كل فعالية بدقة
     function renderEventSteps() {
       const eventType = document.getElementById("eventTypeSelect").value;
       const container = document.getElementById("dynamicStepsContainer");
       container.innerHTML = "";
 
       if (eventType.startsWith("birthdays_")) {
-        // حاسبة أعياد الميلاد المجمعة
         container.innerHTML = `
           <div class="step-section">
             <div class="step-header">🎁 الخطوة ١: باقة هدايا المواليد للـ 3 شهور:</div>
             <select id="step1_select" onchange="calculateTotal()">
-              <option value="2500" data-name="هدايا رمزية ونوت بوك أنيق">هدايا رمزية ونوت بوك وميدالية (2,500 ج.ك)</option>
-              <option value="5000" data-name="هدايا براند شخصية مخصصة">هدايا براند شخصية بالاسم (5,000 ج.ك)</option>
-              <option value="8000" data-name="هدايا قيمة VIP حرارية">هدايا VIP ماج حراري وباور بانك (8,000 ج.ك)</option>
+              <option value="2500" data-name="هدايا رمزية ونوت بوك وميدالية">هدايا رمزية ونوت بوك وميدالية (2,500 ج.ك)</option>
+              <option value="5000" data-name="هدايا براند شخصية مخصصة بالاسم">هدايا براند شخصية بالاسم (5,000 ج.ك)</option>
+              <option value="8000" data-name="هدايا VIP ماج حراري وباور بانك">هدايا VIP ماج حراري وباور بانك (8,000 ج.ك)</option>
             </select>
           </div>
 
           <div class="step-section">
             <div class="step-header">🎂 الخطوة ٢: التورتة والاحتفال:</div>
             <select id="step2_select" onchange="calculateTotal()">
-              <option value="1200" data-name="تورتة متوسطة 40x40">تورتة كيك شيكولاتة متوسطة (1,200 ج.ك)</option>
-              <option value="2500" data-name="تورتة كريمة وشيكولاتة VIP دورين">تورتة VIP دورين مطبوعة بالصور (2,500 ج.ك)</option>
-              <option value="4000" data-name="بوفيه تورتات وكب كيك مخصص">بوفيه ميني تورتات وكب كيك بالاسم (4,000 ج.ك)</option>
+              <option value="1200" data-name="تورتة كيك شيكولاتة متوسطة">تورتة كيك شيكولاتة متوسطة (1,200 ج.ك)</option>
+              <option value="2500" data-name="تورتة VIP دورين مطبوعة بالصور">تورتة VIP دورين مطبوعة بالصور (2,500 ج.ك)</option>
+              <option value="4000" data-name="بوفيه ميني تورتات وكب كيك بالاسم">بوفيه ميني تورتات وكب كيك بالاسم (4,000 ج.ك)</option>
             </select>
           </div>
 
           <div class="step-section">
             <div class="step-header">🥪 الخطوة ٣: وجبة الأكل والمشروبات:</div>
             <select id="step3_select" onchange="calculateTotal()">
-              <option value="1500" data-name="باتيه ومشروبات غازية">سناك باتيه وكانزات عصائر (1,500 ج.ك)</option>
-              <option value="3500" data-name="وجبات ساندوتشات كول سلو وبيبيسي">وجبات كيزر بانيه وكول سلو وبطاطس (3,500 ج.ك)</option>
-              <option value="6000" data-name="وجبات بيتزا وفطائر فاخرة">وجبات بيتزا لارج وعصائر فريش (6,000 ج.ك)</option>
+              <option value="1500" data-name="سناك باتيه وكانزات عصائر">سناك باتيه وكانزات عصائر (1,500 ج.ك)</option>
+              <option value="3500" data-name="وجبات كيزر بانيه وبطاطس">وجبات كيزر بانيه وكول سلو وبطاطس (3,500 ج.ك)</option>
+              <option value="6000" data-name="وجبات بيتزا لارج وعصائر فريش">وجبات بيتزا لارج وعصائر فريش (6,000 ج.ك)</option>
             </select>
           </div>
         `;
       } else if (eventType === "grad_party") {
-        // حاسبة حفلة التخرج
         container.innerHTML = `
           <div class="step-section">
             <div class="step-header">🏛️ الخطوة ١: حجز المسرح / القاعة وتجهيزات الصوت:</div>
             <select id="step1_select" onchange="calculateTotal()">
-              <option value="3000" data-name="مسرح الكنيسة مع ساوند سيستم داخلي">مسرح الكنيسة الداخلي وتجهيز بسيط (3,000 ج.ك)</option>
-              <option value="8000" data-name="تأجير مسرح خارجي مجهز بشاشة ليد">تأجير مسرح خارجي مجهز بشاشات عرض (8,000 ج.ك)</option>
-              <option value="16000" data-name="تأجير قاعة احتفالات VIP بإضاءة مسرحية">قاعة احتفالات VIP بإضاءة ومؤثرات ومسرح (16,000 ج.ك)</option>
+              <option value="3000" data-name="مسرح الكنيسة الداخلي وتجهيز بسيط">مسرح الكنيسة الداخلي وتجهيز بسيط (3,000 ج.ك)</option>
+              <option value="8000" data-name="تأجير مسرح خارجي مجهز بشاشات عرض">تأجير مسرح خارجي مجهز بشاشات عرض (8,000 ج.ك)</option>
+              <option value="16000" data-name="قاعة احتفالات VIP بإضاءة ومؤثرات ومسرح">قاعة احتفالات VIP بإضاءة ومؤثرات ومسرح (16,000 ج.ك)</option>
             </select>
           </div>
 
           <div class="step-section">
             <div class="step-header">🎓 الخطوة ٢: أرواب التخرج وشهادات التقدير والدروع:</div>
             <select id="step2_select" onchange="calculateTotal()">
-              <option value="2500" data-name="تأجير أرواب عادية وشهادات كرتون">تأجير أرواب عادية + شهادات تقدير (2,500 ج.ك)</option>
-              <option value="5500" data-name="تأجير أرواب ستان وشاح مخصص + دروع">أرواب ستان بوشاح كنسي + دروع خشبية (5,500 ج.ك)</option>
-              <option value="9500" data-name="تفصيل أرواب ملكية وشاح مطرز + درع كريستال">أرواب ملكية ملك للخريج + دروع كريستال فاخرة (9,500 ج.ك)</option>
+              <option value="2500" data-name="تأجير أرواب عادية + شهادات تقدير">تأجير أرواب عادية + شهادات تقدير (2,500 ج.ك)</option>
+              <option value="5500" data-name="أرواب ستان بوشاح كنسي + دروع خشبية">أرواب ستان بوشاح كنسي + دروع خشبية (5,500 ج.ك)</option>
+              <option value="9500" data-name="أرواب ملكية للخريج + دروع كريستال فاخرة">أرواب ملكية للخريج + دروع كريستال فاخرة (9,500 ج.ك)</option>
             </select>
           </div>
 
           <div class="step-section">
             <div class="step-header">🎁 الخطوة ٣: هدايا التخرج التذكارية للخريجين:</div>
             <select id="step3_select" onchange="calculateTotal()">
-              <option value="2000" data-name="ألبوم صور مجمع وبوستر تذكاري">ألبوم صور الدفعة وبوستر تذكاري (2,000 ج.ك)</option>
-              <option value="5000" data-name="صليب كريستال وميدالية وساعة حائط">صليب كريستال تذكاري وميدالية فضة (5,000 ج.ك)</option>
-              <option value="9000" data-name="باكدج VIP هودي مطرز تخرج + باور بانك">باكدج VIP هودي تخرج + باور بانك منقوش (9,000 ج.ك)</option>
+              <option value="2000" data-name="ألبوم صور الدفعة وبوستر تذكاري">ألبوم صور الدفعة وبوستر تذكاري (2,000 ج.ك)</option>
+              <option value="5000" data-name="صليب كريستال تذكاري وميدالية فضة">صليب كريستال تذكاري وميدالية فضة (5,000 ج.ك)</option>
+              <option value="9000" data-name="باكدج VIP هودي تخرج + باور بانك منقوش">باكدج VIP هودي تخرج + باور بانك منقوش (9,000 ج.ك)</option>
             </select>
           </div>
         `;
       } else if (eventType === "welcome_party") {
-        // حاسبة حفلة الاستقبال
         container.innerHTML = `
           <div class="step-section">
             <div class="step-header">🎯 الخطوة ١: فقرات الألعاب والأنشطة والمسابقات:</div>
             <select id="step1_select" onchange="calculateTotal()">
-              <option value="1500" data-name="ألعاب ورقية وحركية ذاتية الصنع من الخدام">ألعاب ومسابقات صنع الخدام بالخامات (1,500 ج.ك)</option>
-              <option value="4500" data-name="تأجير ألعاب تيلي ماتش ومسابقات مطاطية">تأجير ألعاب تيلي ماتش ومسابقات حركية (4,500 ج.ك)</option>
-              <option value="8500" data-name="الاتفاق مع فريق ميديا وترفيه محترف كامل">الاتفاق مع فريق ألعاب وترفيه واستعراض (8,500 ج.ك)</option>
+              <option value="1500" data-name="ألعاب ومسابقات صنع الخدام بالخامات">ألعاب ومسابقات صنع الخدام بالخامات (1,500 ج.ك)</option>
+              <option value="4500" data-name="تأجير ألعاب تيلي ماتش ومسابقات حركية">تأجير ألعاب تيلي ماتش ومسابقات حركية (4,500 ج.ك)</option>
+              <option value="8500" data-name="الاتفاق مع فريق ألعاب وترفيه واستعراض">الاتفاق مع فريق ألعاب وترفيه واستعراض (8,500 ج.ك)</option>
             </select>
           </div>
 
@@ -362,8 +440,8 @@
             <div class="step-header">🍔 الخطوة ٢: نوع الأكل والضيافة:</div>
             <select id="step2_select" onchange="calculateTotal()">
               <option value="2000" data-name="ساندوتشات شاورما بيتي وعصائر">ساندوتشات شاورما بيتي وعصائر (2,000 ج.ك)</option>
-              <option value="4500" data-name="وجبات برجر وفرايز وصوصات جاهزة">وجبات برجر وبطاطس وصودا (4,500 ج.ك)</option>
-              <option value="7500" data-name="بوفيه مفتوح ومشاوي وحلوى">بوفيه مفتوح ميني سندوتشات وحلويات (7,500 ج.ك)</option>
+              <option value="4500" data-name="وجبات برجر وبطاطس وصودا">وجبات برجر وبطاطس وصودا (4,500 ج.ك)</option>
+              <option value="7500" data-name="بوفيه مفتوح ميني سندوتشات وحلويات">بوفيه مفتوح ميني سندوتشات وحلويات (7,500 ج.ك)</option>
             </select>
           </div>
 
@@ -371,58 +449,52 @@
             <div class="step-header">🎁 الخطوة ٣: باقة هدايا الترحيب (Welcome Gift):</div>
             <select id="step3_select" onchange="calculateTotal()">
               <option value="0" data-name="بدون هدايا استقبال">بدون هدايا ترحيبية (0 ج.ك)</option>
-              <option value="2000" data-name="نوت بوك المرحلة وقلم وبادج">نوت بوك المرحلة وقلم وبادج اسم (2,000 ج.ك)</option>
-              <option value="5000" data-name="تيشيرت ترحيبي مطبوع + ماج">تيشيرت المرحلة مطبوع + ماج حراري (5,000 ج.ك)</option>
+              <option value="2000" data-name="نوت بوك المرحلة وقلم وبادج اسم">نوت بوك المرحلة وقلم وبادج اسم (2,000 ج.ك)</option>
+              <option value="5000" data-name="تيشيرت المرحلة مطبوع + ماج حراري">تيشيرت المرحلة مطبوع + ماج حراري (5,000 ج.ك)</option>
             </select>
           </div>
         `;
       } else if (eventType === "xmas_party") {
-        // حاسبة عيد الميلاد المجيد (الشتاء)
         container.innerHTML = `
           <div class="step-section">
             <div class="step-header">🎄 الخطوة ١: باقة هدايا عيد الميلاد المجيد للدفعة:</div>
             <select id="step1_select" onchange="calculateTotal()">
-              <option value="3500" data-name="كروت معايدة ومجسم المزود وميدالية">كارت معايدة ومجسم مزود وميدالية (3,500 ج.ك)</option>
-              <option value="8000" data-name="هدايا براند شتوية وشال صوف">شال صوف شتوي + ماج العيد وسناكس (8,000 ج.ك)</option>
-              <option value="18000" data-name="هودي شتوي فاخر مطرز + باكدج العيد">هودي شتوي فاخر مطرز بشعار المرحلة (18,000 ج.ك)</option>
+              <option value="3500" data-name="كارت معايدة ومجسم مزود وميدالية">كارت معايدة ومجسم مزود وميدالية (3,500 ج.ك)</option>
+              <option value="8000" data-name="شال صوف شتوي + ماج العيد وسناكس">شال صوف شتوي + ماج العيد وسناكس (8,000 ج.ك)</option>
+              <option value="18000" data-name="هودي شتوي فاخر مطرز بشعار المرحلة">هودي شتوي فاخر مطرز بشعار المرحلة (18,000 ج.ك)</option>
             </select>
           </div>
 
           <div class="step-section">
             <div class="step-header">🍫 الخطوة ٢: ضيافة وحلوى وشيكولاتة العيد:</div>
             <select id="step2_select" onchange="calculateTotal()">
-              <option value="1500" data-name="أطباق بسكويت وبيتي فور وعصير">بسكويت وبيتي فور العيد ومشروبات (1,500 ج.ك)</option>
-              <option value="4000" data-name="شيكولاتة فاخرة وعلب كحك العيد">علب كحك وشيكولاتة براند فاخرة (4,000 ج.ك)</option>
+              <option value="1500" data-name="بسكويت وبيتي فور العيد ومشروبات">بسكويت وبيتي فور العيد ومشروبات (1,500 ج.ك)</option>
+              <option value="4000" data-name="علب كحك وشيكولاتة براند فاخرة">علب كحك وشيكولاتة براند فاخرة (4,000 ج.ك)</option>
             </select>
           </div>
         `;
       } else {
-        // الفعاليات الأخرى (الربيع والصيف)
         container.innerHTML = `
           <div class="step-section">
             <div class="step-header">🎈 الخطوة ١: تجهيزات الاحتفال والأنشطة:</div>
             <select id="step1_select" onchange="calculateTotal()">
-              <option value="3000" data-name="مسابقات ومهرجان داخلي">مسابقات وألعاب داخل القاعة (3,000 ج.ك)</option>
-              <option value="7000" data-name="مهرجان ألعاب مائية ومسرح تفاعلي">مهرجان ألعاب مائية وصوتيات (7,000 ج.ك)</option>
-              <option value="14000" data-name="كرنفال خارجي كامل وبوفيه احتفالي">كرنفال متكامل مع دي جي وألعاب هوائية (14,000 ج.ك)</option>
+              <option value="3000" data-name="مسابقات وألعاب داخل القاعة">مسابقات وألعاب داخل القاعة (3,000 ج.ك)</option>
+              <option value="7000" data-name="مهرجان ألعاب مائية وصوتيات">مهرجان ألعاب مائية وصوتيات (7,000 ج.ك)</option>
+              <option value="14000" data-name="كرنفال متكامل مع دي جي وألعاب هوائية">كرنفال متكامل مع دي جي وألعاب هوائية (14,000 ج.ك)</option>
             </select>
           </div>
 
           <div class="step-section">
-            <div class="step-header">🎁 الخطوة ٢: هدايا الفعالية:</div>
+            <div class="step-header">🎁 الخطوة ٢: هدايا الفعالية والمسابقات:</div>
             <select id="step2_select" onchange="calculateTotal()">
-              <option value="2000" data-name="تذكار الفعالية وهدايا مسابقات">تذكار وهدايا مسابقات (2,000 ج.ك)</option>
-              <option value="5000" data-name="هدايا قيمة وميداليات تذكارية">هدايا قيمة للمسابقات وميداليات (5,000 ج.ك)</option>
+              <option value="2000" data-name="تذكار وهدايا مسابقات">تذكار وهدايا مسابقات (2,000 ج.ك)</option>
+              <option value="5000" data-name="هدايا قيمة للمسابقات وميداليات">هدايا قيمة للمسابقات وميداليات (5,000 ج.ك)</option>
             </select>
           </div>
         `;
       }
-
       calculateTotal();
     }
-
-    let currentCalculatedTotal = 0;
-    let currentEventSummary = "";
 
     function calculateTotal() {
       const eventSelect = document.getElementById("eventTypeSelect");
@@ -464,12 +536,26 @@
         return;
       }
 
+      if (isTeamFrozen) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⛔ حساب الفريق مُجمد بسبب حرب روحية! نفذوا شرط الصلاة أولاً لفك الحظر.";
+        return;
+      }
+
+      statusEl.style.color = "#f1c40f";
+      statusEl.textContent = "جاري التحقق وإتمام الحجز...";
+
       const teamRef = db.ref('teams/' + teamKey);
 
       teamRef.once('value').then(snapshot => {
         const data = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
         
-        // التحقق من تكرار حجز نفس الفعالية
+        if (data.activeAttack && data.activeAttack.solution && data.activeAttack.solution.trim() !== "") {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "⛔ لا يمكن إتمام الحجز، الحساب مُجمد حالياً!";
+          return;
+        }
+
         const existingPlan = (data.plan && data.plan[quarter]) || [];
         if (existingPlan.some(p => p.slot === eventType)) {
           statusEl.style.color = "#ff0844";
@@ -485,7 +571,8 @@
           return;
         }
 
-        data.balance = bal - currentCalculatedTotal;
+        const newBalance = bal - currentCalculatedTotal;
+
         if (!data.plan) data.plan = {};
         if (!data.plan[quarter]) data.plan[quarter] = [];
 
@@ -504,12 +591,14 @@
           time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
         });
 
+        data.balance = newBalance;
+
         teamRef.set(data).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم اعتماد وحجز [${eventTitle}] بنجاح لـ ${teamName}! المخصوم: ${currentCalculatedTotal.toLocaleString()} ج.ك`;
+          statusEl.textContent = `✅ تم بنجاح حجز [${eventTitle}] لـ ${teamName}! المخصوم: ${currentCalculatedTotal.toLocaleString()} ج.ك`;
         }).catch(err => {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = "❌ خطأ أثناء الحفظ: " + err.message;
+          statusEl.textContent = "❌ خطأ في الاتصال: " + err.message;
         });
       });
     }
