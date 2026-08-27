@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مكتب المتكلمين والمحتوى | Ministry Speakers</title>
+  <title>مكتب المتكلمين والمحتوى الروحي | Ministry Speakers</title>
 
   <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-    
+
     body {
       background: #070b19;
       color: #fff;
@@ -38,8 +38,16 @@
       margin-bottom: 16px;
     }
 
-    h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
-    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 14px; }
+    h2 {
+      color: #00f2fe;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+    p.desc {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
 
     .disclaimer-box {
       background: rgba(241, 196, 15, 0.1);
@@ -51,6 +59,22 @@
       line-height: 1.5;
       text-align: right;
       margin-bottom: 16px;
+    }
+
+    .frozen-warning-box {
+      background: rgba(255, 8, 68, 0.2);
+      border: 2px solid #ff0844;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      text-align: right;
+      color: #fecaca;
+      animation: alertPulse 1.5s infinite;
+    }
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+      50% { box-shadow: 0 0 18px rgba(255, 8, 68, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
     }
 
     input, select {
@@ -66,8 +90,14 @@
       text-align: center;
       outline: none;
     }
-    select option { background: #0f172a; color: #fff; }
-    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+    select option {
+      background: #0f172a;
+      color: #fff;
+    }
+    input:focus, select:focus {
+      border-color: #00f2fe;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    }
 
     .desk-badge {
       background: rgba(0, 242, 254, 0.1);
@@ -93,7 +123,7 @@
       display: inline-block;
     }
 
-    /* نظام المجموعات المنسدلة */
+    /* المجموعات المنسدلة */
     .groups-list {
       display: flex;
       flex-direction: column;
@@ -126,11 +156,29 @@
       cursor: pointer;
       user-select: none;
     }
-    .group-title-box { display: flex; flex-direction: column; }
-    .group-title { font-size: 1rem; font-weight: 900; color: #f1f5f9; }
-    .group-subtitle { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
-    .group-cost { font-size: 1.1rem; font-weight: 900; color: #00f2fe; direction: ltr; }
-    .speaker-group-card.vip-custom .group-cost { color: #f1c40f; }
+    .group-title-box {
+      display: flex;
+      flex-direction: column;
+    }
+    .group-title {
+      font-size: 1rem;
+      font-weight: 900;
+      color: #f1f5f9;
+    }
+    .group-subtitle {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-top: 2px;
+    }
+    .group-cost {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #00f2fe;
+      direction: ltr;
+    }
+    .speaker-group-card.vip-custom .group-cost {
+      color: #f1c40f;
+    }
 
     .group-body {
       padding: 0 16px 16px 16px;
@@ -138,7 +186,9 @@
       display: none;
       animation: fadeIn 0.3s ease;
     }
-    .speaker-group-card.active-group .group-body { display: block; }
+    .speaker-group-card.active-group .group-body {
+      display: block;
+    }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(-6px); }
@@ -170,8 +220,19 @@
       color: #000;
     }
     .btn-buy:active { transform: scale(0.96); }
+    .btn-buy:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #64748b !important;
+      color: #cbd5e1 !important;
+    }
 
-    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .msg {
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: none;
+    }
     .hidden { display: none; }
   </style>
 </head>
@@ -179,9 +240,9 @@
 
   <div class="container">
     
-    <!-- 1. شاشة الدخول -->
+    <!-- 1. شاشة تسجيل الدخول -->
     <div class="card-box" id="loginScreen">
-      <div class="desk-badge">🎙️ مكتب المتكلمين والمحتوى</div>
+      <div class="desk-badge">🎙️ مكتب المتكلمين والمحتوى الروحي</div>
       <h2>تسجيل دخول المكتب</h2>
       <p class="desc">أدخل كلمة سر مكتب المتكلمين (speak101)</p>
 
@@ -199,6 +260,11 @@
         
         <div class="disclaimer-box">
           📌 <b>تنويه هام:</b> المبالغ الموضحة ليست مقابلاً للكلمة أو التعليم الروحي؛ فخدام الكنيسة والآباء لا يتقاضون مقابلاً، بل هي تقديرات رمزية لتغطية تكاليف الانتقالات، هدايا التقدير، وتجهيزات القاعة والمحتوى.
+        </div>
+
+        <div id="freezeWarning" class="frozen-warning-box hidden">
+          ⛔ <b>حساب هذا الفريق مُجمد حالياً بسبب ضربة روحية!</b><br>
+          🙏 <span id="freezeConditionText">المطلوب لفك الحظر: صلاة جماعية</span>
         </div>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
@@ -252,7 +318,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // كتالوج المجموعات والأسماء
+    let isTeamFrozen = false;
+
+    // كتالوج المجموعات والأسماء الكامل
     const speakerGroups = [
       {
         id: "local_servants",
@@ -338,6 +406,7 @@
         return;
       }
 
+      document.getElementById("loginError").style.display = "none";
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
 
@@ -358,14 +427,29 @@
 
     function fetchCurrentTeamBalance() {
       const teamKey = document.getElementById("teamTargetSelect").value;
-      const box = document.getElementById("liveBalanceBox");
-      const display = document.getElementById("currentTeamBalanceDisplay");
-
       if (!teamKey) return;
-      db.ref('teams/' + teamKey + '/balance').on('value', snap => {
-        const bal = Number(snap.val() || 0);
-        display.textContent = bal.toLocaleString();
-        box.classList.remove("hidden");
+
+      db.ref('teams/' + teamKey).on('value', snap => {
+        const tData = snap.val() || {};
+        const bal = Number(tData.balance || 0);
+        document.getElementById("currentTeamBalanceDisplay").textContent = bal.toLocaleString();
+        document.getElementById("liveBalanceBox").classList.remove("hidden");
+
+        const freezeWarning = document.getElementById("freezeWarning");
+        const attack = tData.activeAttack;
+
+        if (attack && attack.solution && attack.solution.trim() !== "") {
+          isTeamFrozen = true;
+          freezeWarning.classList.remove("hidden");
+          document.getElementById("freezeConditionText").textContent = `المطلوب لفك الحظر: ${attack.solution}`;
+        } else {
+          isTeamFrozen = false;
+          freezeWarning.classList.add("hidden");
+        }
+
+        document.querySelectorAll('.btn-buy').forEach(btn => {
+          btn.disabled = isTeamFrozen;
+        });
       });
     }
 
@@ -417,7 +501,6 @@
       const card = document.getElementById(`group_card_${index}`);
       const isActive = card.classList.contains("active-group");
       
-      // إغلاق باقي الكروت لفتح الكارت المطلوب فقط
       document.querySelectorAll('.speaker-group-card').forEach(c => c.classList.remove("active-group"));
       
       if (!isActive) {
@@ -438,6 +521,12 @@
       if (!teamKey) {
         statusEl.style.color = "#ff0844";
         statusEl.textContent = "⚠️ برجاء اختيار الفريق أولاً من الأعلى!";
+        return;
+      }
+
+      if (isTeamFrozen) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⛔ حساب هذا الفريق مُجمد بسبب حرب روحية! نفذوا شرط الصلاة لفك الحظر.";
         return;
       }
 
@@ -464,7 +553,12 @@
       teamRef.once('value').then(snapshot => {
         const teamData = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
         
-        // التحقق من عدم حجز الأسبوع مسبقاً
+        if (teamData.activeAttack && teamData.activeAttack.solution && teamData.activeAttack.solution.trim() !== "") {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "⛔ لا يمكن إتمام الشراء، الحساب مُجمد حالياً!";
+          return;
+        }
+
         const existingPlan = (teamData.plan && teamData.plan[quarter]) || [];
         const alreadyBooked = existingPlan.find(p => p.slot === slot || (p.name && p.name.includes(slot)));
         
