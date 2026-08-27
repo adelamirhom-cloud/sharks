@@ -3,14 +3,14 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>لوحة تحكم الفريق المفصلة | Shark Tank Youth</title>
+  <title>لوحة تحكم الفريق | Shark Tank Youth</title>
 
   <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
     
     body {
@@ -35,7 +35,7 @@
       padding: 20px 16px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
       text-align: center;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
     }
 
     h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
@@ -71,32 +71,92 @@
     }
     button:active { transform: scale(0.97); }
 
+    /* بانر التجميد الروحي */
+    .spiritual-freeze-box {
+      background: linear-gradient(135deg, rgba(255, 8, 68, 0.25), rgba(153, 27, 27, 0.35));
+      border: 2px solid #ff0844;
+      border-radius: 16px;
+      padding: 16px;
+      margin-bottom: 14px;
+      text-align: right;
+      animation: pulseAlert 1.5s infinite;
+    }
+    @keyframes pulseAlert {
+      0% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+      50% { box-shadow: 0 0 22px rgba(255, 8, 68, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+    }
+    .freeze-title { font-size: 1.05rem; font-weight: 900; color: #ff0844; display: flex; align-items: center; gap: 6px; }
+    .freeze-solution {
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px dashed #fca5a5;
+      border-radius: 10px;
+      padding: 10px;
+      margin-top: 8px;
+      font-size: 0.85rem;
+      color: #fef08a;
+      line-height: 1.4;
+    }
+
+    /* تنويه الخصم المادي */
+    .material-notice-box {
+      background: rgba(245, 158, 11, 0.15);
+      border: 1.5px solid #f59e0b;
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 14px;
+      text-align: right;
+      font-size: 0.85rem;
+      color: #fde68a;
+    }
+
+    /* بطاقة المحفظة */
     .wallet-card {
       background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.05));
       border: 2px solid #00f2fe;
       border-radius: 18px;
       padding: 16px;
-      margin-bottom: 16px;
+      margin-bottom: 14px;
       text-align: center;
+      transition: all 0.3s ease;
+    }
+    .wallet-card.frozen {
+      border-color: #ff0844;
+      background: rgba(255, 8, 68, 0.1);
     }
     .wallet-title { font-size: 0.85rem; color: #cbd5e1; font-weight: 700; }
     .wallet-balance { font-size: 2.2rem; font-weight: 900; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.6); margin-top: 4px; }
+    .wallet-card.frozen .wallet-balance { color: #ff0844; text-shadow: 0 0 15px rgba(255, 8, 68, 0.6); }
 
-    .history-box {
-      background: rgba(255, 255, 255, 0.04);
-      border-radius: 14px;
-      padding: 12px;
-      margin-bottom: 16px;
-      text-align: right;
-      max-height: 120px;
-      overflow-y: auto;
+    /* شريط خطوات الفريق */
+    .steps-stepper {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 6px;
+      margin-bottom: 14px;
+      text-align: center;
     }
-    .history-title { font-size: 0.82rem; color: #94a3b8; font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
-    .history-item { font-size: 0.78rem; color: #e2e8f0; margin-bottom: 4px; display: flex; justify-content: space-between; }
-    .history-item span.gain { color: #2ecc71; font-weight: bold; }
-    .history-item span.spend { color: #ff0844; font-weight: bold; }
+    .step-pill {
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 10px;
+      padding: 8px 4px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: #94a3b8;
+    }
+    .step-pill.done {
+      border-color: #22c55e;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+    .step-pill.current {
+      border-color: #00f2fe;
+      background: rgba(0, 242, 254, 0.15);
+      color: #00f2fe;
+    }
 
-    /* تبويبات المواسم الأربعة */
+    /* تبويبات المواسم */
     .tab-nav {
       display: flex;
       gap: 6px;
@@ -109,7 +169,7 @@
       border: 1px solid rgba(0, 242, 254, 0.2);
       border-radius: 10px;
       color: #94a3b8;
-      font-size: 0.82rem;
+      font-size: 0.8rem;
       font-weight: 900;
       cursor: pointer;
       box-shadow: none;
@@ -126,7 +186,7 @@
       grid-template-columns: 1fr;
       gap: 6px;
       text-align: right;
-      max-height: 350px;
+      max-height: 280px;
       overflow-y: auto;
       padding-left: 4px;
     }
@@ -159,6 +219,21 @@
       padding-right: 8px;
     }
 
+    /* سجل الحركات */
+    .history-box {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
+      padding: 12px;
+      margin-top: 14px;
+      text-align: right;
+      max-height: 120px;
+      overflow-y: auto;
+    }
+    .history-title { font-size: 0.82rem; color: #94a3b8; font-weight: 700; margin-bottom: 6px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
+    .history-item { font-size: 0.76rem; color: #e2e8f0; margin-bottom: 4px; display: flex; justify-content: space-between; }
+    .history-item span.gain { color: #2ecc71; font-weight: bold; }
+    .history-item span.spend { color: #ff0844; font-weight: bold; }
+
     .msg { margin-top: 10px; font-weight: 700; font-size: 0.85rem; display: none; }
     .hidden { display: none; }
   </style>
@@ -169,8 +244,8 @@
     
     <!-- 1. تسجيل الدخول -->
     <div class="card" id="loginScreen">
-      <h2>🚩 دخول الفريق</h2>
-      <p class="desc">اختر اسم فريقك وأدخل كلمة السر لعرض تفاصيل الخطة الأسبوعية</p>
+      <h2>🚩 دخول لوحة الفريق</h2>
+      <p class="desc">اختر اسم فريقك وأدخل كلمة السر الخاصة بكم</p>
 
       <select id="teamSelect">
         <option value="" disabled selected>-- اختر الفريق --</option>
@@ -185,25 +260,50 @@
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
-    <!-- 2. لوحة المتابعة المفصلة -->
+    <!-- 2. لوحة الفريق الشاملة -->
     <div id="dashboardScreen" class="hidden">
       
-      <div class="wallet-card">
-        <div class="wallet-title" id="teamNameHeader">محفظة الفريق</div>
-        <div class="wallet-balance" id="teamBalanceDisplay">0 ج.ك</div>
-      </div>
-
-      <div class="history-box">
-        <div class="history-title">📜 سجل الحركات المالية المباشرة:</div>
-        <div id="transactionsList">
-          <div style="color: #64748b; font-size: 0.8rem; text-align: center;">لا توجد معاملات حتى الآن</div>
+      <!-- تنبيه التجميد الروحي للأزمات -->
+      <div id="spiritualFreezeBanner" class="spiritual-freeze-box hidden">
+        <div class="freeze-title">
+          <span>❄️</span>
+          <span>الحساب مُجمد مؤقتاً بسبب حرب روحية!</span>
+        </div>
+        <div style="font-size: 0.85rem; color: #fca5a5; margin-top: 4px;" id="freezeAttackTitle">الأزمة: -</div>
+        <div class="freeze-solution">
+          🙏 <b>المطلوب لفك التجميد عن الفريق:</b><br>
+          <span id="freezeAttackSolution">-</span>
         </div>
       </div>
 
+      <!-- تنبيه الخصومات المادية -->
+      <div id="materialNoticeBanner" class="material-notice-box hidden">
+        ⚠️ <b>تنويه أزمة مالية:</b> تم خصم مبلغ <b id="materialPenaltyAmount" style="color:#ff0844;">0</b> ج.ك بسبب: <span id="materialAttackTitle">-</span>
+      </div>
+
+      <!-- محفظة الفريق -->
+      <div class="wallet-card" id="walletCardBox">
+        <div class="wallet-title" id="teamNameHeader">محفظة الفريق</div>
+        <div class="wallet-balance" id="teamBalanceDisplay">0 ج.ك</div>
+        <div id="walletStatusText" style="font-size: 0.75rem; color: #94a3b8; margin-top: 2px;">الحالة: نشط ومتاح للتعاقد</div>
+      </div>
+
+      <!-- خريطة خطوات الفريق الأربعة للموسم -->
+      <div class="card" style="padding: 12px;">
+        <div style="font-size: 0.8rem; font-weight: 800; color: #38bdf8; text-align: right; margin-bottom: 6px;">🗺️ خطوات خطة الموسم:</div>
+        <div class="steps-stepper">
+          <div class="step-pill" id="step_invest">١. التمويل 💰</div>
+          <div class="step-pill" id="step_speakers">٢. المتكلمون 🎙️</div>
+          <div class="step-pill" id="step_trips">٣. الرحلات 🚌</div>
+          <div class="step-pill" id="step_events">٤. الحفلات 🎁</div>
+        </div>
+      </div>
+
+      <!-- جدول الخطة والتنفيذ -->
       <div class="card" style="padding: 14px;">
-        <h3 style="color: #00f2fe; font-size: 1.05rem; margin-bottom: 12px; font-weight: 900;">📋 جدول الموسم التنفيذي (12 أسبوعاً)</h3>
+        <h3 style="color: #00f2fe; font-size: 1rem; margin-bottom: 10px; font-weight: 900;">📋 تفاصيل خطة المواسم (12 أسبوعاً للربع)</h3>
         
-        <!-- أزرار التبديل بين المواسم -->
+        <!-- التبويبات -->
         <div class="tab-nav">
           <button class="tab-btn active" onclick="switchQuarterTab('Q1')">🍂 Q1 الخريف</button>
           <button class="tab-btn" onclick="switchQuarterTab('Q2')">❄️ Q2 الشتاء</button>
@@ -211,18 +311,22 @@
           <button class="tab-btn" onclick="switchQuarterTab('Q4')">☀️ Q4 الصيف</button>
         </div>
 
-        <!-- أ. جدول الـ 12 أسبوعاً للمتكلمين -->
-        <div class="section-title">🎙️ المتكلمون (مطلوب تغطية 12 أسبوعاً): <span id="speakersCountBadge" style="color:#00f2fe; font-size:0.8rem;">(0/12)</span></div>
-        <div class="weeks-container" id="speakersWeeksGrid">
-          <!-- تتولد الـ 12 أسبوعاً هنا -->
-        </div>
+        <!-- 1. المتكلمون -->
+        <div class="section-title">🎙️ المتكلمون (12 أسبوعاً): <span id="speakersCountBadge" style="color:#00f2fe; font-size:0.78rem;">(0/12)</span></div>
+        <div class="weeks-container" id="speakersWeeksGrid"></div>
 
-        <!-- ب. الرحلات الثلاث والهدايا والأنشطة -->
-        <div class="section-title">🚌 الرحلات والفعاليات والهدايا:</div>
-        <div class="weeks-container" id="eventsGrid">
-          <!-- تتولد الرحلات والفعاليات هنا -->
-        </div>
+        <!-- 2. الرحلات والفعاليات -->
+        <div class="section-title">🚌 الرحلات والفعاليات والاحتفالات:</div>
+        <div class="weeks-container" id="eventsGrid"></div>
 
+      </div>
+
+      <!-- سجل المعاملات -->
+      <div class="history-box">
+        <div class="history-title">📜 سجل التحويلات والمصروفات المباشرة:</div>
+        <div id="transactionsList">
+          <div style="color: #64748b; font-size: 0.78rem; text-align: center;">لا توجد معاملات حتى الآن</div>
+        </div>
       </div>
 
     </div>
@@ -281,49 +385,87 @@
       document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
         btn.classList.toggle('active', ['Q1', 'Q2', 'Q3', 'Q4'][idx] === qId);
       });
-      if (cachedTeamData) {
-        renderQuarterDetails();
-      }
+      if (cachedTeamData) renderQuarterDetails();
     }
 
     function listenToTeamData() {
       db.ref('teams/' + currentTeamKey).on('value', snapshot => {
         cachedTeamData = snapshot.val() || {};
         
-        // 1. تحديث الرصيد
+        // 1. إدارة الأزمات والتجميد الروحي
+        handleAttacksAndFreeze(cachedTeamData);
+
+        // 2. تحديث الرصيد
         const balance = Number(cachedTeamData.balance || 0);
         document.getElementById("teamBalanceDisplay").textContent = balance.toLocaleString() + " ج.ك";
 
-        // 2. تحديث سجل الحركات
-        const txContainer = document.getElementById("transactionsList");
-        txContainer.innerHTML = "";
-        
-        let allTransactions = [];
-        if (cachedTeamData.investments) {
-          cachedTeamData.investments.forEach(inv => {
-            allTransactions.push({ text: `استثمار من الشارك: ${inv.shark_name}`, amount: `+${Number(inv.amount).toLocaleString()} ج.ك`, type: 'gain', time: inv.time });
-          });
-        }
-        if (cachedTeamData.purchases) {
-          cachedTeamData.purchases.forEach(pur => {
-            allTransactions.push({ text: `شراء: ${pur.item_name} (${pur.quarter})`, amount: `-${Number(pur.cost).toLocaleString()} ج.ك`, type: 'spend', time: pur.time });
-          });
-        }
+        // 3. تحديث خريطة الخطوات الأربعة
+        updateWorkflowStepper(cachedTeamData);
 
-        if (allTransactions.length === 0) {
-          txContainer.innerHTML = '<div style="color: #64748b; font-size: 0.8rem; text-align: center;">لا توجد معاملات حتى الآن</div>';
-        } else {
-          allTransactions.reverse().forEach(tx => {
-            const div = document.createElement("div");
-            div.className = "history-item";
-            div.innerHTML = `<span>${tx.text} <small style="color:#94a3b8;">(${tx.time})</small></span><span class="${tx.type}">${tx.amount}</span>`;
-            txContainer.appendChild(div);
-          });
-        }
-
-        // 3. بناء الجدول الأسبوعي
+        // 4. تحديث جدول الخطة الأسبوعية
         renderQuarterDetails();
+
+        // 5. تحديث سجل الحركات
+        renderTransactions(cachedTeamData);
       });
+    }
+
+    // فحص الأزمات وتطبيق التجميد الروحي
+    function handleAttacksAndFreeze(data) {
+      const freezeBox = document.getElementById("spiritualFreezeBanner");
+      const noticeBox = document.getElementById("materialNoticeBanner");
+      const walletCard = document.getElementById("walletCardBox");
+      const walletStatus = document.getElementById("walletStatusText");
+
+      const attack = data.activeAttack;
+
+      if (attack) {
+        // إذا كان هناك شرط صلاة أو حل ولم تكن مجرد خصم مالي
+        const isSpiritual = attack.solution && attack.solution.trim() !== "";
+
+        if (isSpiritual) {
+          freezeBox.classList.remove("hidden");
+          document.getElementById("freezeAttackTitle").textContent = `الأزمة: ${attack.title} (${attack.desc || ''})`;
+          document.getElementById("freezeAttackSolution").textContent = attack.solution;
+          
+          walletCard.classList.add("frozen");
+          walletStatus.textContent = "🔒 الحساب مُجمد وموقوف مؤقتاً بسبب الضربة الروحية";
+          walletStatus.style.color = "#ff0844";
+        } else {
+          freezeBox.classList.add("hidden");
+        }
+
+        if (attack.penalty && attack.penalty > 0) {
+          noticeBox.classList.remove("hidden");
+          document.getElementById("materialPenaltyAmount").textContent = Number(attack.penalty).toLocaleString();
+          document.getElementById("materialAttackTitle").textContent = attack.title;
+        } else {
+          noticeBox.classList.add("hidden");
+        }
+
+      } else {
+        freezeBox.classList.add("hidden");
+        noticeBox.classList.add("hidden");
+        walletCard.classList.remove("frozen");
+        walletStatus.textContent = "الحالة: نشط ومتاح للتعاقد والشراء";
+        walletStatus.style.color = "#4ade80";
+      }
+    }
+
+    // تحديث شريط خطوات الفريق
+    function updateWorkflowStepper(data) {
+      const hasInvest = (data.investments && data.investments.length > 0);
+      const plan = data.plan || {};
+      const allItems = [...(plan.Q1 || []), ...(plan.Q2 || []), ...(plan.Q3 || []), ...(plan.Q4 || [])];
+      
+      const hasSpeakers = allItems.some(i => i.desk === 'speakers');
+      const hasTrips = allItems.some(i => i.desk === 'trips');
+      const hasEvents = allItems.some(i => i.desk === 'events');
+
+      document.getElementById("step_invest").className = `step-pill ${hasInvest ? 'done' : 'current'}`;
+      document.getElementById("step_speakers").className = `step-pill ${hasSpeakers ? 'done' : (hasInvest ? 'current' : '')}`;
+      document.getElementById("step_trips").className = `step-pill ${hasTrips ? 'done' : (hasSpeakers ? 'current' : '')}`;
+      document.getElementById("step_events").className = `step-pill ${hasEvents ? 'done' : (hasTrips ? 'current' : '')}`;
     }
 
     function renderQuarterDetails() {
@@ -336,7 +478,7 @@
 
       let bookedSpeakersCount = 0;
 
-      // أ. بناء الـ 12 أسبوعاً للمتكلمين واحداً تلو الآخر
+      // 1. جدول الـ 12 أسبوعاً
       for (let i = 1; i <= 12; i++) {
         const slotKey = `الأسبوع (${i})`;
         const found = qPlan.find(item => item.slot === slotKey || (item.name && item.name.includes(slotKey)));
@@ -346,7 +488,6 @@
 
         if (found) {
           bookedSpeakersCount++;
-          // استخراج اسم البند بدون رمز الأسبوع المكرر
           const cleanName = found.name.replace(/^الأسبوع \(\d+\)\s*:\s*/, '');
           row.innerHTML = `
             <div class="week-title">📅 أسبوع ${i}</div>
@@ -365,11 +506,11 @@
 
       document.getElementById("speakersCountBadge").textContent = `(${bookedSpeakersCount}/12 أسبوعاً)`;
 
-      // ب. بناء الرحلات والهدايا والفعاليات
+      // 2. الرحلات والفعاليات
       const nonSpeakerItems = qPlan.filter(item => !(item.slot && item.slot.startsWith("الأسبوع (")));
       
       if (nonSpeakerItems.length === 0) {
-        eventsGrid.innerHTML = '<div style="color: #64748b; font-size: 0.8rem; text-align: center; padding: 10px;">لا توجد رحلات أو فعاليات مشتراة لهذا الموسم حتى الآن</div>';
+        eventsGrid.innerHTML = '<div style="color: #64748b; font-size: 0.78rem; text-align: center; padding: 8px;">لا توجد رحلات أو فعاليات مشتراة لهذا الموسم بعد</div>';
       } else {
         nonSpeakerItems.forEach(item => {
           const row = document.createElement("div");
@@ -380,6 +521,34 @@
             <div class="week-cost">${Number(item.cost).toLocaleString()} ج.ك</div>
           `;
           eventsGrid.appendChild(row);
+        });
+      }
+    }
+
+    function renderTransactions(data) {
+      const txContainer = document.getElementById("transactionsList");
+      txContainer.innerHTML = "";
+      
+      let allTransactions = [];
+      if (data.investments) {
+        data.investments.forEach(inv => {
+          allTransactions.push({ text: `استثمار من الشارك: ${inv.shark_name}`, amount: `+${Number(inv.amount).toLocaleString()} ج.ك`, type: 'gain', time: inv.time });
+        });
+      }
+      if (data.purchases) {
+        data.purchases.forEach(pur => {
+          allTransactions.push({ text: `شراء: ${pur.item_name} (${pur.quarter})`, amount: `-${Number(pur.cost).toLocaleString()} ج.ك`, type: 'spend', time: pur.time });
+        });
+      }
+
+      if (allTransactions.length === 0) {
+        txContainer.innerHTML = '<div style="color: #64748b; font-size: 0.78rem; text-align: center;">لا توجد معاملات حتى الآن</div>';
+      } else {
+        allTransactions.reverse().forEach(tx => {
+          const div = document.createElement("div");
+          div.className = "history-item";
+          div.innerHTML = `<span>${tx.text} <small style="color:#94a3b8;">(${tx.time})</small></span><span class="${tx.type}">${tx.amount}</span>`;
+          txContainer.appendChild(div);
         });
       }
     }
