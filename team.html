@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>لوحة تحكم الفريق | Shark Tank Youth</title>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+    
+    body {
+      background: #070b19;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
+      border-radius: 20px;
+      padding: 22px 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    h2 { color: #00f2fe; margin-bottom: 8px; font-weight: 900; }
+    p.desc { color: #94a3b8; font-size: 0.9rem; margin-bottom: 18px; }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+      outline: none;
+    }
+    select option { background: #0f172a; color: #fff; }
+    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+    button {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+      transition: transform 0.2s;
+    }
+    button:active { transform: scale(0.97); }
+
+    .wallet-card {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(79, 172, 254, 0.05));
+      border: 2px solid #00f2fe;
+      border-radius: 18px;
+      padding: 16px;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    .wallet-title { font-size: 0.85rem; color: #cbd5e1; font-weight: 700; }
+    .wallet-balance { font-size: 2.2rem; font-weight: 900; color: #00f2fe; text-shadow: 0 0 15px rgba(0, 242, 254, 0.6); margin-top: 4px; }
+
+    .history-box {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 16px;
+      text-align: right;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+    .history-title { font-size: 0.85rem; color: #94a3b8; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
+    .history-item { font-size: 0.8rem; color: #e2e8f0; margin-bottom: 6px; display: flex; justify-content: space-between; }
+    .history-item span.gain { color: #2ecc71; font-weight: bold; }
+    .history-item span.spend { color: #ff0844; font-weight: bold; }
+
+    .quarter-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      text-align: right;
+    }
+    .quarter-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1px solid rgba(0, 242, 254, 0.25);
+      border-radius: 14px;
+      padding: 12px;
+    }
+    .quarter-header {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #38bdf8;
+      display: flex;
+      justify-content: space-between;
+      border-bottom: 1px dashed rgba(56, 189, 248, 0.3);
+      padding-bottom: 6px;
+      margin-bottom: 8px;
+    }
+    .items-list { list-style: none; padding: 0; }
+    .item-tag {
+      background: rgba(0, 242, 254, 0.1);
+      border-right: 3px solid #00f2fe;
+      padding: 6px 10px;
+      border-radius: 6px;
+      margin-bottom: 6px;
+      font-size: 0.82rem;
+      color: #f1f5f9;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .msg { margin-top: 10px; font-weight: 700; font-size: 0.85rem; display: none; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- 1. شاشة تسجيل دخول الفريق -->
+    <div class="card" id="loginScreen">
+      <h2>🚩 دخول الفريق</h2>
+      <p class="desc">اختر اسم فريقك وأدخل كلمة السر للدخول إلى محفظتك وخطتك</p>
+
+      <select id="teamSelect">
+        <option value="" disabled selected>-- اختر الفريق --</option>
+        <option value="team_virgin_mary">فريق السيدة العذراء</option>
+        <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
+        <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
+        <option value="team_anba_rois">فريق الانبا رويس</option>
+      </select>
+
+      <input type="password" id="teamPassInput" placeholder="كلمة السر الخاصة بالفريق...">
+      <button onclick="loginTeam()">دخول لوحة الفريق ↵</button>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة أو لم تختر الفريق!</div>
+    </div>
+
+    <!-- 2. لوحة التحكم الحية للفريق -->
+    <div id="dashboardScreen" class="hidden">
+      
+      <div class="wallet-card">
+        <div class="wallet-title" id="teamNameHeader">محفظة الفريق</div>
+        <div class="wallet-balance" id="teamBalanceDisplay">0 ج.ك</div>
+      </div>
+
+      <div class="history-box">
+        <div class="history-title">📜 سجل المعاملات المالية المباشرة:</div>
+        <div id="transactionsList">
+          <div style="color: #64748b; font-size: 0.8rem; text-align: center;">لا توجد معاملات حتى الآن</div>
+        </div>
+      </div>
+
+      <div class="card" style="padding: 16px;">
+        <h3 style="color: #00f2fe; font-size: 1.1rem; margin-bottom: 12px; font-weight: 900;">📋 خطة الـ 4 مواسم السنوية</h3>
+        
+        <div class="quarter-grid">
+          <!-- Q1 -->
+          <div class="quarter-card">
+            <div class="quarter-header">
+              <span>🍂 الربع الأول (Q1 - الخريف)</span>
+              <span style="font-size: 0.75rem; color: #94a3b8;">الانطلاق والبدايات</span>
+            </div>
+            <ul class="items-list" id="list_Q1">
+              <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
+            </ul>
+          </div>
+
+          <!-- Q2 -->
+          <div class="quarter-card">
+            <div class="quarter-header">
+              <span>❄️ الربع الثاني (Q2 - الشتاء)</span>
+              <span style="font-size: 0.75rem; color: #94a3b8;">الميلاد ونصف السنة</span>
+            </div>
+            <ul class="items-list" id="list_Q2">
+              <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
+            </ul>
+          </div>
+
+          <!-- Q3 -->
+          <div class="quarter-card">
+            <div class="quarter-header">
+              <span>🌱 الربع الثالث (Q3 - الربيع)</span>
+              <span style="font-size: 0.75rem; color: #94a3b8;">الصوم الكبير والقيامة</span>
+            </div>
+            <ul class="items-list" id="list_Q3">
+              <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
+            </ul>
+          </div>
+
+          <!-- Q4 -->
+          <div class="quarter-card">
+            <div class="quarter-header">
+              <span>☀️ الربع الرابع (Q4 - الصيف)</span>
+              <span style="font-size: 0.75rem; color: #94a3b8;">الخلوة والمصيف</span>
+            </div>
+            <ul class="items-list" id="list_Q4">
+              <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
+            </ul>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM",
+      authDomain: "maze-d8572.firebaseapp.com",
+      databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com",
+      projectId: "maze-d8572",
+      storageBucket: "maze-d8572.firebasestorage.app",
+      messagingSenderId: "133228040813",
+      appId: "1:133228040813:web:67eac572b15f952e99e564"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // كلمات سر الفرق المخصصة
+    const teamPasswords = {
+      "team_virgin_mary": "mary1212",
+      "team_archangel_michael": "mike2019",
+      "team_st_mercurius": "phil2222",
+      "team_anba_rois": "rois7123"
+    };
+
+    let currentTeamKey = "";
+
+    function loginTeam() {
+      const select = document.getElementById("teamSelect");
+      const pass = document.getElementById("teamPassInput").value.trim();
+      const teamKey = select.value;
+      const errorEl = document.getElementById("loginError");
+
+      if (!teamKey || teamPasswords[teamKey] !== pass) {
+        errorEl.style.display = "block";
+        return;
+      }
+
+      errorEl.style.display = "none";
+      currentTeamKey = teamKey;
+      const teamName = select.options[select.selectedIndex].text;
+      document.getElementById("teamNameHeader").textContent = `محفظة ${teamName}`;
+
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("dashboardScreen").classList.remove("hidden");
+
+      listenToTeamData();
+    }
+
+    function listenToTeamData() {
+      const teamRef = db.ref('teams/' + currentTeamKey);
+
+      teamRef.on('value', snapshot => {
+        const data = snapshot.val() || {};
+        
+        // 1. تحديث الرصيد
+        const balance = data.balance || 0;
+        document.getElementById("teamBalanceDisplay").textContent = Number(balance).toLocaleString() + " ج.ك";
+
+        // 2. تحديث سجل الحركات المالية
+        const txContainer = document.getElementById("transactionsList");
+        txContainer.innerHTML = "";
+        
+        let allTransactions = [];
+        if (data.investments) {
+          data.investments.forEach(inv => {
+            allTransactions.push({ text: `استثمار من الشارك: ${inv.shark_name}`, amount: `+${inv.amount.toLocaleString()} ج.ك`, type: 'gain', time: inv.time });
+          });
+        }
+        if (data.purchases) {
+          data.purchases.forEach(pur => {
+            allTransactions.push({ text: `شراء: ${pur.item_name} (${pur.quarter})`, amount: `-${pur.cost.toLocaleString()} ج.ك`, type: 'spend', time: pur.time });
+          });
+        }
+
+        if (allTransactions.length === 0) {
+          txContainer.innerHTML = '<div style="color: #64748b; font-size: 0.8rem; text-align: center;">لا توجد معاملات حتى الآن</div>';
+        } else {
+          allTransactions.reverse().forEach(tx => {
+            const div = document.createElement("div");
+            div.className = "history-item";
+            div.innerHTML = `<span>${tx.text} <small style="color:#94a3b8;">(${tx.time})</small></span><span class="${tx.type}">${tx.amount}</span>`;
+            txContainer.appendChild(div);
+          });
+        }
+
+        // 3. تحديث خطة الـ 4 مواسم
+        renderQuarterList("Q1", (data.plan && data.plan.Q1) || []);
+        renderQuarterList("Q2", (data.plan && data.plan.Q2) || []);
+        renderQuarterList("Q3", (data.plan && data.plan.Q3) || []);
+        renderQuarterList("Q4", (data.plan && data.plan.Q4) || []);
+      });
+    }
+
+    function renderQuarterList(quarterId, items) {
+      const ul = document.getElementById("list_" + quarterId);
+      ul.innerHTML = "";
+      if (items.length === 0) {
+        ul.innerHTML = '<li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>';
+      } else {
+        items.forEach(item => {
+          const li = document.createElement("li");
+          li.className = "item-tag";
+          li.innerHTML = `<span>${item.name}</span><b style="color: #00f2fe;">${Number(item.cost).toLocaleString()} ج.ك</b>`;
+          ul.appendChild(li);
+        });
+      }
+    }
+  </script>
+</body>
+</html>

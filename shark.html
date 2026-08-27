@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>بوابة الشاركس | Shark Tank</title>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+    
+    body {
+      background: #070b19;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 440px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
+      text-align: center;
+    }
+
+    h2 { color: #00f2fe; margin-bottom: 8px; font-weight: 900; }
+    p.desc { color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px; }
+
+    input, select {
+      width: 100%;
+      padding: 13px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 1rem;
+      font-weight: 700;
+      margin-bottom: 14px;
+      text-align: center;
+      outline: none;
+    }
+    select option { background: #0f172a; color: #fff; }
+    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+      transition: transform 0.2s;
+    }
+    button:active { transform: scale(0.97); }
+
+    .wallet-box {
+      background: rgba(0, 242, 254, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      border-radius: 14px;
+      padding: 14px;
+      margin-bottom: 18px;
+    }
+    .wallet-amount {
+      font-size: 1.8rem;
+      font-weight: 900;
+      color: #38bdf8;
+      margin-top: 4px;
+    }
+
+    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    
+    <!-- 1. شاشة تسجيل دخول الشارك -->
+    <div id="loginScreen">
+      <h2>🦈 منصة الشاركس</h2>
+      <p class="desc">أدخل اسمك ورمز الدخول لاستلام محفظتك الاستثمارية</p>
+      
+      <input type="text" id="sharkNameInput" placeholder="اكتب اسمك (مثال: أ. مينا / أبونا فلان)">
+      <input type="password" id="sharkPassInput" placeholder="كلمة السر...">
+      
+      <button onclick="loginShark()">دخول كـ Shark ↵</button>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة أو البيانات ناقصة!</div>
+    </div>
+
+    <!-- 2. شاشة المحفظة وضخ الاستثمارات -->
+    <div id="investScreen" class="hidden">
+      <h2 id="welcomeSharkText">مرحباً بالشارك</h2>
+      
+      <div class="wallet-box">
+        <div style="font-size: 0.85rem; color: #94a3b8;">رصيدك الاستثماري المتبقي</div>
+        <div class="wallet-amount" id="sharkBudgetDisplay">100,000 ج.ك</div>
+      </div>
+
+      <div style="text-align: right; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1;">اختر الفريق المستهدف:</div>
+      <select id="targetTeamSelect">
+        <option value="" disabled selected>-- اختر الفريق --</option>
+        <option value="team_virgin_mary">فريق السيدة العذراء</option>
+        <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
+        <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
+        <option value="team_anba_rois">فريق الانبا رويس</option>
+      </select>
+
+      <div style="text-align: right; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1;">المبلغ المراد استثماره:</div>
+      <input type="number" id="investAmountInput" placeholder="أدخل المبلغ (مثال: 25000)">
+
+      <button onclick="sendInvestment()">💸 تحويل الاستثمار للفريق</button>
+      
+      <div id="actionStatus" class="msg"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM",
+      authDomain: "maze-d8572.firebaseapp.com",
+      databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com",
+      projectId: "maze-d8572",
+      storageBucket: "maze-d8572.firebasestorage.app",
+      messagingSenderId: "133228040813",
+      appId: "1:133228040813:web:67eac572b15f952e99e564"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    let currentSharkId = "";
+    let currentSharkName = "";
+    let currentBudget = 100000;
+
+    function loginShark() {
+      const name = document.getElementById("sharkNameInput").value.trim();
+      const pass = document.getElementById("sharkPassInput").value.trim();
+      const errorEl = document.getElementById("loginError");
+
+      if (pass !== "avatege2019" || !name) {
+        errorEl.style.display = "block";
+        return;
+      }
+
+      errorEl.style.display = "none";
+      currentSharkName = name;
+      currentSharkId = 'shark_' + encodeURIComponent(name).replace(/\./g, '%2E');
+
+      const sharkRef = db.ref('sharks/' + currentSharkId);
+
+      sharkRef.once('value').then(snapshot => {
+        if (!snapshot.exists()) {
+          sharkRef.set({
+            name: currentSharkName,
+            remaining_budget: 100000
+          });
+        }
+      });
+
+      sharkRef.on('value', snapshot => {
+        const data = snapshot.val();
+        if (data) {
+          currentBudget = data.remaining_budget !== undefined ? data.remaining_budget : 100000;
+          document.getElementById("sharkBudgetDisplay").textContent = Number(currentBudget).toLocaleString() + " ج.ك";
+        }
+      });
+
+      document.getElementById("welcomeSharkText").textContent = `🦈 الشارك: ${currentSharkName}`;
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("investScreen").classList.remove("hidden");
+    }
+
+    function sendInvestment() {
+      const teamSelect = document.getElementById("targetTeamSelect");
+      const teamKey = teamSelect.value;
+      const teamName = teamSelect.options[teamSelect.selectedIndex].text;
+      const amount = parseInt(document.getElementById("investAmountInput").value, 10);
+      const statusEl = document.getElementById("actionStatus");
+
+      statusEl.style.display = "block";
+
+      if (!teamKey) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⚠️ برجاء اختيار الفريق أولاً!";
+        return;
+      }
+      if (isNaN(amount) || amount <= 0) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⚠️ برجاء إدخال مبلغ استثماري صحيح!";
+        return;
+      }
+      if (amount > currentBudget) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = `❌ رصيدك لا يكفي! المتبقي لديك هو ${currentBudget.toLocaleString()} فقط.`;
+        return;
+      }
+
+      statusEl.style.color = "#f1c40f";
+      statusEl.textContent = "جاري تحويل الاستثمار...";
+
+      const newBudget = currentBudget - amount;
+      const teamRef = db.ref('teams/' + teamKey);
+      const sharkRef = db.ref('sharks/' + currentSharkId);
+
+      sharkRef.update({ remaining_budget: newBudget }).then(() => {
+        teamRef.transaction(teamData => {
+          if (!teamData) {
+            teamData = { balance: 0, investments: [] };
+          }
+          teamData.balance = (teamData.balance || 0) + amount;
+          if (!teamData.investments) teamData.investments = [];
+          
+          teamData.investments.push({
+            shark_name: currentSharkName,
+            amount: amount,
+            time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+          });
+
+          return teamData;
+        }).then(() => {
+          statusEl.style.color = "#2ecc71";
+          statusEl.textContent = `✅ تم تحويل ${amount.toLocaleString()} ج.ك بنجاح إلى ${teamName}!`;
+          document.getElementById("investAmountInput").value = "";
+          teamSelect.selectedIndex = 0;
+        });
+      }).catch(err => {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "❌ خطأ أثناء التحويل: " + err.message;
+      });
+    }
+  </script>
+</body>
+</html>

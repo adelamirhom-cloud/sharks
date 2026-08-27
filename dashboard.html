@@ -1,0 +1,248 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>بورصة استثمارات الخلوة | Live Leaderboard</title>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+    
+    body {
+      background: radial-gradient(circle at top, #0f172a, #030712);
+      color: #fff;
+      min-height: 100vh;
+      padding: 24px;
+      overflow-x: hidden;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 24px;
+      border-bottom: 1.5px solid rgba(0, 242, 254, 0.2);
+      padding-bottom: 16px;
+    }
+    h1 {
+      font-size: 2.2rem;
+      font-weight: 900;
+      color: #00f2fe;
+      text-shadow: 0 0 20px rgba(0, 242, 254, 0.6);
+      letter-spacing: 1px;
+    }
+    .sub-title {
+      color: #94a3b8;
+      font-size: 1.1rem;
+      font-weight: 700;
+      margin-top: 4px;
+    }
+
+    .grid-teams {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+
+    .team-card {
+      background: rgba(15, 23, 42, 0.85);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
+      border-radius: 20px;
+      padding: 20px;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.7), 0 0 15px rgba(0, 242, 254, 0.1);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .team-card.rank-1 {
+      border-color: #f1c40f;
+      box-shadow: 0 0 25px rgba(241, 196, 15, 0.35);
+    }
+    .team-card.rank-1::before {
+      content: '👑 المتصدر';
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: linear-gradient(135deg, #f1c40f, #e67e22);
+      color: #000;
+      font-weight: 900;
+      font-size: 0.75rem;
+      padding: 3px 10px;
+      border-radius: 12px;
+    }
+
+    .team-name {
+      font-size: 1.35rem;
+      font-weight: 900;
+      color: #38bdf8;
+      margin-bottom: 12px;
+      text-align: right;
+    }
+
+    .stat-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      font-size: 0.95rem;
+      color: #cbd5e1;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+      padding-bottom: 6px;
+    }
+    .stat-value {
+      font-weight: 900;
+      color: #00f2fe;
+    }
+
+    .quarters-indicator {
+      display: flex;
+      gap: 6px;
+      margin-top: 14px;
+    }
+    .q-pill {
+      flex: 1;
+      text-align: center;
+      padding: 6px 0;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 900;
+      background: rgba(255, 255, 255, 0.05);
+      color: #64748b;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+    }
+    .q-pill.done {
+      background: rgba(46, 204, 113, 0.2);
+      color: #2ecc71;
+      border-color: #2ecc71;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <h1>🦈 بورصة استثمارات الشاركس المباشرة</h1>
+    <div class="sub-title">المتابعة اللحظية لتمويل ومشتريات فرق خطة الخدمة السنوية</div>
+  </header>
+
+  <div class="grid-teams" id="teamsDashboardGrid">
+    <!-- كروت الفرق تتولد ديناميكياً هنا -->
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM",
+      authDomain: "maze-d8572.firebaseapp.com",
+      databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com",
+      projectId: "maze-d8572",
+      storageBucket: "maze-d8572.firebasestorage.app",
+      messagingSenderId: "133228040813",
+      appId: "1:133228040813:web:67eac572b15f952e99e564"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const teamMeta = {
+      "team_virgin_mary": "فريق السيدة العذراء",
+      "team_archangel_michael": "فريق الملاك ميخائيل",
+      "team_st_mercurius": "فريق القديس ابو سيفين",
+      "team_anba_rois": "فريق الانبا رويس"
+    };
+
+    const teamsRef = db.ref('teams');
+
+    teamsRef.on('value', snapshot => {
+      const data = snapshot.val() || {};
+      const container = document.getElementById("teamsDashboardGrid");
+      container.innerHTML = "";
+
+      let teamsList = Object.keys(teamMeta).map(key => {
+        const teamData = data[key] || {};
+        let totalInvested = 0;
+        if (teamData.investments) {
+          totalInvested = teamData.investments.reduce((sum, inv) => sum + (inv.amount || 0), 0);
+        }
+        let totalSpent = 0;
+        if (teamData.purchases) {
+          totalSpent = teamData.purchases.reduce((sum, p) => sum + (p.cost || 0), 0);
+        }
+
+        const plan = teamData.plan || {};
+        const q1Count = (plan.Q1 || []).length;
+        const q2Count = (plan.Q2 || []).length;
+        const q3Count = (plan.Q3 || []).length;
+        const q4Count = (plan.Q4 || []).length;
+
+        return {
+          key: key,
+          name: teamMeta[key],
+          currentBalance: teamData.balance || 0,
+          totalInvested: totalInvested,
+          totalSpent: totalSpent,
+          itemsCount: (teamData.purchases || []).length,
+          qStatus: {
+            Q1: q1Count > 0,
+            Q2: q2Count > 0,
+            Q3: q3Count > 0,
+            Q4: q4Count > 0
+          }
+        };
+      });
+
+      // ترتيب الفرق حسب إجمالي الاستثمارات التي حصلوا عليها
+      teamsList.sort((a, b) => b.totalInvested - a.totalInvested);
+
+      teamsList.forEach((team, index) => {
+        const isLeader = index === 0 && team.totalInvested > 0;
+        const card = document.createElement("div");
+        card.className = `team-card ${isLeader ? 'rank-1' : ''}`;
+
+        card.innerHTML = `
+          <div>
+            <div class="team-name">${team.name}</div>
+            
+            <div class="stat-row">
+              <span>إجمالي الاستثمارات المجمعة:</span>
+              <span class="stat-value" style="color: #f1c40f;">${team.totalInvested.toLocaleString()} ج.ك</span>
+            </div>
+
+            <div class="stat-row">
+              <span>الرصيد المتبقي بالمحفظة:</span>
+              <span class="stat-value">${team.currentBalance.toLocaleString()} ج.ك</span>
+            </div>
+
+            <div class="stat-row">
+              <span>المصروفات في السوق:</span>
+              <span class="stat-value" style="color: #ff0844;">${team.totalSpent.toLocaleString()} ج.ك</span>
+            </div>
+
+            <div class="stat-row">
+              <span>عدد البنود المشتراة:</span>
+              <span class="stat-value">${team.itemsCount} بنود</span>
+            </div>
+          </div>
+
+          <div>
+            <div style="font-size: 0.8rem; color: #94a3b8; text-align: right; margin-top: 10px;">اكتمال خطة الـ 4 مواسم:</div>
+            <div class="quarters-indicator">
+              <div class="q-pill ${team.qStatus.Q1 ? 'done' : ''}">Q1 الخريف</div>
+              <div class="q-pill ${team.qStatus.Q2 ? 'done' : ''}">Q2 الشتاء</div>
+              <div class="q-pill ${team.qStatus.Q3 ? 'done' : ''}">Q3 الربيع</div>
+              <div class="q-pill ${team.qStatus.Q4 ? 'done' : ''}">Q4 الصيف</div>
+            </div>
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    });
+  </script>
+</body>
+</html>

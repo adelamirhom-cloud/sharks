@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>سوق تعاقدات الخدمة | Ministry Market</title>
+
+  <!-- Firebase Compatibility SDKs -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+    
+    body {
+      background: #070b19;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .card {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
+      border-radius: 20px;
+      padding: 24px;
+      width: 100%;
+      max-width: 480px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
+      text-align: center;
+    }
+
+    h2 { color: #00f2fe; margin-bottom: 8px; font-weight: 900; }
+    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 18px; }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+      outline: none;
+    }
+    select option { background: #0f172a; color: #fff; }
+    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+    button {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+      transition: transform 0.2s;
+    }
+    button:active { transform: scale(0.97); }
+
+    .desk-badge {
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid #00f2fe;
+      color: #00f2fe;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      display: inline-block;
+      margin-bottom: 14px;
+    }
+
+    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+
+  <div class="card">
+    
+    <!-- 1. شاشة تسجيل دخول الخادم للمكتب -->
+    <div id="loginScreen">
+      <h2>🏪 سوق تعاقدات الخدمة</h2>
+      <p class="desc">اختر مكتب التعاقدات المسؤول عنه وأدخل كلمة السر المخصصة له</p>
+
+      <select id="deskSelect">
+        <option value="" disabled selected>-- اختر مكتب التعاقد --</option>
+        <option value="speakers">🎙️ مكتب المتكلمين والمحتوى الروحي</option>
+        <option value="trips">🚌 مكتب الرحلات وأتوبيسات الخلوة السنوية</option>
+        <option value="events">🎁 مكتب الهدايا والاحتفالات والألعاب</option>
+      </select>
+
+      <input type="password" id="servantPassInput" placeholder="كلمة سر المكتب...">
+      <button onclick="loginServant()">دخول المكتب ↵</button>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة لهذا المكتب!</div>
+    </div>
+
+    <!-- 2. شاشة بيع البنود للفرق -->
+    <div id="marketScreen" class="hidden">
+      <div class="desk-badge" id="deskTitleDisplay">المكتب</div>
+      <h2 style="font-size: 1.25rem;">إتمام تعاقد جديد</h2>
+      <p class="desc" style="margin-bottom: 14px;">حدد الفريق والموسم والبند لإتمام الخصم وتحديث الخطة</p>
+
+      <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #cbd5e1;">١. الفريق المتعاقد:</div>
+      <select id="teamTargetSelect">
+        <option value="" disabled selected>-- اختر الفريق المشتري --</option>
+        <option value="team_virgin_mary">فريق السيدة العذراء</option>
+        <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
+        <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
+        <option value="team_anba_rois">فريق الانبا رويس</option>
+      </select>
+
+      <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #cbd5e1;">٢. الربع السنوي (الموسم المستهدف):</div>
+      <select id="quarterTargetSelect">
+        <option value="Q1">الربع الأول (Q1 - الخريف: الانطلاق)</option>
+        <option value="Q2">الربع الثاني (Q2 - الشتاء: الميلاد ونصف السنة)</option>
+        <option value="Q3">الربع الثالث (Q3 - الربيع: الصوم الكبير والقيامة)</option>
+        <option value="Q4">الربع الرابع (Q4 - الصيف: الخلوة والمصيف)</option>
+      </select>
+
+      <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #cbd5e1;">٣. البند والخدمة المطلوبة:</div>
+      <select id="catalogItemSelect"></select>
+
+      <button onclick="processSale()">🏷️ اعتماد التعاقد وخصم المبلغ</button>
+      <div id="saleStatus" class="msg"></div>
+    </div>
+
+  </div>
+
+  <script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM",
+      authDomain: "maze-d8572.firebaseapp.com",
+      databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com",
+      projectId: "maze-d8572",
+      storageBucket: "maze-d8572.firebasestorage.app",
+      messagingSenderId: "133228040813",
+      appId: "1:133228040813:web:67eac572b15f952e99e564"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // كلمات سر مكاتب السوق
+    const deskPasswords = {
+      "speakers": "speak101",
+      "trips": "trip202",
+      "events": "event303"
+    };
+
+    // كتالوج البنود والأسعار الشامل
+    const marketCatalog = {
+      speakers: [
+        { name: "خادم محلي من الكنيسة / أمين الخدمة (أسبوع واحد)", cost: 0 },
+        { name: "كاهن من الكنيسة أو الإيبارشية (مرة واحدة)", cost: 2500 },
+        { name: "باقة كاهن الإيبارشية (شهر كامل / 4 أسابيع)", cost: 9000 },
+        { name: "خادم شباب وميديا معروف (مرة واحدة)", cost: 5000 },
+        { name: "باقة خادم الشباب والميديا (شهر كامل / 4 أسابيع)", cost: 18000 },
+        { name: "متخصص نفسي وتربوي مشهور (مرة واحدة)", cost: 8000 },
+        { name: "باقة المتخصص النفسي (شهر كامل / 4 أسابيع)", cost: 30000 },
+        { name: "متكلم VIP قامة كبيرة - د. مجدي / أبونا داود (مرة واحدة)", cost: 12000 },
+        { name: "باقة متكلم VIP قامة كبيرة (شهر كامل / 4 أسابيع)", cost: 45000 }
+      ],
+      trips: [
+        // رحلات قريبة
+        { name: "رحلة قريبة (مارمينا/النطرون) - أتوبيس عادي 28 راكب", cost: 4000 },
+        { name: "رحلة قريبة (مارمينا/النطرون) - ميني باص مكيف 28 راكب", cost: 6500 },
+        { name: "رحلة قريبة (مارمينا/النطرون) - أتوبيس سياحي مكيف 50 راكب", cost: 10000 },
+        // رحلات متوسطة
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - أتوبيس عادي 28 راكب", cost: 6000 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - ميني باص مكيف 28 راكب", cost: 9500 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - أتوبيس سياحي مكيف 50 راكب", cost: 14000 },
+        // رحلات بعيدة
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - عادي 28 راكب", cost: 9000 },
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - مكيف 28 راكب", cost: 14000 },
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - سياحي 50 راكب", cost: 22000 },
+        // رحلات بعيدة جداً
+        { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - مكيف 28 راكب", cost: 22000 },
+        { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - سياحي 50 راكب", cost: 35000 },
+        // بيوت الخلوة السنوية
+        { name: "الخلوة السنوية - بيت دير روحي بسيط (3 أيام)", cost: 20000 },
+        { name: "الخلوة السنوية - بيت مؤتمرات متوسط (3 أيام)", cost: 40000 },
+        { name: "الخلوة السنوية - منتجع فندقي VIP بحمام سباحة (3 أيام)", cost: 75000 },
+        // إعاشة الخلوة
+        { name: "إعاشة الخلوة السنوية - باقة التوفير وساندوتشات (3 أيام)", cost: 10000 },
+        { name: "إعاشة الخلوة السنوية - وجبات بيتي متوازنة مطبوخة (3 أيام)", cost: 20000 },
+        { name: "إعاشة الخلوة السنوية - بوفيه مفتوح و Fast Food فاخر (3 أيام)", cost: 35000 }
+      ],
+      events: [
+        { name: "هدايا أعياد ميلاد الدفعة السنوية (اقتصادية)", cost: 5000 },
+        { name: "هدايا أعياد ميلاد الدفعة السنوية (فاخرة ومخصصة)", cost: 12000 },
+        { name: "هدايا عيدي الميلاد والقيامة (رمزية)", cost: 8000 },
+        { name: "هدايا عيدي الميلاد والقيامة (براند وهودي ومجات)", cost: 25000 },
+        { name: "ألعاب تفاعلية ومسابقات داخل القاعة للموسم", cost: 4000 },
+        { name: "مهرجان تيلي ماتش وكرنفال ألعاب كبير للموسم", cost: 15000 }
+      ]
+    };
+
+    let selectedDesk = "";
+
+    function loginServant() {
+      const desk = document.getElementById("deskSelect").value;
+      const pass = document.getElementById("servantPassInput").value.trim();
+      const errorEl = document.getElementById("loginError");
+
+      if (!desk || deskPasswords[desk] !== pass) {
+        errorEl.style.display = "block";
+        return;
+      }
+
+      errorEl.style.display = "none";
+      selectedDesk = desk;
+
+      const deskTitles = {
+        speakers: "🎙️ مكتب المتكلمين والمحتوى الروحي",
+        trips: "🚌 مكتب الرحلات والخلوة السنوية",
+        events: "🎁 مكتب الهدايا والاحتفالات والألعاب"
+      };
+
+      document.getElementById("deskTitleDisplay").textContent = deskTitles[selectedDesk];
+      
+      const itemSelect = document.getElementById("catalogItemSelect");
+      itemSelect.innerHTML = "";
+      marketCatalog[selectedDesk].forEach((item, index) => {
+        const opt = document.createElement("option");
+        opt.value = index;
+        opt.textContent = `${item.name} — [${item.cost.toLocaleString()} ج.ك]`;
+        itemSelect.appendChild(opt);
+      });
+
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("marketScreen").classList.remove("hidden");
+    }
+
+    function processSale() {
+      const teamSelect = document.getElementById("teamTargetSelect");
+      const teamKey = teamSelect.value;
+      const teamName = teamSelect.options[teamSelect.selectedIndex]?.text;
+      const quarter = document.getElementById("quarterTargetSelect").value;
+      const itemIndex = document.getElementById("catalogItemSelect").value;
+      const statusEl = document.getElementById("saleStatus");
+
+      statusEl.style.display = "block";
+
+      if (!teamKey) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⚠️ برجاء اختيار الفريق أولاً!";
+        return;
+      }
+
+      const item = marketCatalog[selectedDesk][itemIndex];
+      statusEl.style.color = "#f1c40f";
+      statusEl.textContent = "جاري مراجعة الرصيد وإتمام التعاقد...";
+
+      const teamRef = db.ref('teams/' + teamKey);
+
+      teamRef.transaction(teamData => {
+        if (!teamData) {
+          teamData = { balance: 0, plan: { Q1: [], Q2: [], Q3: [], Q4: [] }, purchases: [] };
+        }
+
+        const currentBalance = teamData.balance || 0;
+        
+        if (currentBalance < item.cost) {
+          return;
+        }
+
+        teamData.balance = currentBalance - item.cost;
+
+        if (!teamData.plan) teamData.plan = { Q1: [], Q2: [], Q3: [], Q4: [] };
+        if (!teamData.plan[quarter]) teamData.plan[quarter] = [];
+        teamData.plan[quarter].push({ name: item.name, cost: item.cost });
+
+        if (!teamData.purchases) teamData.purchases = [];
+        teamData.purchases.push({
+          item_name: item.name,
+          cost: item.cost,
+          quarter: quarter,
+          time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+        });
+
+        return teamData;
+      }, (error, committed, snapshot) => {
+        if (error || !committed) {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = `❌ فشلت العملية: رصيد ${teamName} لا يكفي لإتمام الشراء!`;
+        } else {
+          statusEl.style.color = "#2ecc71";
+          statusEl.textContent = `✅ تم بيع [${item.name}] بنجاح لـ ${teamName} وإضافته للـ ${quarter}!`;
+        }
+      });
+    }
+  </script>
+</body>
+</html>
