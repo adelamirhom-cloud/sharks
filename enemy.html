@@ -25,65 +25,39 @@
 
     .container {
       width: 100%;
-      max-width: 520px;
+      max-width: 600px;
     }
 
     .card {
       background: rgba(26, 8, 12, 0.95);
       border: 1.5px solid rgba(255, 8, 68, 0.4);
       border-radius: 20px;
-      padding: 22px 18px;
+      padding: 20px 16px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.9), 0 0 25px rgba(255, 8, 68, 0.25);
       text-align: center;
       margin-bottom: 16px;
     }
 
-    h2 { color: #ff0844; margin-bottom: 8px; font-weight: 900; text-shadow: 0 0 15px rgba(255, 8, 68, 0.6); }
-    p.desc { color: #f87171; font-size: 0.88rem; margin-bottom: 18px; }
+    h2 { color: #ff0844; margin-bottom: 6px; font-weight: 900; text-shadow: 0 0 15px rgba(255, 8, 68, 0.6); }
+    p.desc { color: #f87171; font-size: 0.85rem; margin-bottom: 16px; }
 
-    input, select {
+    input, select, textarea {
       width: 100%;
-      padding: 12px;
+      padding: 11px;
       border-radius: 12px;
       border: 1px solid rgba(255, 8, 68, 0.4);
       background: rgba(255, 255, 255, 0.05);
       color: #fff;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       font-weight: 700;
-      margin-bottom: 12px;
+      margin-bottom: 10px;
       text-align: center;
       outline: none;
     }
-    select option { background: #1a080c; color: #fff; }
-    input:focus, select:focus { border-color: #ff0844; box-shadow: 0 0 12px rgba(255, 8, 68, 0.5); }
-
-    button.btn-attack {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      font-weight: 900;
-      cursor: pointer;
-      background: linear-gradient(135deg, #ff0844, #991b1b);
-      color: #fff;
-      box-shadow: 0 0 20px rgba(255, 8, 68, 0.45);
-      transition: transform 0.2s;
-      margin-bottom: 10px;
-    }
-    button.btn-lift {
-      width: 100%;
-      padding: 12px;
-      border: 1px solid #22c55e;
-      border-radius: 12px;
-      font-size: 0.95rem;
-      font-weight: 800;
-      cursor: pointer;
-      background: rgba(34, 197, 94, 0.15);
-      color: #4ade80;
-      transition: transform 0.2s;
-    }
-    button:active { transform: scale(0.97); }
+    textarea { resize: vertical; min-height: 55px; text-align: right; }
+    optgroup { background: #1a080c; color: #fca5a5; font-weight: 900; text-align: right; }
+    select option { background: #0f172a; color: #fff; text-align: right; }
+    input:focus, select:focus, textarea:focus { border-color: #ff0844; box-shadow: 0 0 12px rgba(255, 8, 68, 0.5); }
 
     .badge-enemy {
       background: rgba(255, 8, 68, 0.15);
@@ -94,45 +68,135 @@
       font-size: 0.8rem;
       font-weight: 800;
       display: inline-block;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
 
-    .radar-box {
+    /* رادار كشف تحركات وخطوات الفرق */
+    .radar-list {
       display: flex;
       flex-direction: column;
       gap: 10px;
+      margin-bottom: 14px;
       text-align: right;
-      margin-bottom: 18px;
     }
-    .radar-team-card {
-      background: rgba(255, 255, 255, 0.04);
+    .radar-card {
+      background: rgba(255, 255, 255, 0.03);
       border: 1px solid rgba(255, 8, 68, 0.25);
-      border-radius: 12px;
-      padding: 10px 14px;
+      border-radius: 14px;
+      padding: 12px;
+      cursor: pointer;
+      transition: all 0.25s ease;
     }
-    .radar-team-card.attacked {
+    .radar-card:hover {
       border-color: #ff0844;
-      background: rgba(255, 8, 68, 0.15);
+      background: rgba(255, 8, 68, 0.08);
     }
-    .team-top-row {
+    .radar-card.active-spy {
+      border-color: #00f2fe;
+      background: rgba(0, 242, 254, 0.08);
+    }
+    .radar-card.under-attack {
+      border-color: #ff0844;
+      background: rgba(255, 8, 68, 0.2);
+    }
+
+    .radar-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 4px;
+      margin-bottom: 6px;
     }
-    .team-title { font-weight: 900; font-size: 0.95rem; color: #fca5a5; }
-    .team-status-badge { font-size: 0.75rem; padding: 2px 8px; border-radius: 10px; }
-    .status-safe { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
-    .status-under-attack { background: rgba(255, 8, 68, 0.3); color: #ff0844; font-weight: bold; }
+    .team-spy-name { font-size: 0.95rem; font-weight: 900; color: #fca5a5; }
+    .spy-badge { font-size: 0.72rem; padding: 2px 8px; border-radius: 10px; font-weight: 800; }
+    .badge-safe { background: rgba(34, 197, 94, 0.2); color: #4ade80; }
+    .badge-struck { background: rgba(255, 8, 68, 0.3); color: #ff0844; }
 
-    .team-stats {
-      font-size: 0.8rem;
-      color: #cbd5e1;
+    /* تفاصيل خطوات الفريق بعد التجسس عليه */
+    .spy-details-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid #00f2fe;
+      border-radius: 14px;
+      padding: 14px;
+      margin-top: 10px;
+      text-align: right;
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .radar-card.active-spy .spy-details-box {
+      display: block;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .spy-stat-row {
       display: flex;
       justify-content: space-between;
+      font-size: 0.82rem;
+      color: #cbd5e1;
+      border-bottom: 1px dashed rgba(255, 255, 255, 0.1);
+      padding: 4px 0;
+      margin-bottom: 4px;
+    }
+    .spy-log-item {
+      font-size: 0.75rem;
+      color: #94a3b8;
+      margin-bottom: 3px;
+      background: rgba(255, 255, 255, 0.03);
+      padding: 4px 8px;
+      border-radius: 6px;
     }
 
-    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .crisis-preview {
+      background: rgba(255, 8, 68, 0.1);
+      border: 1px dashed rgba(255, 8, 68, 0.4);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 12px;
+      text-align: right;
+      font-size: 0.8rem;
+      color: #fecaca;
+      line-height: 1.4;
+    }
+
+    .solution-box {
+      background: rgba(56, 189, 248, 0.08);
+      border: 1px solid rgba(56, 189, 248, 0.3);
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 12px;
+      text-align: right;
+    }
+    .solution-header { font-size: 0.85rem; font-weight: 900; color: #38bdf8; margin-bottom: 6px; }
+
+    button.btn-attack {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #ff0844, #991b1b);
+      color: #fff;
+      box-shadow: 0 0 20px rgba(255, 8, 68, 0.45);
+      margin-bottom: 8px;
+    }
+    button.btn-lift {
+      width: 100%;
+      padding: 11px;
+      border: 1px solid #22c55e;
+      border-radius: 12px;
+      font-size: 0.92rem;
+      font-weight: 800;
+      cursor: pointer;
+      background: rgba(34, 197, 94, 0.15);
+      color: #4ade80;
+    }
+    button:active { transform: scale(0.97); }
+
+    .msg { margin-top: 10px; font-weight: 700; font-size: 0.85rem; display: none; }
     .hidden { display: none; }
   </style>
 </head>
@@ -140,34 +204,36 @@
 
   <div class="container">
     
-    <!-- 1. شاشة تسجيل الدخول -->
+    <!-- 1. شاشة الدخول -->
     <div class="card" id="loginScreen">
       <div class="badge-enemy">⚠️ غرفة إدارة الأزمات والحروب</div>
       <h2>👺 بوابة عدو الخير</h2>
-      <p class="desc">أدخل رمز التحكم لفتح رادار الفرق وإطلاق التجارب والضربات</p>
+      <p class="desc">أدخل رمز التحكم لرصد خطوات وتحركات الفرق (evil666)</p>
 
-      <input type="password" id="enemyPassInput" placeholder="كلمة السر (evil666)...">
+      <input type="password" id="enemyPassInput" placeholder="كلمة السر...">
       <button class="btn-attack" onclick="loginEnemy()">دخول غرفة التحكم ↵</button>
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
-    <!-- 2. لوحة المتابعة وإطلاق الأزمات -->
+    <!-- 2. لوحة التحكم والتجسس على الخطوات -->
     <div id="attackScreen" class="hidden">
       
-      <!-- رادار المتابعة اللحظية -->
-      <div class="card" style="padding: 16px;">
-        <div class="badge-enemy">📡 رادار تجسس ومتابعة الفرق</div>
-        <div class="radar-box" id="radarContainer">
-          <div style="color: #94a3b8; font-size: 0.85rem; text-align: center;">جاري رصد إشارات الفرق...</div>
+      <!-- رادار التجسس على خطوات الفرق -->
+      <div class="card" style="padding: 14px;">
+        <div class="badge-enemy">📡 رادار كشف خطوات وتحركات الفرق المباشرة</div>
+        <p style="font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px;">اضغط على أي فريق لكشف خطواته وتعاقداته بالتفصيل</p>
+        
+        <div class="radar-list" id="radarContainer">
+          <div style="color: #94a3b8; font-size: 0.8rem; text-align: center;">جاري تتبع خطوات الفرق...</div>
         </div>
       </div>
 
-      <!-- تحكم إطلاق الضربات -->
+      <!-- إطلاق الضربة -->
       <div class="card">
-        <h2 style="font-size: 1.25rem;">⚡ توجيه ضربة مباغتة</h2>
-        <p class="desc">اختر الفريق ونوع الضربة لاختبار سرعة تصرفه ووحدته</p>
+        <h2 style="font-size: 1.2rem;">⚡ توجيه أزمة وشرط الحل</h2>
+        <p class="desc">اختر الفريق المستهدف ونوع الأزمة وشرط فكها الروحي</p>
 
-        <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #fca5a5;">١. الفريق المستهدف:</div>
+        <div style="text-align: right; margin-bottom: 4px; font-size: 0.8rem; color: #fca5a5;">١. الفريق المستهدف:</div>
         <select id="targetTeamSelect">
           <option value="" disabled selected>-- اختر الفريق المستهدف --</option>
           <option value="team_virgin_mary">فريق السيدة العذراء</option>
@@ -176,24 +242,61 @@
           <option value="team_anba_rois">فريق الانبا رويس</option>
         </select>
 
-        <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #fca5a5;">٢. نوع الهجمة والأزمة:</div>
-        <select id="attackTypeSelect" onchange="toggleCustomFields()">
-          <option value="speaker_cancel">🎙️ اعتذار مفاجئ للمتكلم الـ VIP قبل الاجتماع</option>
-          <option value="bus_breakdown">🚍 عطل مفاجئ بالأتوبيس وتكلفة صيانة طارئة (خصم مالي)</option>
-          <option value="apathy_division">❄️ ضربة فتور وتحزبات بين الشباب ورفض النزول</option>
-          <option value="weather_ruin">🌧️ سوء أحوال جوية وإلغاء مكان اليوم الرياضي</option>
-          <option value="custom_strike">✍️ ضربة مخصصة يدوياً</option>
+        <div style="text-align: right; margin-bottom: 4px; font-size: 0.8rem; color: #fca5a5;">٢. نوع الأزمة:</div>
+        <select id="attackTypeSelect" onchange="handleCrisisChange()">
+          
+          <optgroup label="💸 أزمات مالية ولوجستية (خصم مالي)">
+            <option value="bus_breakdown">🚍 عطل بالأتوبيس وتكلفة صيانة ونش طارئة</option>
+            <option value="weather_ruin">🌧️ عاصفة جوية وتلف أدوات الكرنفال بالملعب</option>
+            <option value="hall_damage">🏛️ غرامة تلفيات بقاعة المسرح</option>
+            <option value="food_inflation">🥪 زيادة طارئة في أسعار وجبات الحفل من المورد</option>
+          </optgroup>
+
+          <optgroup label="🎙️ أزمة المتكلم الأساسي">
+            <option value="speaker_cancel">🎙️ اعتذار مفاجئ للمتكلم الأساسي قبل الاجتماع</option>
+          </optgroup>
+
+          <optgroup label="❄️ تحديات روحية وعلاقات (حلها الصلاة والافتقاد)">
+            <option value="apathy_division">💔 خلاف وتحزبات بين الشباب ورفض النزول</option>
+            <option value="servants_burnout">🥱 فتور وإحباط جماعي لخدام الأسرة وثقل الخدمة</option>
+            <option value="phone_addiction">📵 تشتيت السوشيال ميديا وانشغال الشباب بالموبايل</option>
+            <option value="prayer_coolness">🕯️ برود الصلاة واختفاء الروح والحرارة بالاجتماع</option>
+          </optgroup>
+
+          <optgroup label="✍️ مخصص">
+            <option value="custom_strike">✍️ ضربة وتحدي مخصص بالكامل</option>
+          </optgroup>
+
         </select>
 
-        <div id="customAttackBox" class="hidden">
-          <input type="text" id="customAttackText" placeholder="اكتب نص الأزمة...">
+        <div id="crisisPreviewBox" class="crisis-preview"></div>
+
+        <div id="customCrisisBox" class="hidden">
+          <input type="text" id="customAttackTitle" placeholder="عنوان الأزمة...">
+          <textarea id="customAttackText" placeholder="تفاصيل ومطالب الأزمة..."></textarea>
         </div>
 
-        <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #fca5a5;">٣. خصم مالي إجباري كغرامة أزمة (اختياري):</div>
-        <input type="number" id="penaltyAmountInput" placeholder="أدخل مبلغ الخصم إن وُجد (مثال: 15000)">
+        <!-- شروط الفك والحل -->
+        <div class="solution-box">
+          <div class="solution-header">🕊️ شرط فك الضربة (ما يجب على الفريق فعله):</div>
+          <select id="solutionTypeSelect" onchange="handleSolutionTypeChange()">
+            <option value="prayer_group">🙏 صلاة جماعية: وقفة صلاة وتضرع لكل أعضاء الفريق لمدة دقيقة</option>
+            <option value="psalm_recite">📖 مزمور جماعي: قراءة مزمور (الرب راعيّ / الساكن في عون العلي)</option>
+            <option value="thanks_prayer">❤️ صلاة شكر وسلام: صلاة شكر ومصالحة الخدام والشباب</option>
+            <option value="hymn_challenge">🎵 ترنيمة حفظ: قيام 3 مخدومين بأداء ترنيمة تسبيح معاً</option>
+            <option value="custom_solution">✍️ كتابة شرط وحل مخصص بنفسي</option>
+          </select>
 
-        <button class="btn-attack" onclick="launchAttack()">⚡ إطلاق الهجمة المفاجئة فوراً</button>
-        <button class="btn-lift" onclick="liftTeamAttack()">🛡️ فك الهجمة (بعد صلاة الفريق وحل الأزمة)</button>
+          <div id="customSolutionBox" class="hidden">
+            <input type="text" id="customSolutionInput" placeholder="اكتب المطلوب من الفريق بالتفصيل لفك الضربة...">
+          </div>
+        </div>
+
+        <div style="text-align: right; margin-bottom: 4px; font-size: 0.8rem; color: #fca5a5;">٣. خصم مالي كغرامة أزمة إن وُجد:</div>
+        <input type="number" id="penaltyAmountInput" placeholder="مبلغ الخصم (0 إذا كان تحدياً روحياً فقط)">
+
+        <button class="btn-attack" onclick="launchAttack()">⚡ إطلاق الأزمة وشرط الحل فوراً</button>
+        <button class="btn-lift" onclick="liftTeamAttack()">🛡️ فك الهجمة (بعد إتمام الصلاة والحل المطلوب)</button>
         
         <div id="attackStatus" class="msg"></div>
       </div>
@@ -223,74 +326,154 @@
       "team_anba_rois": "فريق الانبا رويس"
     };
 
+    let activeSpyKey = null;
+    let cachedTeamsData = {};
+
     const attacksCatalog = {
-      speaker_cancel: { title: "اعتذار مفاجئ للمتكلم", desc: "المتكلم الأساسي اعتذر لظرف طارئ! مطلوب بديل سريع فوراً.", defaultPenalty: 0 },
-      bus_breakdown: { title: "عطل فني بالأتوبيس", desc: "حدث عطل في الطريق وتطلب دفع رسوم ونش وصيانة طارئة!", defaultPenalty: 12000 },
-      apathy_division: { title: "فتور وتحزب بين الشباب", desc: "حالة خلاف وفتور تسببت في انسحاب نصف المشتركين، مطلوب حل روحي وافتقاد عاجل!", defaultPenalty: 0 },
-      weather_ruin: { title: "عاصفة جوية مفاجئة", desc: "إلغاء الملعب المفتوح وتلف أدوات الكرنفال بسبب الأمطار!", defaultPenalty: 8000 }
+      bus_breakdown: { title: "عطل فني مفاجئ بالأتوبيس", desc: "تعطل الأتوبيس على طريق السفر وتطلب ونش وصيانة طارئة!", defaultPenalty: 12000, defaultSolution: "prayer_group" },
+      weather_ruin: { title: "عاصفة جوية وتلف أدوات الكرنفال", desc: "رياح شديدة وأمطار أتلفت الديكورات وشبكات الألعاب بالملعب!", defaultPenalty: 8000, defaultSolution: "thanks_prayer" },
+      hall_damage: { title: "غرامة تلفيات بقاعة المسرح", desc: "حدث تلف عفوي بمعدات الإضاءة والصوت أثناء بروفة الحفل!", defaultPenalty: 6000, defaultSolution: "prayer_group" },
+      food_inflation: { title: "زيادة طارئة في تكلفة وجبات الحفل", desc: "اعتذر مورد الأكل وطلب المورد البديل زيادة عاجلة!", defaultPenalty: 5000, defaultSolution: "thanks_prayer" },
+      speaker_cancel: { title: "اعتذار مفاجئ لمتكلم اللقاء الأساسي", desc: "المتكلم الأساسي اعتذر لظرف طارئ! مطلوب تجهيز كلمة بديلة فوراً.", defaultPenalty: 0, defaultSolution: "prayer_group" },
+      apathy_division: { title: "خلاف وتحزبات بين الشباب", desc: "حالة خلاف وفتور تسببت في مقاطعة نصف المخدومين؛ مطلوب صلاة محبة ومصالحة عاجلة!", defaultPenalty: 0, defaultSolution: "thanks_prayer" },
+      servants_burnout: { title: "فتور وإحباط جماعي لخدام الأسرة", desc: "إرهاق وضغوط جعلت الخدام يشعرون بثقل الحمل؛ مطلوب وقفة صلاة وتجديد طاقة الخدمة.", defaultPenalty: 0, defaultSolution: "psalm_recite" },
+      phone_addiction: { title: "تشتيت السوشيال ميديا والموبايل", desc: "انشغال الشباب بالهواتف وقت اللقاء؛ مطلوب وقفة صلاة وتنبيه روحي تفاعلي.", defaultPenalty: 0, defaultSolution: "hymn_challenge" },
+      prayer_coolness: { title: "برود الصلاة وتراجع الحرارة الروحية", desc: "شعور بالروتين وجفاف الصلوات؛ مطلوب صلاة حارة بمشاعر توبة وتجديد.", defaultPenalty: 0, defaultSolution: "psalm_recite" }
     };
 
     function loginEnemy() {
-      const pass = document.getElementById("enemyPassInput").value.trim().toLowerCase();
-      const errorEl = document.getElementById("loginError");
-
-      if (pass !== "evil666") {
-        errorEl.style.display = "block";
+      if (document.getElementById("enemyPassInput").value.trim().toLowerCase() !== "evil666") {
+        document.getElementById("loginError").style.display = "block";
         return;
       }
-
-      errorEl.style.display = "none";
+      document.getElementById("loginError").style.display = "none";
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("attackScreen").classList.remove("hidden");
 
       listenToRadarData();
+      handleCrisisChange();
     }
 
     function listenToRadarData() {
       db.ref('teams').on('value', snapshot => {
-        const data = snapshot.val() || {};
-        const container = document.getElementById("radarContainer");
-        container.innerHTML = "";
-
-        Object.keys(teamMeta).forEach(key => {
-          const tData = data[key] || {};
-          const balance = Number(tData.balance || 0);
-          const itemsCount = (tData.purchases || []).length;
-          const isAttacked = !!tData.activeAttack;
-
-          const card = document.createElement("div");
-          card.className = `radar-team-card ${isAttacked ? 'attacked' : ''}`;
-          
-          card.innerHTML = `
-            <div class="team-top-row">
-              <span class="team-title">${teamMeta[key]}</span>
-              <span class="team-status-badge ${isAttacked ? 'status-under-attack' : 'status-safe'}">
-                ${isAttacked ? '🔥 تحت الهجوم: ' + tData.activeAttack.title : '🛡️ في أمان'}
-              </span>
-            </div>
-            <div class="team-stats">
-              <span>الرصيد المتاح: <b style="color:#00f2fe;">${balance.toLocaleString()} ج.ك</b></span>
-              <span>البنود المنجزة: <b style="color:#f1c40f;">${itemsCount} بنود</b></span>
-            </div>
-          `;
-
-          container.appendChild(card);
-        });
+        cachedTeamsData = snapshot.val() || {};
+        renderRadarFeed();
       });
     }
 
-    function toggleCustomFields() {
+    // رسم رادار كشف الخطوات بالتفصيل
+    function renderRadarFeed() {
+      const container = document.getElementById("radarContainer");
+      container.innerHTML = "";
+
+      Object.keys(teamMeta).forEach(key => {
+        const tData = cachedTeamsData[key] || {};
+        const balance = Number(tData.balance || 0);
+        const isAttacked = !!tData.activeAttack;
+        const isSelected = (activeSpyKey === key);
+
+        let totalInvested = 0;
+        if (tData.investments) {
+          totalInvested = tData.investments.reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
+        }
+        let totalSpent = 0;
+        if (tData.purchases) {
+          totalSpent = tData.purchases.reduce((sum, p) => sum + (Number(p.cost) || 0), 0);
+        }
+
+        // حساب عدد المتكلمين والبنود
+        const plan = tData.plan || {};
+        const q1Speakers = (plan.Q1 || []).filter(i => i.desk === 'speakers').length;
+        const q2Speakers = (plan.Q2 || []).filter(i => i.desk === 'speakers').length;
+        const q3Speakers = (plan.Q3 || []).filter(i => i.desk === 'speakers').length;
+        const q4Speakers = (plan.Q4 || []).filter(i => i.desk === 'speakers').length;
+
+        const card = document.createElement("div");
+        card.className = `radar-card ${isAttacked ? 'under-attack' : ''} ${isSelected ? 'active-spy' : ''}`;
+        card.onclick = (e) => {
+          if (e.target.tagName !== 'SELECT' && e.target.tagName !== 'BUTTON') {
+            activeSpyKey = (activeSpyKey === key) ? null : key;
+            renderRadarFeed();
+          }
+        };
+
+        let lastPurchasesHtml = "";
+        if (tData.purchases && tData.purchases.length > 0) {
+          lastPurchasesHtml = tData.purchases.slice(-3).reverse().map(p => `
+            <div class="spy-log-item">🛒 ${p.item_name} (${Number(p.cost).toLocaleString()} ج.ك) [${p.quarter}]</div>
+          `).join('');
+        } else {
+          lastPurchasesHtml = '<div class="spy-log-item" style="color:#64748b;">لم يقم بأي شراء بعد</div>';
+        }
+
+        card.innerHTML = `
+          <div class="radar-header">
+            <span class="team-spy-name">${teamMeta[key]}</span>
+            <span class="spy-badge ${isAttacked ? 'badge-struck' : 'badge-safe'}">
+              ${isAttacked ? '🔥 أزمة: ' + tData.activeAttack.title : '🛡️ في أمان'}
+            </span>
+          </div>
+
+          <div style="font-size: 0.8rem; color: #cbd5e1; display: flex; justify-content: space-between;">
+            <span>الرصيد: <b style="color:#00f2fe;">${balance.toLocaleString()} ج.ك</b></span>
+            <span>الاستثمارات: <b style="color:#f1c40f;">${totalInvested.toLocaleString()} ج.ك</b></span>
+          </div>
+
+          <!-- تفاصيل التجسس المنسدلة -->
+          <div class="spy-details-box">
+            <div style="font-size: 0.82rem; font-weight: 900; color: #38bdf8; margin-bottom: 6px;">🕵️‍♂️ خطوات ومشتريات الفريق:</div>
+            
+            <div class="spy-stat-row">
+              <span>المصروفات في السوق:</span>
+              <b style="color: #ff0844;">${totalSpent.toLocaleString()} ج.ك</b>
+            </div>
+
+            <div class="spy-stat-row">
+              <span>إنجاز المتكلمين (12 أسبوعاً):</span>
+              <b>Q1: ${q1Speakers}/12 | Q2: ${q2Speakers}/12 | Q3: ${q3Speakers}/12 | Q4: ${q4Speakers}/12</b>
+            </div>
+
+            <div style="font-size: 0.78rem; color: #94a3b8; margin: 6px 0 4px 0;">آخر 3 تعاقدات للفريق:</div>
+            ${lastPurchasesHtml}
+
+            ${isAttacked ? `
+              <div style="background: rgba(255,8,68,0.15); border: 1px dashed #ff0844; border-radius: 8px; padding: 6px; margin-top: 6px; font-size: 0.76rem; color: #fca5a5;">
+                ⚠️ <b>شرط الفك الحالي:</b> ${tData.activeAttack.solution || 'صلاة جماعية'}
+              </div>
+            ` : ''}
+          </div>
+        `;
+
+        container.appendChild(card);
+      });
+    }
+
+    function handleCrisisChange() {
       const type = document.getElementById("attackTypeSelect").value;
-      const customBox = document.getElementById("customAttackBox");
+      const customBox = document.getElementById("customCrisisBox");
+      const previewBox = document.getElementById("crisisPreviewBox");
       const penaltyInput = document.getElementById("penaltyAmountInput");
+      const solSelect = document.getElementById("solutionTypeSelect");
 
       if (type === "custom_strike") {
         customBox.classList.remove("hidden");
+        previewBox.textContent = "اكتب عنوان وتفاصيل الأزمة المخصصة بالأسفل.";
         penaltyInput.value = "";
       } else {
         customBox.classList.add("hidden");
-        penaltyInput.value = attacksCatalog[type].defaultPenalty || "";
+        const c = attacksCatalog[type];
+        previewBox.innerHTML = `📌 <b>طبيعة الأزمة:</b> ${c.desc}`;
+        penaltyInput.value = c.defaultPenalty || 0;
+        if (c.defaultSolution) {
+          solSelect.value = c.defaultSolution;
+        }
       }
+      handleSolutionTypeChange();
+    }
+
+    function handleSolutionTypeChange() {
+      const solType = document.getElementById("solutionTypeSelect").value;
+      document.getElementById("customSolutionBox").classList.toggle("hidden", solType !== "custom_solution");
     }
 
     function launchAttack() {
@@ -313,15 +496,23 @@
       let desc = "";
 
       if (attackType === "custom_strike") {
-        title = "أزمة طارئة مخصصة";
-        desc = document.getElementById("customAttackText").value.trim() || "تجربة مفاجئة غير متوقعة للخدمة!";
+        title = document.getElementById("customAttackTitle").value.trim() || "أزمة مخصصة";
+        desc = document.getElementById("customAttackText").value.trim() || "موقف طارئ يتطلب صلاة وتصرفاً سريعاً!";
       } else {
         title = attacksCatalog[attackType].title;
         desc = attacksCatalog[attackType].desc;
       }
 
+      const solSelect = document.getElementById("solutionTypeSelect");
+      let solutionText = "";
+      if (solSelect.value === "custom_solution") {
+        solutionText = document.getElementById("customSolutionInput").value.trim() || "صلاة وتضرع جماعي من الفريق";
+      } else {
+        solutionText = solSelect.options[solSelect.selectedIndex].text;
+      }
+
       statusEl.style.color = "#f1c40f";
-      statusEl.textContent = "جاري توجيه الضربة وتطبيق الخصم...";
+      statusEl.textContent = "جاري توجيه الضربة وإرسال شرط الفك...";
 
       const teamRef = db.ref('teams/' + teamKey);
 
@@ -333,7 +524,7 @@
           teamData.balance = Math.max(0, currentBalance - penalty);
           if (!teamData.purchases) teamData.purchases = [];
           teamData.purchases.push({
-            item_name: `⚠️ ضربة عدو الخير: ${title}`,
+            item_name: `⚠️ غرامة أزمة: ${title}`,
             cost: penalty,
             quarter: 'طوارئ',
             time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
@@ -344,12 +535,13 @@
           title: title,
           desc: desc,
           penalty: penalty,
+          solution: solutionText,
           timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
         };
 
         teamRef.set(teamData).then(() => {
           statusEl.style.color = "#22c55e";
-          statusEl.textContent = `🔥 تم إطلاق [${title}] بنجاح ضد ${teamName}!`;
+          statusEl.textContent = `🔥 تم إطلاق [${title}] ضد ${teamName}! شرط الفك: [${solutionText}]`;
         });
       }).catch(err => {
         statusEl.style.color = "#ff0844";
@@ -373,7 +565,7 @@
 
       db.ref('teams/' + teamKey + '/activeAttack').remove().then(() => {
         statusEl.style.color = "#4ade80";
-        statusEl.textContent = `🛡️ تم فك وإلغاء الضربة بنجاح عن ${teamName}! استمروا في الصلاة.`;
+        statusEl.textContent = `🛡️ تم فك وإلغاء الضربة بنجاح عن ${teamName}! استمروا في الصلاة والخدمة.`;
       }).catch(err => {
         statusEl.style.color = "#ff0844";
         statusEl.textContent = "❌ خطأ أثناء فك الضربة: " + err.message;
