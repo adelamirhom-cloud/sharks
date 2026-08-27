@@ -93,13 +93,13 @@
     <!-- 1. شاشة تسجيل دخول الشارك -->
     <div id="loginScreen">
       <h2>🦈 منصة الشاركس</h2>
-      <p class="desc">أدخل اسمك ورمز الدخول لاستلام محفظتك الاستثمارية</p>
+      <p class="desc">أدخل رمز الدخول واكتب اسمك لاستلام المحفظة</p>
       
-      <input type="text" id="sharkNameInput" placeholder="اكتب اسمك (مثال: أ. مينا / أبونا فلان)">
-      <input type="password" id="sharkPassInput" placeholder="كلمة السر...">
+      <input type="password" id="sharkPassInput" placeholder="كلمة السر (shark101 / shark202 / shark303)...">
+      <input type="text" id="sharkNameInput" placeholder="اكتب اسم الشارك (مثال: أ. مينا / أبونا...)">
       
       <button onclick="loginShark()">دخول كـ Shark ↵</button>
-      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة أو البيانات ناقصة!</div>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة أو لم تكتب اسمك!</div>
     </div>
 
     <!-- 2. شاشة المحفظة وضخ الاستثمارات -->
@@ -108,7 +108,7 @@
       
       <div class="wallet-box">
         <div style="font-size: 0.85rem; color: #94a3b8;">رصيدك الاستثماري المتبقي</div>
-        <div class="wallet-amount" id="sharkBudgetDisplay">100,000 ج.ك</div>
+        <div class="wallet-amount" id="sharkBudgetDisplay">500,000 ج.ك</div>
       </div>
 
       <div style="text-align: right; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1;">اختر الفريق المستهدف:</div>
@@ -120,8 +120,8 @@
         <option value="team_anba_rois">فريق الانبا رويس</option>
       </select>
 
-      <div style="text-align: right; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1;">المبلغ المراد استثماره:</div>
-      <input type="number" id="investAmountInput" placeholder="أدخل المبلغ (مثال: 25000)">
+      <div style="text-align: right; margin-bottom: 6px; font-size: 0.85rem; color: #cbd5e1;">المبلغ المراد استثماره (الحد الأقصى 150,000):</div>
+      <input type="number" id="investAmountInput" placeholder="أدخل المبلغ (مثال: 50000)">
 
       <button onclick="sendInvestment()">💸 تحويل الاستثمار للفريق</button>
       
@@ -144,39 +144,50 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    let currentSharkId = "";
+    // كلمات سر الشاركس الثلاثة
+    const validSharkPasscodes = {
+      "shark101": "shark_slot_1",
+      "shark202": "shark_slot_2",
+      "shark303": "shark_slot_3"
+    };
+
+    let currentSharkSlot = "";
     let currentSharkName = "";
-    let currentBudget = 100000;
+    let currentBudget = 500000;
+    const MAX_PER_INVESTMENT = 150000;
 
     function loginShark() {
-      const name = document.getElementById("sharkNameInput").value.trim();
-      const pass = document.getElementById("sharkPassInput").value.trim();
+      const passInput = document.getElementById("sharkPassInput").value.trim().toLowerCase();
+      const nameInput = document.getElementById("sharkNameInput").value.trim();
       const errorEl = document.getElementById("loginError");
 
-      if (pass !== "avatege2019" || !name) {
+      if (!nameInput || !validSharkPasscodes[passInput]) {
         errorEl.style.display = "block";
+        errorEl.textContent = "❌ كلمة السر غير صحيحة أو لم تكتب اسمك!";
         return;
       }
 
       errorEl.style.display = "none";
-      currentSharkName = name;
-      currentSharkId = 'shark_' + encodeURIComponent(name).replace(/\./g, '%2E');
+      currentSharkSlot = validSharkPasscodes[passInput];
+      currentSharkName = nameInput;
 
-      const sharkRef = db.ref('sharks/' + currentSharkId);
+      const sharkRef = db.ref('sharks/' + currentSharkSlot);
 
       sharkRef.once('value').then(snapshot => {
         if (!snapshot.exists()) {
           sharkRef.set({
             name: currentSharkName,
-            remaining_budget: 100000
+            remaining_budget: 500000
           });
+        } else {
+          sharkRef.update({ name: currentSharkName });
         }
       });
 
       sharkRef.on('value', snapshot => {
         const data = snapshot.val();
         if (data) {
-          currentBudget = data.remaining_budget !== undefined ? data.remaining_budget : 100000;
+          currentBudget = data.remaining_budget !== undefined ? data.remaining_budget : 500000;
           document.getElementById("sharkBudgetDisplay").textContent = Number(currentBudget).toLocaleString() + " ج.ك";
         }
       });
@@ -189,7 +200,7 @@
     function sendInvestment() {
       const teamSelect = document.getElementById("targetTeamSelect");
       const teamKey = teamSelect.value;
-      const teamName = teamSelect.options[teamSelect.selectedIndex].text;
+      const teamName = teamSelect.options[teamSelect.selectedIndex]?.text;
       const amount = parseInt(document.getElementById("investAmountInput").value, 10);
       const statusEl = document.getElementById("actionStatus");
 
@@ -205,9 +216,14 @@
         statusEl.textContent = "⚠️ برجاء إدخال مبلغ استثماري صحيح!";
         return;
       }
+      if (amount > MAX_PER_INVESTMENT) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = `⚠️ الحد الأقصى للتمويل في المرة الواحدة هو ${MAX_PER_INVESTMENT.toLocaleString()} ج.ك فقط!`;
+        return;
+      }
       if (amount > currentBudget) {
         statusEl.style.color = "#ff0844";
-        statusEl.textContent = `❌ رصيدك لا يكفي! المتبقي لديك هو ${currentBudget.toLocaleString()} فقط.`;
+        statusEl.textContent = `❌ رصيدك لا يكفي! المتبقي لديك هو ${currentBudget.toLocaleString()} ج.ك فقط.`;
         return;
       }
 
@@ -216,7 +232,7 @@
 
       const newBudget = currentBudget - amount;
       const teamRef = db.ref('teams/' + teamKey);
-      const sharkRef = db.ref('sharks/' + currentSharkId);
+      const sharkRef = db.ref('sharks/' + currentSharkSlot);
 
       sharkRef.update({ remaining_budget: newBudget }).then(() => {
         teamRef.transaction(teamData => {
