@@ -49,7 +49,7 @@
       backdrop-filter: blur(20px);
       border: 1.5px solid rgba(0, 242, 254, 0.3);
       border-radius: 24px;
-      padding: 28px 20px;
+      padding: 26px 20px;
       width: 100%;
       max-width: 480px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(0, 242, 254, 0.12);
@@ -71,7 +71,7 @@
     }
 
     h1 {
-      font-size: 1.6rem;
+      font-size: 1.55rem;
       font-weight: 900;
       color: #fff;
       margin-bottom: 6px;
@@ -83,80 +83,80 @@
 
     p.subtitle {
       color: #94a3b8;
-      font-size: 0.88rem;
-      margin-bottom: 22px;
+      font-size: 0.85rem;
+      margin-bottom: 20px;
     }
 
     .portal-grid {
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 10px;
     }
 
     .portal-btn {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 14px 18px;
+      padding: 13px 16px;
       border-radius: 14px;
       text-decoration: none;
       color: #fff;
       font-weight: 800;
-      font-size: 0.98rem;
+      font-size: 0.92rem;
       transition: all 0.25s ease;
       border: 1px solid rgba(255, 255, 255, 0.08);
     }
     .portal-btn:active { transform: scale(0.98); }
 
-    /* ألوان الأزرار */
+    /* أنماط الأزرار */
     .btn-team {
       background: linear-gradient(135deg, rgba(0, 242, 254, 0.2), rgba(79, 172, 254, 0.1));
       border-color: rgba(0, 242, 254, 0.4);
     }
-    .btn-team:hover { box-shadow: 0 0 18px rgba(0, 242, 254, 0.4); }
+    .btn-team:hover { box-shadow: 0 0 16px rgba(0, 242, 254, 0.35); }
 
     .btn-shark {
       background: linear-gradient(135deg, rgba(241, 196, 15, 0.2), rgba(230, 126, 34, 0.1));
       border-color: rgba(241, 196, 15, 0.4);
     }
-    .btn-shark:hover { box-shadow: 0 0 18px rgba(241, 196, 15, 0.4); }
+    .btn-shark:hover { box-shadow: 0 0 16px rgba(241, 196, 15, 0.35); }
 
     .btn-market {
-      background: linear-gradient(135deg, rgba(46, 204, 113, 0.2), rgba(39, 174, 96, 0.1));
-      border-color: rgba(46, 204, 113, 0.4);
+      background: linear-gradient(135deg, rgba(46, 204, 113, 0.18), rgba(39, 174, 96, 0.08));
+      border-color: rgba(46, 204, 113, 0.35);
     }
-    .btn-market:hover { box-shadow: 0 0 18px rgba(46, 204, 113, 0.4); }
+    .btn-market:hover { box-shadow: 0 0 16px rgba(46, 204, 113, 0.35); }
 
     .btn-dashboard {
       background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(147, 51, 234, 0.1));
       border-color: rgba(168, 85, 247, 0.4);
     }
-    .btn-dashboard:hover { box-shadow: 0 0 18px rgba(168, 85, 247, 0.4); }
+    .btn-dashboard:hover { box-shadow: 0 0 16px rgba(168, 85, 247, 0.35); }
 
     .btn-enemy {
       background: linear-gradient(135deg, rgba(255, 8, 68, 0.2), rgba(153, 27, 27, 0.1));
       border-color: rgba(255, 8, 68, 0.45);
       color: #fca5a5;
     }
-    .btn-enemy:hover { box-shadow: 0 0 18px rgba(255, 8, 68, 0.4); }
+    .btn-enemy:hover { box-shadow: 0 0 16px rgba(255, 8, 68, 0.35); }
 
     .btn-admin {
       background: rgba(255, 255, 255, 0.04);
       border-color: rgba(255, 255, 255, 0.15);
       color: #94a3b8;
-      font-size: 0.85rem;
+      font-size: 0.82rem;
       padding: 10px 14px;
       justify-content: center;
-      margin-top: 8px;
+      margin-top: 6px;
     }
     .btn-admin:hover { color: #ff0844; border-color: rgba(255, 8, 68, 0.4); }
 
     .btn-icon {
-      font-size: 1.25rem;
+      font-size: 1.2rem;
       margin-left: 10px;
     }
     .arrow-icon {
-      font-size: 1.1rem;
+      font-size: 1rem;
       color: #64748b;
     }
   </style>
@@ -169,7 +169,7 @@
   <div class="hub-card">
     <div class="badge-hub">⚡ خلوة مرحلة ثانوي</div>
     <h1>منظومة <span>Shark Tank الخدمة</span></h1>
-    <p class="subtitle">اختر بوابتك المخصصة للمتابعة والمشاركة المباشرة</p>
+    <p class="subtitle">اختر بوابتك المخصصة للمتابعة والتنفيذ المباشر</p>
 
     <div class="portal-grid">
       
@@ -177,7 +177,7 @@
       <a href="team.html" class="portal-btn btn-team">
         <div style="display: flex; align-items: center;">
           <span class="btn-icon">🚩</span>
-          <span>لوحة تحكم الفريق (الرصيد والخطة)</span>
+          <span>لوحة تحكم الفريق (الجدول الأسبوعي والرصيد)</span>
         </div>
         <span class="arrow-icon">↵</span>
       </a>
@@ -191,11 +191,27 @@
         <span class="arrow-icon">↵</span>
       </a>
 
-      <!-- 3. سوق تعاقدات الخدام -->
-      <a href="market.html" class="portal-btn btn-market">
+      <!-- 3. مكاتب سوق الخدمة المنفصلة -->
+      <a href="market_speakers.html" class="portal-btn btn-market">
         <div style="display: flex; align-items: center;">
-          <span class="btn-icon">🏪</span>
-          <span>سوق تعاقدات الخدمة (مكاتب الخدام)</span>
+          <span class="btn-icon">🎙️</span>
+          <span>مكتب المتكلمين والمحتوى الروحي</span>
+        </div>
+        <span class="arrow-icon">↵</span>
+      </a>
+
+      <a href="market_trips.html" class="portal-btn btn-market">
+        <div style="display: flex; align-items: center;">
+          <span class="btn-icon">🚌</span>
+          <span>مكتب الرحلات وأتوبيسات الخلوة السنوية</span>
+        </div>
+        <span class="arrow-icon">↵</span>
+      </a>
+
+      <a href="market_events.html" class="portal-btn btn-market">
+        <div style="display: flex; align-items: center;">
+          <span class="btn-icon">🎁</span>
+          <span>مكتب الهدايا والأنشطة والاحتفالات</span>
         </div>
         <span class="arrow-icon">↵</span>
       </a>
@@ -204,7 +220,7 @@
       <a href="dashboard.html" class="portal-btn btn-dashboard">
         <div style="display: flex; align-items: center;">
           <span class="btn-icon">📊</span>
-          <span>بورصة الاستثمارات (شاشة العرض)</span>
+          <span>بورصة الاستثمارات (شاشة العرض المباشرة)</span>
         </div>
         <span class="arrow-icon">↵</span>
       </a>
@@ -220,7 +236,7 @@
 
       <!-- 6. لوحة الأدمن لتصفير النظام -->
       <a href="admin_shark.html" class="portal-btn btn-admin">
-        <span>⚙️ لوحة الأدمن (تصفير وإعادة ضبط النظام)</span>
+        <span>⚙️ لوحة الأدمن (تصفير وإعادة ضبط المنظومة)</span>
       </a>
 
     </div>
