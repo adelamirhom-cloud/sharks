@@ -18,23 +18,27 @@
       color: #fff;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
       padding: 16px;
     }
 
-    .card {
+    .container {
+      width: 100%;
+      max-width: 650px;
+    }
+
+    .card-box {
       background: rgba(15, 23, 42, 0.95);
       border: 1.5px solid rgba(0, 242, 254, 0.3);
       border-radius: 20px;
-      padding: 24px;
-      width: 100%;
-      max-width: 480px;
+      padding: 22px 18px;
       box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
       text-align: center;
+      margin-bottom: 16px;
     }
 
-    h2 { color: #00f2fe; margin-bottom: 8px; font-weight: 900; }
+    h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
     p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 18px; }
 
     input, select {
@@ -53,21 +57,6 @@
     select option { background: #0f172a; color: #fff; }
     input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
 
-    button {
-      width: 100%;
-      padding: 14px;
-      border: none;
-      border-radius: 12px;
-      font-size: 1.05rem;
-      font-weight: 900;
-      cursor: pointer;
-      background: linear-gradient(135deg, #00f2fe, #4facfe);
-      color: #070b19;
-      box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
-      transition: transform 0.2s;
-    }
-    button:active { transform: scale(0.97); }
-
     .desk-badge {
       background: rgba(0, 242, 254, 0.1);
       border: 1px solid #00f2fe;
@@ -75,10 +64,70 @@
       padding: 6px 14px;
       border-radius: 20px;
       font-size: 0.85rem;
-      font-weight: 700;
+      font-weight: 800;
       display: inline-block;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
     }
+
+    /* شبكة مربعات الكتالوج */
+    .market-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+      gap: 14px;
+      margin-top: 16px;
+      text-align: right;
+    }
+
+    .item-square {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1.5px solid rgba(0, 242, 254, 0.2);
+      border-radius: 16px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: all 0.25s ease;
+    }
+    .item-square:hover {
+      border-color: #00f2fe;
+      transform: translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 242, 254, 0.15);
+    }
+
+    .item-title {
+      font-size: 0.95rem;
+      font-weight: 900;
+      color: #f1f5f9;
+      margin-bottom: 4px;
+    }
+    .item-info {
+      font-size: 0.78rem;
+      color: #94a3b8;
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+    .item-price-tag {
+      font-size: 1.1rem;
+      font-weight: 900;
+      color: #00f2fe;
+      margin-bottom: 10px;
+      text-align: left;
+      direction: ltr;
+    }
+
+    .btn-buy {
+      width: 100%;
+      padding: 10px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      transition: transform 0.2s;
+    }
+    .btn-buy:active { transform: scale(0.96); }
 
     .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
     .hidden { display: none; }
@@ -86,53 +135,64 @@
 </head>
 <body>
 
-  <div class="card">
+  <div class="container">
     
     <!-- 1. شاشة تسجيل دخول الخادم للمكتب -->
-    <div id="loginScreen">
+    <div class="card-box" id="loginScreen">
       <h2>🏪 سوق تعاقدات الخدمة</h2>
-      <p class="desc">اختر مكتب التعاقدات المسؤول عنه وأدخل كلمة السر المخصصة له</p>
+      <p class="desc">اختر مكتب التعاقدات المسؤول عنه وأدخل كلمة السر المخصصة</p>
 
       <select id="deskSelect">
         <option value="" disabled selected>-- اختر مكتب التعاقد --</option>
-        <option value="speakers">🎙️ مكتب المتكلمين والمحتوى الروحي</option>
+        <option value="speakers">🎙️ مكتب المتكلمين (مطلوب 12 أسبوعاً للربع)</option>
         <option value="trips">🚌 مكتب الرحلات وأتوبيسات الخلوة السنوية</option>
-        <option value="events">🎁 مكتب الهدايا والاحتفالات والألعاب</option>
+        <option value="events">🎁 مكتب الهدايا والاحتفالات والأنشطة</option>
       </select>
 
-      <input type="password" id="servantPassInput" placeholder="كلمة سر المكتب...">
-      <button onclick="loginServant()">دخول المكتب ↵</button>
+      <input type="password" id="servantPassInput" placeholder="كلمة سر المكتب (speak101 / trip202 / event303)...">
+      <button class="btn-buy" style="padding: 13px;" onclick="loginServant()">دخول المكتب ↵</button>
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة لهذا المكتب!</div>
     </div>
 
-    <!-- 2. شاشة بيع البنود للفرق -->
+    <!-- 2. شاشة شبكة المربعات والشراء المباشر -->
     <div id="marketScreen" class="hidden">
-      <div class="desk-badge" id="deskTitleDisplay">المكتب</div>
-      <h2 style="font-size: 1.25rem;">إتمام تعاقد جديد</h2>
-      <p class="desc" style="margin-bottom: 14px;">حدد الفريق والموسم والبند لإتمام الخصم وتحديث الخطة</p>
+      
+      <div class="card-box" style="margin-bottom: 14px;">
+        <div class="desk-badge" id="deskTitleDisplay">المكتب</div>
+        <h2 style="font-size: 1.25rem;">إتمام تعاقدات ومشتريات الفريق</h2>
+        <p class="desc" style="margin-bottom: 14px;">حدد الفريق والموسم أولاً، ثم اضغط على البند المطلوب لشرائه مباشرة</p>
 
-      <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #cbd5e1;">١. الفريق المتعاقد:</div>
-      <select id="teamTargetSelect">
-        <option value="" disabled selected>-- اختر الفريق المشتري --</option>
-        <option value="team_virgin_mary">فريق السيدة العذراء</option>
-        <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
-        <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
-        <option value="team_anba_rois">فريق الانبا رويس</option>
-      </select>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق المشتري:</div>
+            <select id="teamTargetSelect">
+              <option value="" disabled selected>-- اختر الفريق --</option>
+              <option value="team_virgin_mary">فريق السيدة العذراء</option>
+              <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
+              <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
+              <option value="team_anba_rois">فريق الانبا رويس</option>
+            </select>
+          </div>
 
-      <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #cbd5e1;">٢. الربع السنوي (الموسم المستهدف):</div>
-      <select id="quarterTargetSelect">
-        <option value="Q1">الربع الأول (Q1 - الخريف: الانطلاق)</option>
-        <option value="Q2">الربع الثاني (Q2 - الشتاء: الميلاد ونصف السنة)</option>
-        <option value="Q3">الربع الثالث (Q3 - الربيع: الصوم الكبير والقيامة)</option>
-        <option value="Q4">الربع الرابع (Q4 - الصيف: الخلوة والمصيف)</option>
-      </select>
+          <div>
+            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">٢. الربع السنوي (الموسم):</div>
+            <select id="quarterTargetSelect">
+              <option value="Q1">الربع الأول (Q1 - الخريف)</option>
+              <option value="Q2">الربع الثاني (Q2 - الشتاء)</option>
+              <option value="Q3">الربع الثالث (Q3 - الربيع)</option>
+              <option value="Q4">الربع الرابع (Q4 - الصيف)</option>
+            </select>
+          </div>
+        </div>
 
-      <div style="text-align: right; margin-bottom: 4px; font-size: 0.82rem; color: #cbd5e1;">٣. البند والخدمة المطلوبة:</div>
-      <select id="catalogItemSelect"></select>
+        <div id="saleStatus" class="msg"></div>
+      </div>
 
-      <button onclick="processSale()">🏷️ اعتماد التعاقد وخصم المبلغ</button>
-      <div id="saleStatus" class="msg"></div>
+      <!-- شبكة المربعات والكروت للمنتجات -->
+      <div class="market-grid" id="itemsGrid">
+        <!-- الكروت تتولد ديناميكياً هنا -->
+      </div>
+
     </div>
 
   </div>
@@ -151,58 +211,52 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // كلمات سر مكاتب السوق
     const deskPasswords = {
       "speakers": "speak101",
       "trips": "trip202",
       "events": "event303"
     };
 
-    // كتالوج البنود والأسعار الشامل
+    // كتالوج الكروت والمربعات مع احتساب أسابيع المتكلمين (12 أسبوعاً للربع)
     const marketCatalog = {
       speakers: [
-        { name: "خادم محلي من الكنيسة / أمين الخدمة (أسبوع واحد)", cost: 0 },
-        { name: "كاهن من الكنيسة أو الإيبارشية (مرة واحدة)", cost: 2500 },
-        { name: "باقة كاهن الإيبارشية (شهر كامل / 4 أسابيع)", cost: 9000 },
-        { name: "خادم شباب وميديا معروف (مرة واحدة)", cost: 5000 },
-        { name: "باقة خادم الشباب والميديا (شهر كامل / 4 أسابيع)", cost: 18000 },
-        { name: "متخصص نفسي وتربوي مشهور (مرة واحدة)", cost: 8000 },
-        { name: "باقة المتخصص النفسي (شهر كامل / 4 أسابيع)", cost: 30000 },
-        { name: "متكلم VIP قامة كبيرة - د. مجدي / أبونا داود (مرة واحدة)", cost: 12000 },
-        { name: "باقة متكلم VIP قامة كبيرة (شهر كامل / 4 أسابيع)", cost: 45000 }
+        { name: "خادم محلي / أمين الخدمة (أسبوع واحد)", weeks: 1, info: "خادم من الكنيسة لموضوع محلي (أسبوع)", cost: 0 },
+        { name: "باقة الخدام المحليين (الموسم كامل / 12 أسبوعاً)", weeks: 12, info: "تغطية الـ 12 أسبوعاً كاملة بخدام من أسرة المرحلة", cost: 0 },
+        { name: "كاهن من الكنيسة أو الإيبارشية (أسبوع واحد)", weeks: 1, info: "محاضرة طقسية وعقائدية (أسبوع)", cost: 2500 },
+        { name: "باقة كاهن الإيبارشية (شهر / 4 أسابيع)", weeks: 4, info: "كورس عقائدي أسبوعي لمدة 4 أسابيع", cost: 9000 },
+        { name: "خادم شباب وميديا معروف (أسبوع واحد)", weeks: 1, info: "لقاء شبابي وترانيم وميديا (أسبوع)", cost: 5000 },
+        { name: "باقة خادم الشباب والميديا (شهر / 4 أسابيع)", weeks: 4, info: "سلسلة موضوعات شبابية لمدة 4 أسابيع", cost: 18000 },
+        { name: "متخصص نفسي وتربوي مشهور (أسبوع واحد)", weeks: 1, info: "ورشة علاقات وتعديل سلوك ونفسية (أسبوع)", cost: 8000 },
+        { name: "باقة المتخصص النفسي (شهر / 4 أسابيع)", weeks: 4, info: "كورس نفسي متكامل على مدار 4 أسابيع", cost: 30000 },
+        { name: "متكلم VIP قامة كبيرة (أسبوع واحد)", weeks: 1, info: "لقاء قامة كنسية كبيرة - د. مجدي / أبونا داود (أسبوع)", cost: 12000 },
+        { name: "باقة متكلم VIP قامة كبيرة (شهر / 4 أسابيع)", weeks: 4, info: "سلسلة ندوات خاصة للخدام والشباب (4 أسابيع)", cost: 45000 }
       ],
       trips: [
-        // رحلات قريبة
-        { name: "رحلة قريبة (مارمينا/النطرون) - أتوبيس عادي 28 راكب", cost: 4000 },
-        { name: "رحلة قريبة (مارمينا/النطرون) - ميني باص مكيف 28 راكب", cost: 6500 },
-        { name: "رحلة قريبة (مارمينا/النطرون) - أتوبيس سياحي مكيف 50 راكب", cost: 10000 },
-        // رحلات متوسطة
-        { name: "رحلة متوسطة (الخطاطبة/مقار) - أتوبيس عادي 28 راكب", cost: 6000 },
-        { name: "رحلة متوسطة (الخطاطبة/مقار) - ميني باص مكيف 28 راكب", cost: 9500 },
-        { name: "رحلة متوسطة (الخطاطبة/مقار) - أتوبيس سياحي مكيف 50 راكب", cost: 14000 },
-        // رحلات بعيدة
-        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - عادي 28 راكب", cost: 9000 },
-        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - مكيف 28 راكب", cost: 14000 },
-        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - سياحي 50 راكب", cost: 22000 },
-        // رحلات بعيدة جداً
-        { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - مكيف 28 راكب", cost: 22000 },
-        { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - سياحي 50 راكب", cost: 35000 },
-        // بيوت الخلوة السنوية
-        { name: "الخلوة السنوية - بيت دير روحي بسيط (3 أيام)", cost: 20000 },
-        { name: "الخلوة السنوية - بيت مؤتمرات متوسط (3 أيام)", cost: 40000 },
-        { name: "الخلوة السنوية - منتجع فندقي VIP بحمام سباحة (3 أيام)", cost: 75000 },
-        // إعاشة الخلوة
-        { name: "إعاشة الخلوة السنوية - باقة التوفير وساندوتشات (3 أيام)", cost: 10000 },
-        { name: "إعاشة الخلوة السنوية - وجبات بيتي متوازنة مطبوخة (3 أيام)", cost: 20000 },
-        { name: "إعاشة الخلوة السنوية - بوفيه مفتوح و Fast Food فاخر (3 أيام)", cost: 35000 }
+        { name: "رحلة قريبة (مارمينا/النطرون) - عادي 28", info: "أتوبيس عادي بدون تكييف سعة 28 راكب", cost: 4000 },
+        { name: "رحلة قريبة (مارمينا/النطرون) - مكيف 28", info: "ميني باص مكيف سياحي سعة 28 راكب", cost: 6500 },
+        { name: "رحلة قريبة (مارمينا/النطرون) - سياحي 50", info: "أتوبيس مرسيدس سياحي مكيف 50 راكب", cost: 10000 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - عادي 28", info: "أتوبيس عادي سعة 28 راكب", cost: 6000 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - مكيف 28", info: "ميني باص مكيف سعة 28 راكب", cost: 9500 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - سياحي 50", info: "أتوبيس سياحي مكيف كبير سعة 50 راكب", cost: 14000 },
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - عادي 28", info: "أتوبيس 28 راكب للمسافات الطويلة", cost: 9000 },
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - مكيف 28", info: "ميني باص مكيف 28 راكب", cost: 14000 },
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - سياحي 50", info: "أتوبيس سياحي فاخر 50 راكب", cost: 22000 },
+        { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - مكيف 28", info: "ميني باص مكيف حديث للسفر الطويل", cost: 22000 },
+        { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - سياحي 50", info: "أتوبيس سياحي VIP سعة 50 راكب", cost: 35000 },
+        { name: "الخلوة السنوية - بيت دير روحي (3 أيام)", info: "مبيت جماعي وأجواء هدوء وتسبحة وقداسات", cost: 20000 },
+        { name: "الخلوة السنوية - بيت مؤتمرات متوسط (3 أيام)", info: "غرف مجهزة ومساحات خضراء وقاعة بساوند", cost: 40000 },
+        { name: "الخلوة السنوية - منتجع فندقي VIP (3 أيام)", info: "غرف مكيفة وحمام سباحة وملاعب نجيل", cost: 75000 },
+        { name: "إعاشة الخلوة - باقة التوفير وساندوتشات", info: "جبن وبقوليات وساندوتشات وعصائر", cost: 10000 },
+        { name: "إعاشة الخلوة - وجبات بيتي متوازنة", info: "وجبات مطبوخة دجاج ولحوم وخضار وأرز", cost: 20000 },
+        { name: "إعاشة الخلوة - بوفيه مفتوح و Fast Food", info: "بوفيه مفتوح وبرجر وفراخ مشوية وسناكس", cost: 35000 }
       ],
       events: [
-        { name: "هدايا أعياد ميلاد الدفعة السنوية (اقتصادية)", cost: 5000 },
-        { name: "هدايا أعياد ميلاد الدفعة السنوية (فاخرة ومخصصة)", cost: 12000 },
-        { name: "هدايا عيدي الميلاد والقيامة (رمزية)", cost: 8000 },
-        { name: "هدايا عيدي الميلاد والقيامة (براند وهودي ومجات)", cost: 25000 },
-        { name: "ألعاب تفاعلية ومسابقات داخل القاعة للموسم", cost: 4000 },
-        { name: "مهرجان تيلي ماتش وكرنفال ألعاب كبير للموسم", cost: 15000 }
+        { name: "هدايا أعياد ميلاد الدفعة السنوية (اقتصادية)", info: "نوت بوك أنيق + قلم وميدالية لكل مخدوم", cost: 5000 },
+        { name: "هدايا أعياد ميلاد الدفعة السنوية (فاخرة)", info: "هدايا براند شخصية مخصصة بالاسم", cost: 12000 },
+        { name: "هدايا عيدي الميلاد والقيامة (رمزية)", info: "كارت معايدة وبوني وشيكولاتة وإكسسوار", cost: 8000 },
+        { name: "هدايا عيدي الميلاد والقيامة (براند وهودي)", info: "هودي شتوي مطبوع + ماج حراري وشنطة", cost: 25000 },
+        { name: "ألعاب تفاعلية ومسابقات بالقاعة للموسم", info: "مسابقات ذكاء وألعاب جماعية داخل الاجتماع", cost: 4000 },
+        { name: "مهرجان تيلي ماتش وكرنفال ألعاب كبير", info: "ألعاب مائية ومسابقات حركية وصوتيات", cost: 15000 }
       ]
     };
 
@@ -210,7 +264,7 @@
 
     function loginServant() {
       const desk = document.getElementById("deskSelect").value;
-      const pass = document.getElementById("servantPassInput").value.trim();
+      const pass = document.getElementById("servantPassInput").value.trim().toLowerCase();
       const errorEl = document.getElementById("loginError");
 
       if (!desk || deskPasswords[desk] !== pass) {
@@ -222,45 +276,59 @@
       selectedDesk = desk;
 
       const deskTitles = {
-        speakers: "🎙️ مكتب المتكلمين والمحتوى الروحي",
-        trips: "🚌 مكتب الرحلات والخلوة السنوية",
-        events: "🎁 مكتب الهدايا والاحتفالات والألعاب"
+        speakers: "🎙️ مكتب المتكلمين والمحتوى الروحي (هدف: 12 أسبوعاً)",
+        trips: "🚌 مكتب الرحلات وأتوبيسات الخلوة السنوية",
+        events: "🎁 مكتب الهدايا والاحتفالات والأنشطة"
       };
 
       document.getElementById("deskTitleDisplay").textContent = deskTitles[selectedDesk];
-      
-      const itemSelect = document.getElementById("catalogItemSelect");
-      itemSelect.innerHTML = "";
-      marketCatalog[selectedDesk].forEach((item, index) => {
-        const opt = document.createElement("option");
-        opt.value = index;
-        opt.textContent = `${item.name} — [${item.cost.toLocaleString()} ج.ك]`;
-        itemSelect.appendChild(opt);
-      });
+      renderMarketGrid();
 
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
     }
 
-    function processSale() {
+    function renderMarketGrid() {
+      const grid = document.getElementById("itemsGrid");
+      grid.innerHTML = "";
+
+      marketCatalog[selectedDesk].forEach((item, index) => {
+        const box = document.createElement("div");
+        box.className = "item-square";
+
+        box.innerHTML = `
+          <div>
+            <div class="item-title">${item.name}</div>
+            <div class="item-info">${item.info}</div>
+          </div>
+          <div>
+            <div class="item-price-tag">${item.cost.toLocaleString()} EGP</div>
+            <button class="btn-buy" onclick="buyItem(${index})">🛒 شراء واعتماد التعاقد</button>
+          </div>
+        `;
+
+        grid.appendChild(box);
+      });
+    }
+
+    function buyItem(itemIndex) {
       const teamSelect = document.getElementById("teamTargetSelect");
       const teamKey = teamSelect.value;
       const teamName = teamSelect.options[teamSelect.selectedIndex]?.text;
       const quarter = document.getElementById("quarterTargetSelect").value;
-      const itemIndex = document.getElementById("catalogItemSelect").value;
       const statusEl = document.getElementById("saleStatus");
 
       statusEl.style.display = "block";
 
       if (!teamKey) {
         statusEl.style.color = "#ff0844";
-        statusEl.textContent = "⚠️ برجاء اختيار الفريق أولاً!";
+        statusEl.textContent = "⚠️ برجاء اختيار الفريق أولاً من الأعلى!";
         return;
       }
 
       const item = marketCatalog[selectedDesk][itemIndex];
       statusEl.style.color = "#f1c40f";
-      statusEl.textContent = "جاري مراجعة الرصيد وإتمام التعاقد...";
+      statusEl.textContent = "جاري مراجعة الرصيد وإتمام الخصم...";
 
       const teamRef = db.ref('teams/' + teamKey);
 
@@ -271,6 +339,7 @@
 
         const currentBalance = teamData.balance || 0;
         
+        // التحقق من كفاية الرصيد
         if (currentBalance < item.cost) {
           return;
         }
@@ -279,7 +348,13 @@
 
         if (!teamData.plan) teamData.plan = { Q1: [], Q2: [], Q3: [], Q4: [] };
         if (!teamData.plan[quarter]) teamData.plan[quarter] = [];
-        teamData.plan[quarter].push({ name: item.name, cost: item.cost });
+        
+        // إضافة البند مع عدد الأسابيع إن وجد
+        teamData.plan[quarter].push({
+          name: item.name,
+          cost: item.cost,
+          weeks: item.weeks || 0
+        });
 
         if (!teamData.purchases) teamData.purchases = [];
         teamData.purchases.push({
@@ -290,13 +365,13 @@
         });
 
         return teamData;
-      }, (error, committed, snapshot) => {
+      }, (error, committed) => {
         if (error || !committed) {
           statusEl.style.color = "#ff0844";
           statusEl.textContent = `❌ فشلت العملية: رصيد ${teamName} لا يكفي لإتمام الشراء!`;
         } else {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم بيع [${item.name}] بنجاح لـ ${teamName} وإضافته للـ ${quarter}!`;
+          statusEl.textContent = `✅ تم بنجاح شراء [${item.name}] لـ ${teamName} وإضافته للـ ${quarter}!`;
         }
       });
     }
