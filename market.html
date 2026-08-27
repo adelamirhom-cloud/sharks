@@ -137,7 +137,7 @@
 
   <div class="container">
     
-    <!-- 1. شاشة تسجيل دخول الخادم للمكتب -->
+    <!-- 1. شاشة تسجيل الدخول -->
     <div class="card-box" id="loginScreen">
       <h2>🏪 سوق تعاقدات الخدمة</h2>
       <p class="desc">اختر مكتب التعاقدات المسؤول عنه وأدخل كلمة السر المخصصة</p>
@@ -154,17 +154,17 @@
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة لهذا المكتب!</div>
     </div>
 
-    <!-- 2. شاشة شبكة المربعات والشراء المباشر -->
+    <!-- 2. شاشة الشراء المباشر بالأسبوع والمربعات -->
     <div id="marketScreen" class="hidden">
       
       <div class="card-box" style="margin-bottom: 14px;">
         <div class="desk-badge" id="deskTitleDisplay">المكتب</div>
-        <h2 style="font-size: 1.25rem;">إتمام تعاقدات ومشتريات الفريق</h2>
-        <p class="desc" style="margin-bottom: 14px;">حدد الفريق والموسم أولاً، ثم اضغط على البند المطلوب لشرائه مباشرة</p>
+        <h2 style="font-size: 1.25rem;">إتمام تعاقد فردي مفصل</h2>
+        <p class="desc" style="margin-bottom: 14px;">حدد الفريق والموسم ورقم الأسبوع/الشهر، ثم اختر البند للشراء</p>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
-            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق المشتري:</div>
+            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
             <select id="teamTargetSelect">
               <option value="" disabled selected>-- اختر الفريق --</option>
               <option value="team_virgin_mary">فريق السيدة العذراء</option>
@@ -175,7 +175,7 @@
           </div>
 
           <div>
-            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">٢. الربع السنوي (الموسم):</div>
+            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">٢. الربع السنوي:</div>
             <select id="quarterTargetSelect">
               <option value="Q1">الربع الأول (Q1 - الخريف)</option>
               <option value="Q2">الربع الثاني (Q2 - الشتاء)</option>
@@ -185,13 +185,16 @@
           </div>
         </div>
 
+        <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px;">٣. التوقيت المستهدف (أسبوع / شهر):</div>
+        <select id="slotTargetSelect">
+          <!-- يتغير ديناميكياً حسب نوع المكتب -->
+        </select>
+
         <div id="saleStatus" class="msg"></div>
       </div>
 
-      <!-- شبكة المربعات والكروت للمنتجات -->
-      <div class="market-grid" id="itemsGrid">
-        <!-- الكروت تتولد ديناميكياً هنا -->
-      </div>
+      <!-- شبكة المربعات -->
+      <div class="market-grid" id="itemsGrid"></div>
 
     </div>
 
@@ -217,19 +220,14 @@
       "events": "event303"
     };
 
-    // كتالوج الكروت والمربعات مع احتساب أسابيع المتكلمين (12 أسبوعاً للربع)
+    // كتالوج فردي بالكامل بدون باندلز
     const marketCatalog = {
       speakers: [
-        { name: "خادم محلي / أمين الخدمة (أسبوع واحد)", weeks: 1, info: "خادم من الكنيسة لموضوع محلي (أسبوع)", cost: 0 },
-        { name: "باقة الخدام المحليين (الموسم كامل / 12 أسبوعاً)", weeks: 12, info: "تغطية الـ 12 أسبوعاً كاملة بخدام من أسرة المرحلة", cost: 0 },
-        { name: "كاهن من الكنيسة أو الإيبارشية (أسبوع واحد)", weeks: 1, info: "محاضرة طقسية وعقائدية (أسبوع)", cost: 2500 },
-        { name: "باقة كاهن الإيبارشية (شهر / 4 أسابيع)", weeks: 4, info: "كورس عقائدي أسبوعي لمدة 4 أسابيع", cost: 9000 },
-        { name: "خادم شباب وميديا معروف (أسبوع واحد)", weeks: 1, info: "لقاء شبابي وترانيم وميديا (أسبوع)", cost: 5000 },
-        { name: "باقة خادم الشباب والميديا (شهر / 4 أسابيع)", weeks: 4, info: "سلسلة موضوعات شبابية لمدة 4 أسابيع", cost: 18000 },
-        { name: "متخصص نفسي وتربوي مشهور (أسبوع واحد)", weeks: 1, info: "ورشة علاقات وتعديل سلوك ونفسية (أسبوع)", cost: 8000 },
-        { name: "باقة المتخصص النفسي (شهر / 4 أسابيع)", weeks: 4, info: "كورس نفسي متكامل على مدار 4 أسابيع", cost: 30000 },
-        { name: "متكلم VIP قامة كبيرة (أسبوع واحد)", weeks: 1, info: "لقاء قامة كنسية كبيرة - د. مجدي / أبونا داود (أسبوع)", cost: 12000 },
-        { name: "باقة متكلم VIP قامة كبيرة (شهر / 4 أسابيع)", weeks: 4, info: "سلسلة ندوات خاصة للخدام والشباب (4 أسابيع)", cost: 45000 }
+        { name: "خادم محلي / أمين الخدمة", info: "خادم من أسرة المرحلة لموضوع محلي", cost: 0 },
+        { name: "كاهن من الكنيسة أو الإيبارشية", info: "محاضرة طقسية وعقائدية متخصصة", cost: 2500 },
+        { name: "خادم شباب وميديا معروف", info: "لقاء شبابي وترانيم وميديا هادفة", cost: 5000 },
+        { name: "متخصص نفسي وتربوي مشهور", info: "ندوة علاقات وتعديل سلوك وصحة نفسية", cost: 8000 },
+        { name: "متكلم VIP قامة كنسية كبيرة", info: "لقاء قامة كنسية كبيرة (د. مجدي / أبونا داود)", cost: 12000 }
       ],
       trips: [
         { name: "رحلة قريبة (مارمينا/النطرون) - عادي 28", info: "أتوبيس عادي بدون تكييف سعة 28 راكب", cost: 4000 },
@@ -251,12 +249,12 @@
         { name: "إعاشة الخلوة - بوفيه مفتوح و Fast Food", info: "بوفيه مفتوح وبرجر وفراخ مشوية وسناكس", cost: 35000 }
       ],
       events: [
-        { name: "هدايا أعياد ميلاد الدفعة السنوية (اقتصادية)", info: "نوت بوك أنيق + قلم وميدالية لكل مخدوم", cost: 5000 },
-        { name: "هدايا أعياد ميلاد الدفعة السنوية (فاخرة)", info: "هدايا براند شخصية مخصصة بالاسم", cost: 12000 },
-        { name: "هدايا عيدي الميلاد والقيامة (رمزية)", info: "كارت معايدة وبوني وشيكولاتة وإكسسوار", cost: 8000 },
-        { name: "هدايا عيدي الميلاد والقيامة (براند وهودي)", info: "هودي شتوي مطبوع + ماج حراري وشنطة", cost: 25000 },
-        { name: "ألعاب تفاعلية ومسابقات بالقاعة للموسم", info: "مسابقات ذكاء وألعاب جماعية داخل الاجتماع", cost: 4000 },
-        { name: "مهرجان تيلي ماتش وكرنفال ألعاب كبير", info: "ألعاب مائية ومسابقات حركية وصوتيات", cost: 15000 }
+        { name: "هدايا أعياد ميلاد الدفعة (شهر فردي - اقتصادي)", info: "نوت بوك أنيق + قلم وميدالية", cost: 1500 },
+        { name: "هدايا أعياد ميلاد الدفعة (شهر فردي - فاخر)", info: "هدايا براند مخصصة بالاسم لمواليد الشهر", cost: 3500 },
+        { name: "هدايا مناسبة العيد (رمزية)", info: "كارت معايدة وشيكولاتة وإكسسوار", cost: 8000 },
+        { name: "هدايا مناسبة العيد (براند وهودي)", info: "هودي شتوي مطبوع + ماج حراري وشنطة", cost: 25000 },
+        { name: "مسابقة وتحدي أسبوعي بالقاعة", info: "ألعاب تفاعلية ومسابقات ذكاء داخل الاجتماع", cost: 1000 },
+        { name: "مهرجان تيلي ماتش وكرنفال ألعاب الموسم", info: "ألعاب مائية ومسابقات حركية وصوتيات", cost: 15000 }
       ]
     };
 
@@ -276,16 +274,47 @@
       selectedDesk = desk;
 
       const deskTitles = {
-        speakers: "🎙️ مكتب المتكلمين والمحتوى الروحي (هدف: 12 أسبوعاً)",
+        speakers: "🎙️ مكتب المتكلمين (مطلوب 12 أسبوعاً للربع)",
         trips: "🚌 مكتب الرحلات وأتوبيسات الخلوة السنوية",
         events: "🎁 مكتب الهدايا والاحتفالات والأنشطة"
       };
 
       document.getElementById("deskTitleDisplay").textContent = deskTitles[selectedDesk];
+      populateSlotOptions();
       renderMarketGrid();
 
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
+    }
+
+    function populateSlotOptions() {
+      const slotSelect = document.getElementById("slotTargetSelect");
+      slotSelect.innerHTML = "";
+
+      if (selectedDesk === "speakers") {
+        for (let i = 1; i <= 12; i++) {
+          const opt = document.createElement("option");
+          opt.value = `الأسبوع (${i})`;
+          opt.textContent = `📅 الأسبوع رقم ${i}`;
+          slotSelect.appendChild(opt);
+        }
+      } else if (selectedDesk === "trips") {
+        slotSelect.innerHTML = `
+          <option value="رحلة الشهر (1)">🚌 رحلة الشهر الأول</option>
+          <option value="رحلة الشهر (2)">🚌 رحلة الشهر الثاني</option>
+          <option value="رحلة الشهر (3)">🚌 رحلة الشهر الثالث</option>
+          <option value="الخلوة السنوية الصيفية">☀️ الخلوة السنوية الصيفية</option>
+          <option value="إعاشة الخلوة السنوية">🍲 إعاشة الخلوة السنوية</option>
+        `;
+      } else {
+        slotSelect.innerHTML = `
+          <option value="مواليد الشهر (1)">🎂 أعياد ميلاد الشهر الأول</option>
+          <option value="مواليد الشهر (2)">🎂 أعياد ميلاد الشهر الثاني</option>
+          <option value="مواليد الشهر (3)">🎂 أعياد ميلاد الشهر الثالث</option>
+          <option value="هدية المناسبة الكبرى">🎄 هدية المناسبة / العيد</option>
+          <option value="كرنفال وفعالية الموسم">🎯 كرنفال ومهرجان الموسم</option>
+        `;
+      }
     }
 
     function renderMarketGrid() {
@@ -302,8 +331,8 @@
             <div class="item-info">${item.info}</div>
           </div>
           <div>
-            <div class="item-price-tag">${item.cost.toLocaleString()} EGP</div>
-            <button class="btn-buy" onclick="buyItem(${index})">🛒 شراء واعتماد التعاقد</button>
+            <div class="item-price-tag">${item.cost.toLocaleString()} ج.ك</div>
+            <button class="btn-buy" onclick="buyItemDirect(${index})">🛒 اعتماد والشراء</button>
           </div>
         `;
 
@@ -311,11 +340,13 @@
       });
     }
 
-    function buyItem(itemIndex) {
+    // شراء مباشر ومؤكد بدون مشاكل الـ Transaction
+    function buyItemDirect(itemIndex) {
       const teamSelect = document.getElementById("teamTargetSelect");
       const teamKey = teamSelect.value;
       const teamName = teamSelect.options[teamSelect.selectedIndex]?.text;
       const quarter = document.getElementById("quarterTargetSelect").value;
+      const slot = document.getElementById("slotTargetSelect").value;
       const statusEl = document.getElementById("saleStatus");
 
       statusEl.style.display = "block";
@@ -328,51 +359,48 @@
 
       const item = marketCatalog[selectedDesk][itemIndex];
       statusEl.style.color = "#f1c40f";
-      statusEl.textContent = "جاري مراجعة الرصيد وإتمام الخصم...";
+      statusEl.textContent = "جاري التحقق من الرصيد والخصم...";
 
       const teamRef = db.ref('teams/' + teamKey);
 
-      teamRef.transaction(teamData => {
-        if (!teamData) {
-          teamData = { balance: 0, plan: { Q1: [], Q2: [], Q3: [], Q4: [] }, purchases: [] };
-        }
+      teamRef.once('value').then(snapshot => {
+        const teamData = snapshot.val() || { balance: 0, plan: { Q1: [], Q2: [], Q3: [], Q4: [] }, purchases: [] };
+        const currentBalance = Number(teamData.balance || 0);
 
-        const currentBalance = teamData.balance || 0;
-        
-        // التحقق من كفاية الرصيد
         if (currentBalance < item.cost) {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = `❌ رصيد ${teamName} (${currentBalance.toLocaleString()} ج.ك) لا يكفي لشراء [${item.name}] بسعر ${item.cost.toLocaleString()} ج.ك!`;
           return;
         }
 
-        teamData.balance = currentBalance - item.cost;
-
+        const newBalance = currentBalance - item.cost;
         if (!teamData.plan) teamData.plan = { Q1: [], Q2: [], Q3: [], Q4: [] };
         if (!teamData.plan[quarter]) teamData.plan[quarter] = [];
         
-        // إضافة البند مع عدد الأسابيع إن وجد
         teamData.plan[quarter].push({
-          name: item.name,
+          name: `${slot} : ${item.name}`,
           cost: item.cost,
-          weeks: item.weeks || 0
+          desk: selectedDesk,
+          slot: slot
         });
 
         if (!teamData.purchases) teamData.purchases = [];
         teamData.purchases.push({
-          item_name: item.name,
+          item_name: `${item.name} [${slot}]`,
           cost: item.cost,
           quarter: quarter,
           time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
         });
 
-        return teamData;
-      }, (error, committed) => {
-        if (error || !committed) {
-          statusEl.style.color = "#ff0844";
-          statusEl.textContent = `❌ فشلت العملية: رصيد ${teamName} لا يكفي لإتمام الشراء!`;
-        } else {
+        teamData.balance = newBalance;
+
+        teamRef.set(teamData).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم بنجاح شراء [${item.name}] لـ ${teamName} وإضافته للـ ${quarter}!`;
-        }
+          statusEl.textContent = `✅ تم بنجاح شراء [${item.name}] لـ ${teamName} وإضافته في ${slot}! الرصيد المتبقي: ${newBalance.toLocaleString()} ج.ك`;
+        }).catch(err => {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "❌ خطأ أثناء الحفظ: " + err.message;
+        });
       });
     }
   </script>
