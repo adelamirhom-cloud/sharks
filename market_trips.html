@@ -135,6 +135,18 @@
       display: inline-block;
     }
 
+    .auto-calc-badge {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
+      color: #4ade80;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 0.78rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-top: 4px;
+    }
+
     .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
     .hidden { display: none; }
   </style>
@@ -154,7 +166,7 @@
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
-    <!-- 2. واجهة بناء الرحلة خطوة بخطوة -->
+    <!-- 2. واجهة بناء الرحلة التفاعلية -->
     <div id="marketScreen" class="hidden">
       
       <div class="card-box">
@@ -209,7 +221,7 @@
           </select>
         </div>
 
-        <!-- خيارات الخلوة المنفصلة في الصيف -->
+        <!-- خيارات الخلوة في الصيف -->
         <div class="step-section hidden" id="retreatSection">
           <div class="step-header">🏡 بيت الخلوة والإعاشة (3 أيام):</div>
           <select id="retreatSelect" onchange="calculateTotal()">
@@ -219,17 +231,17 @@
           </select>
         </div>
 
-        <!-- الخطوة 2: الأتوبيس -->
+        <!-- الخطوة 2: الأتوبيس وعدد الكراسي -->
         <div class="step-section" id="busSection">
-          <div class="step-header">🚍 الخطوة ٢: نوع الأتوبيس والانتقالات:</div>
+          <div class="step-header">🚍 الخطوة ٢: نوع الأتوبيس وسعة الكراسي:</div>
           <select id="busSelect" onchange="calculateTotal()">
-            <option value="4000" data-name="ميني باص عادي 28 راكب">ميني باص عادي 28 راكب (4,000 ج.ك)</option>
-            <option value="7000" data-name="ميني باص سياحي مكيف 28 راكب">ميني باص سياحي مكيف 28 راكب (7,000 ج.ك)</option>
-            <option value="12000" data-name="أتوبيس مرسيدس سياحي مكيف 50 راكب">أتوبيس مرسيدس سياحي 50 راكب (12,000 ج.ك)</option>
+            <option value="4000" data-seats="28" data-name="ميني باص عادي 28 راكب">ميني باص عادي (28 راكب) - 4,000 ج.ك</option>
+            <option value="7000" data-seats="28" data-name="ميني باص سياحي مكيف 28 راكب">ميني باص سياحي مكيف (28 راكب) - 7,000 ج.ك</option>
+            <option value="12000" data-seats="50" data-name="أتوبيس مرسيدس سياحي مكيف 50 راكب">أتوبيس مرسيدس سياحي مكيف (50 راكب) - 12,000 ج.ك</option>
           </select>
         </div>
 
-        <!-- الخطوة 3: هدايا وتذكارات (اختياري) -->
+        <!-- الخطوة 3: هدايا وسناكس (اختياري) -->
         <div class="step-section">
           <div class="step-header">🎁 الخطوة ٣: هدايا وتذكارات وسناكس الرحلة (اختياري):</div>
           <select id="giftSelect" onchange="calculateTotal()">
@@ -240,17 +252,20 @@
           </select>
         </div>
 
-        <!-- الخطوة 4: اشتراك المخدومين -->
+        <!-- الخطوة 4: تسعير تذكرة الفرد والضرب في عدد الكراسي -->
         <div class="step-section">
-          <div class="step-header">💵 الخطوة ٤: إجمالي ما يدفعه المخدومون (خصم الاشتراكات):</div>
-          <input type="number" id="collectedContribution" placeholder="أدخل المبلغ المحصل من الشباب (مثال: 5000)" value="0" oninput="calculateTotal()">
+          <div class="step-header">💵 الخطوة ٤: سعر تذكرة اشتراك الفرد (يُضرب تلقائياً في عدد الكراسي):</div>
+          <input type="number" id="ticketPriceInput" placeholder="أدخل سعر اشتراك الفرد (مثال: 150)" value="0" oninput="calculateTotal()">
+          <div id="seatsCalculationBadge" class="auto-calc-badge">
+            تم احتساب: 0 ج.ك × 28 كرسي = 0 ج.ك (إجمالي اشتراكات)
+          </div>
         </div>
 
         <!-- ملخص الحساب -->
         <div class="calculation-box">
           <div class="calc-row"><span>إجمالي تكلفة الرحلة:</span><b id="totalCostDisplay">0 ج.ك</b></div>
-          <div class="calc-row" style="color: #4ade80;"><span>اشتراكات المخدومين (خصم):</span><b id="contribDisplay">-0 ج.ك</b></div>
-          <div class="calc-row calc-net"><span>المطلوب خصمه من رصيد الفريق:</span><b id="netCostDisplay">0 ج.ك</b></div>
+          <div class="calc-row" style="color: #4ade80;"><span>إجمالي اشتراكات المخدومين (خصم):</span><b id="contribDisplay">-0 ج.ك</b></div>
+          <div class="calc-row calc-net"><span>الصافي المطلوب خصمه من محفظة الفريق:</span><b id="netCostDisplay">0 ج.ك</b></div>
         </div>
 
         <button class="btn-buy" onclick="finalizeBooking()">🛒 اعتماد وحجز الرحلة</button>
@@ -326,6 +341,7 @@
     let currentCalculatedNet = 0;
     let currentTotalGross = 0;
     let currentSummaryName = "";
+    let totalCollectedContributions = 0;
 
     function calculateTotal() {
       const type = document.getElementById("tripTypeSelect").value;
@@ -344,24 +360,33 @@
         placeName = destSel.options[destSel.selectedIndex].dataset.name;
       }
 
+      // قراءة الأتوبيس وعدد الكراسي
       const busSel = document.getElementById("busSelect");
       const busCost = Number(busSel.value);
+      const busSeats = Number(busSel.options[busSel.selectedIndex].dataset.seats || 28);
       const busName = busSel.options[busSel.selectedIndex].dataset.name;
 
       const giftSel = document.getElementById("giftSelect");
       const giftCost = Number(giftSel.value);
       const giftName = giftSel.options[giftSel.selectedIndex].dataset.name;
 
-      const contrib = Math.max(0, Number(document.getElementById("collectedContribution").value) || 0);
+      // حساب الاشتراكات: سعر التذكرة × عدد الكراسي
+      const ticketPrice = Math.max(0, Number(document.getElementById("ticketPriceInput").value) || 0);
+      totalCollectedContributions = ticketPrice * busSeats;
+
+      document.getElementById("seatsCalculationBadge").textContent = 
+        `تم احتساب: ${ticketPrice.toLocaleString()} ج.ك × ${busSeats} كرسي = ${totalCollectedContributions.toLocaleString()} ج.ك (إجمالي اشتراكات)`;
 
       currentTotalGross = placeCost + busCost + giftCost;
-      currentCalculatedNet = Math.max(0, currentTotalGross - contrib);
+      currentCalculatedNet = Math.max(0, currentTotalGross - totalCollectedContributions);
 
       document.getElementById("totalCostDisplay").textContent = currentTotalGross.toLocaleString() + " ج.ك";
-      document.getElementById("contribDisplay").textContent = `-${contrib.toLocaleString()} ج.ك`;
+      document.getElementById("contribDisplay").textContent = `-${totalCollectedContributions.toLocaleString()} ج.ك`;
       document.getElementById("netCostDisplay").textContent = currentCalculatedNet.toLocaleString() + " ج.ك";
 
-      currentSummaryName = `${type}: ${placeName} + ${busName}` + (giftCost > 0 ? ` + ${giftName}` : '');
+      currentSummaryName = `${type}: ${placeName} + ${busName} (${busSeats} راكب)` + 
+        (giftCost > 0 ? ` + ${giftName}` : '') + 
+        ` [اشتراك: ${ticketPrice} ج.ك/فرد]`;
     }
 
     function finalizeBooking() {
@@ -383,7 +408,7 @@
       teamRef.once('value').then(snapshot => {
         const data = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
         
-        // التحقق من تكرار حجز نفس الرحلة
+        // التحقق من تكرار حجز نفس الرحلة في نفس الربع
         const existingPlan = (data.plan && data.plan[quarter]) || [];
         if (existingPlan.some(p => p.slot === slot)) {
           statusEl.style.color = "#ff0844";
@@ -420,7 +445,7 @@
 
         teamRef.set(data).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم اعتماد وحجز [${slot}] بنجاح لـ ${teamName}! الصافي المخصوم: ${currentCalculatedNet.toLocaleString()} ج.ك`;
+          statusEl.textContent = `✅ تم اعتماد وحجز [${slot}] بنجاح لـ ${teamName}! الصافي المخصوم: ${currentCalculatedNet.toLocaleString()} ج.ك (بعد خصم اشتراك ${totalCollectedContributions.toLocaleString()} ج.ك)`;
         }).catch(err => {
           statusEl.style.color = "#ff0844";
           statusEl.textContent = "❌ خطأ أثناء الحفظ: " + err.message;
