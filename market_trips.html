@@ -3,45 +3,163 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مكتب الرحلات والخلوة السنوية | Ministry Trips</title>
+  <title>مكتب الرحلات والخلوة | Trip Builder</title>
+
+  <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-    body { background: #070b19; color: #fff; display: flex; justify-content: center; min-height: 100vh; padding: 16px; }
-    .container { width: 100%; max-width: 650px; }
-    .card-box { background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(0, 242, 254, 0.3); border-radius: 20px; padding: 22px 18px; text-align: center; margin-bottom: 16px; }
+    
+    body {
+      background: #070b19;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 600px;
+    }
+
+    .card-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
+      border-radius: 20px;
+      padding: 22px 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
     h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
-    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 18px; }
-    input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 242, 254, 0.3); background: rgba(255, 255, 255, 0.06); color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; text-align: center; outline: none; }
+    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 14px; }
+
+    .rule-banner {
+      background: rgba(56, 189, 248, 0.1);
+      border: 1px dashed #38bdf8;
+      color: #bae6fd;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.8rem;
+      line-height: 1.4;
+      text-align: right;
+      margin-bottom: 16px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+      outline: none;
+    }
     select option { background: #0f172a; color: #fff; }
-    .desk-badge { background: rgba(0, 242, 254, 0.1); border: 1px solid #00f2fe; color: #00f2fe; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; display: inline-block; margin-bottom: 12px; }
-    .live-balance-tag { background: rgba(0, 242, 254, 0.15); border: 1px dashed #00f2fe; color: #38bdf8; padding: 8px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 900; margin-top: 8px; display: inline-block; }
-    .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px; text-align: right; }
-    .item-square { background: rgba(30, 41, 59, 0.7); border: 1.5px solid rgba(0, 242, 254, 0.2); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
-    .item-title { font-size: 0.95rem; font-weight: 900; color: #f1f5f9; margin-bottom: 4px; }
-    .item-info { font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px; line-height: 1.3; }
-    .item-price-tag { font-size: 1.1rem; font-weight: 900; color: #00f2fe; margin-bottom: 10px; text-align: left; direction: ltr; }
-    .btn-buy { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #070b19; }
+    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+    .desk-badge {
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid #00f2fe;
+      color: #00f2fe;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .step-section {
+      background: rgba(30, 41, 59, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      border-radius: 14px;
+      padding: 12px;
+      margin-bottom: 12px;
+      text-align: right;
+    }
+    .step-header {
+      font-size: 0.85rem;
+      font-weight: 900;
+      color: #38bdf8;
+      margin-bottom: 8px;
+    }
+
+    .calculation-box {
+      background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.05));
+      border: 2px solid #00f2fe;
+      border-radius: 14px;
+      padding: 12px;
+      margin: 14px 0;
+      text-align: right;
+      font-size: 0.88rem;
+    }
+    .calc-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
+    .calc-net { font-size: 1.15rem; font-weight: 900; color: #00f2fe; border-top: 1px dashed rgba(0, 242, 254, 0.4); padding-top: 6px; margin-top: 6px; }
+
+    .btn-buy {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.05rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      box-shadow: 0 0 20px rgba(0, 242, 254, 0.35);
+      transition: transform 0.2s;
+    }
+    .btn-buy:active { transform: scale(0.97); }
+
+    .live-balance-tag {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px dashed #00f2fe;
+      color: #38bdf8;
+      padding: 6px 12px;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
     .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
+
   <div class="container">
+    
+    <!-- 1. شاشة الدخول -->
     <div class="card-box" id="loginScreen">
-      <div class="desk-badge">🚌 مكتب الرحلات والخلوة السنوية</div>
+      <div class="desk-badge">🚌 مكتب الرحلات والخلوة</div>
       <h2>تسجيل دخول المكتب</h2>
-      <p class="desc">أدخل كلمة سر مكتب الرحلات للدخول</p>
+      <p class="desc">أدخل كلمة سر مكتب الرحلات (trip202)</p>
+
       <input type="password" id="servantPassInput" placeholder="كلمة السر...">
-      <button class="btn-buy" style="padding: 13px;" onclick="loginDesk()">دخول المكتب ↵</button>
+      <button class="btn-buy" onclick="loginDesk()">دخول المكتب ↵</button>
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
+    <!-- 2. واجهة بناء الرحلة خطوة بخطوة -->
     <div id="marketScreen" class="hidden">
+      
       <div class="card-box">
-        <div class="desk-badge">🚌 مكتب الرحلات والأتوبيسات والخلوة</div>
+        <div class="desk-badge">🚌 حاسبة تعاقدات الرحلات والخلوات</div>
+        
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
@@ -53,55 +171,110 @@
               <option value="team_anba_rois">فريق الانبا رويس</option>
             </select>
           </div>
+
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">٢. الربع السنوي:</div>
-            <select id="quarterTargetSelect">
-              <option value="Q1">الربع الأول (Q1 - الخريف)</option>
-              <option value="Q2">الربع الثاني (Q2 - الشتاء)</option>
-              <option value="Q3">الربع الثالث (Q3 - الربيع)</option>
-              <option value="Q4">الربع الرابع (Q4 - الصيف)</option>
+            <select id="quarterTargetSelect" onchange="updateQuarterRules()">
+              <option value="Q1">🍂 الربع الأول (Q1 - الخريف)</option>
+              <option value="Q2">❄️ الربع الثاني (Q2 - الشتاء)</option>
+              <option value="Q3">🌱 الربع الثالث (Q3 - الربيع)</option>
+              <option value="Q4">☀️ الربع الرابع (Q4 - الصيف)</option>
             </select>
           </div>
         </div>
-        <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px;">٣. نوع الحجز المستهدف:</div>
-        <select id="slotTargetSelect">
-          <option value="رحلة الشهر (1)">🚌 رحلة الشهر الأول</option>
-          <option value="رحلة الشهر (2)">🚌 رحلة الشهر الثاني</option>
-          <option value="رحلة الشهر (3)">🚌 رحلة الشهر الثالث</option>
-          <option value="الخلوة السنوية الصيفية">☀️ الخلوة السنوية الصيفية</option>
-          <option value="إعاشة الخلوة السنوية">🍲 إعاشة الخلوة السنوية</option>
-        </select>
+
+        <div id="ruleBannerText" class="rule-banner"></div>
+
         <div id="liveBalanceBox" class="live-balance-tag hidden">الرصيد المتاح: <span id="currentTeamBalanceDisplay">0</span> ج.ك</div>
+
+        <!-- الخطوة 0: نوع الحجز -->
+        <div class="step-section">
+          <div class="step-header">🎯 نوع الحجز:</div>
+          <select id="tripTypeSelect" onchange="handleTypeChange()">
+            <option value="رحلة الشهر (1)">🚌 رحلة الشهر الأول</option>
+            <option value="رحلة الشهر (2)">🚌 رحلة الشهر الثاني</option>
+            <option value="رحلة الشهر (3)">🚌 رحلة الشهر الثالث</option>
+            <option value="الخلوة السنوية الصيفية" id="retreatOption" disabled>☀️ الخلوة السنوية الصيفية (متاحة في الصيف فقط)</option>
+          </select>
+        </div>
+
+        <!-- الخطوة 1: الوجهة -->
+        <div class="step-section" id="destSection">
+          <div class="step-header">📍 الخطوة ١: اختيار المكان والمسافة (رسوم الدخول والخدمات):</div>
+          <select id="destSelect" onchange="calculateTotal()">
+            <option value="2000" data-cat="قريبة" data-name="مكان قريب (مارمينا / النطرون / خادم الدير)">قريبة: مارمينا / النطرون (2,000 ج.ك)</option>
+            <option value="4500" data-cat="متوسطة" data-name="مكان متوسط (الخطاطبة / مقار / وادي النطرون البعيد)">متوسطة: الخطاطبة / مقار (4,500 ج.ك)</option>
+            <option value="7500" data-cat="بعيدة" data-name="مكان بعيد (القاهرة / البحر الأحمر / الإسماعيلية)">بعيدة: القاهرة / البحر الأحمر (7,500 ج.ك)</option>
+            <option value="12000" data-cat="بعيدة جداً" data-name="مكان بعيد جداً (أديرة الصعيد / الأقصر والفيوم)">بعيدة جداً: أديرة الصعيد / الأقصر (12,000 ج.ك)</option>
+          </select>
+        </div>
+
+        <!-- خيارات الخلوة المنفصلة في الصيف -->
+        <div class="step-section hidden" id="retreatSection">
+          <div class="step-header">🏡 بيت الخلوة والإعاشة (3 أيام):</div>
+          <select id="retreatSelect" onchange="calculateTotal()">
+            <option value="30000" data-cat="خلوة دير" data-name="بيت دير روحي + وجبات التوفير">بيت دير روحي + إعاشة توفير (30,000 ج.ك)</option>
+            <option value="60000" data-cat="خلوة مؤتمرات" data-name="بيت مؤتمرات مجهز + وجبات بيتي متوازنة">بيت مؤتمرات مجهز + وجبات بيتي (60,000 ج.ك)</option>
+            <option value="110000" data-cat="خلوة منتجع VIP" data-name="منتجع فندقي وملاعب + بوفيه مفتوح">منتجع فندقي فاخر + بوفيه مفتوح (110,000 ج.ك)</option>
+          </select>
+        </div>
+
+        <!-- الخطوة 2: الأتوبيس -->
+        <div class="step-section" id="busSection">
+          <div class="step-header">🚍 الخطوة ٢: نوع الأتوبيس والانتقالات:</div>
+          <select id="busSelect" onchange="calculateTotal()">
+            <option value="4000" data-name="ميني باص عادي 28 راكب">ميني باص عادي 28 راكب (4,000 ج.ك)</option>
+            <option value="7000" data-name="ميني باص سياحي مكيف 28 راكب">ميني باص سياحي مكيف 28 راكب (7,000 ج.ك)</option>
+            <option value="12000" data-name="أتوبيس مرسيدس سياحي مكيف 50 راكب">أتوبيس مرسيدس سياحي 50 راكب (12,000 ج.ك)</option>
+          </select>
+        </div>
+
+        <!-- الخطوة 3: هدايا وتذكارات (اختياري) -->
+        <div class="step-section">
+          <div class="step-header">🎁 الخطوة ٣: هدايا وتذكارات وسناكس الرحلة (اختياري):</div>
+          <select id="giftSelect" onchange="calculateTotal()">
+            <option value="0" data-name="بدون هدايا إضافية">بدون هدايا إضافية (0 ج.ك)</option>
+            <option value="1500" data-name="تذكارات وصور وميداليات الرحلة">تذكارات وصور وميدالية للرحلة (1,500 ج.ك)</option>
+            <option value="3500" data-name="وجبات سناكس وعصائر بالطريق">سناكس وباتيه وعصائر في الأتوبيس (3,500 ج.ك)</option>
+            <option value="6000" data-name="باقة تذكار مميز + سناكس متكامل">تذكار براند + سناكس متكامل (6,000 ج.ك)</option>
+          </select>
+        </div>
+
+        <!-- الخطوة 4: اشتراك المخدومين -->
+        <div class="step-section">
+          <div class="step-header">💵 الخطوة ٤: إجمالي ما يدفعه المخدومون (خصم الاشتراكات):</div>
+          <input type="number" id="collectedContribution" placeholder="أدخل المبلغ المحصل من الشباب (مثال: 5000)" value="0" oninput="calculateTotal()">
+        </div>
+
+        <!-- ملخص الحساب -->
+        <div class="calculation-box">
+          <div class="calc-row"><span>إجمالي تكلفة الرحلة:</span><b id="totalCostDisplay">0 ج.ك</b></div>
+          <div class="calc-row" style="color: #4ade80;"><span>اشتراكات المخدومين (خصم):</span><b id="contribDisplay">-0 ج.ك</b></div>
+          <div class="calc-row calc-net"><span>المطلوب خصمه من رصيد الفريق:</span><b id="netCostDisplay">0 ج.ك</b></div>
+        </div>
+
+        <button class="btn-buy" onclick="finalizeBooking()">🛒 اعتماد وحجز الرحلة</button>
         <div id="saleStatus" class="msg"></div>
+
       </div>
-      <div class="market-grid" id="itemsGrid"></div>
+
     </div>
+
   </div>
 
   <script>
-    const firebaseConfig = { apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM", authDomain: "maze-d8572.firebaseapp.com", databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com", projectId: "maze-d8572", storageBucket: "maze-d8572.firebasestorage.app", messagingSenderId: "133228040813", appId: "1:133228040813:web:67eac572b15f952e99e564" };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM",
+      authDomain: "maze-d8572.firebaseapp.com",
+      databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com",
+      projectId: "maze-d8572",
+      storageBucket: "maze-d8572.firebasestorage.app",
+      messagingSenderId: "133228040813",
+      appId: "1:133228040813:web:67eac572b15f952e99e564"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-
-    const catalog = [
-      { name: "رحلة قريبة (مارمينا/النطرون) - عادي 28", info: "أتوبيس عادي بدون تكييف 28 راكب", cost: 4000 },
-      { name: "رحلة قريبة (مارمينا/النطرون) - مكيف 28", info: "ميني باص مكيف سياحي 28 راكب", cost: 6500 },
-      { name: "رحلة قريبة (مارمينا/النطرون) - سياحي 50", info: "أتوبيس مرسيدس سياحي مكيف 50 راكب", cost: 10000 },
-      { name: "رحلة متوسطة (الخطاطبة/مقار) - عادي 28", info: "أتوبيس عادي 28 راكب", cost: 6000 },
-      { name: "رحلة متوسطة (الخطاطبة/مقار) - مكيف 28", info: "ميني باص مكيف سياحي 28 راكب", cost: 9500 },
-      { name: "رحلة متوسطة (الخطاطبة/مقار) - سياحي 50", info: "أتوبيس سياحي مكيف كبير 50 راكب", cost: 14000 },
-      { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - عادي 28", info: "أتوبيس 28 راكب للمسافات البعيدة", cost: 9000 },
-      { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - مكيف 28", info: "ميني باص مكيف 28 راكب", cost: 14000 },
-      { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - سياحي 50", info: "أتوبيس سياحي فاخر 50 راكب", cost: 22000 },
-      { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - مكيف 28", info: "ميني باص مكيف حديث للسفر الطويل", cost: 22000 },
-      { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - سياحي 50", info: "أتوبيس سياحي VIP سعة 50 راكب", cost: 35000 },
-      { name: "الخلوة السنوية - بيت دير روحي (3 أيام)", info: "مبيت جماعي وهدوء وتسبحة وقداسات", cost: 20000 },
-      { name: "الخلوة السنوية - بيت مؤتمرات متوسط (3 أيام)", info: "غرف مجهزة ومساحات خضراء وقاعة ساوند", cost: 40000 },
-      { name: "الخلوة السنوية - منتجع فندقي VIP (3 أيام)", info: "غرف مكيفة وحمام سباحة وملاعب نجيل", cost: 75000 },
-      { name: "إعاشة الخلوة - باقة التوفير وساندوتشات", info: "جبن وبقوليات وساندوتشات وعصائر", cost: 10000 },
-      { name: "إعاشة الخلوة - وجبات بيتي متوازنة", info: "وجبات مطبوخة دجاج ولحوم وخضار وأرز", cost: 20000 },
-      { name: "إعاشة الخلوة - بوفيه مفتوح و Fast Food", info: "بوفيه مفتوح وبرجر وفراخ مشوية وسناكس", cost: 35000 }
-    ];
 
     function loginDesk() {
       if (document.getElementById("servantPassInput").value.trim().toLowerCase() !== "trip202") {
@@ -110,7 +283,35 @@
       }
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
-      renderGrid();
+      updateQuarterRules();
+      calculateTotal();
+    }
+
+    function updateQuarterRules() {
+      const q = document.getElementById("quarterTargetSelect").value;
+      const banner = document.getElementById("ruleBannerText");
+      const retreatOpt = document.getElementById("retreatOption");
+
+      if (q === "Q4") {
+        banner.innerHTML = "☀️ <b>موسم الصيف (Q4):</b> متاح حجز الخلوة السنوية الصيفية بالإضافة لرحلات الشهور، ولا يُشترط مسافة بعيدة.";
+        retreatOpt.disabled = false;
+      } else {
+        banner.innerHTML = `📌 <b>شرط الموسم (${q}):</b> 3 رحلات (رحلة شهرياً) ولا توجد خلوة، مع **ضرورة أن تكون رحلة واحدة على الأقل متوسطة أو بعيدة**.`;
+        retreatOpt.disabled = true;
+        if (document.getElementById("tripTypeSelect").value === "الخلوة السنوية الصيفية") {
+          document.getElementById("tripTypeSelect").selectedIndex = 0;
+        }
+      }
+      handleTypeChange();
+    }
+
+    function handleTypeChange() {
+      const type = document.getElementById("tripTypeSelect").value;
+      const isRetreat = type === "الخلوة السنوية الصيفية";
+      
+      document.getElementById("destSection").classList.toggle("hidden", isRetreat);
+      document.getElementById("retreatSection").classList.toggle("hidden", !isRetreat);
+      calculateTotal();
     }
 
     function fetchCurrentTeamBalance() {
@@ -122,54 +323,107 @@
       });
     }
 
-    function renderGrid() {
-      const grid = document.getElementById("itemsGrid");
-      grid.innerHTML = "";
-      catalog.forEach((item, index) => {
-        const box = document.createElement("div");
-        box.className = "item-square";
-        box.innerHTML = `
-          <div><div class="item-title">${item.name}</div><div class="item-info">${item.info}</div></div>
-          <div><div class="item-price-tag">${item.cost.toLocaleString()} ج.ك</div>
-          <button class="btn-buy" onclick="buyItem(${index})">🛒 اعتماد وحجز</button></div>
-        `;
-        grid.appendChild(box);
-      });
+    let currentCalculatedNet = 0;
+    let currentTotalGross = 0;
+    let currentSummaryName = "";
+
+    function calculateTotal() {
+      const type = document.getElementById("tripTypeSelect").value;
+      const isRetreat = type === "الخلوة السنوية الصيفية";
+
+      let placeCost = 0;
+      let placeName = "";
+
+      if (isRetreat) {
+        const retSel = document.getElementById("retreatSelect");
+        placeCost = Number(retSel.value);
+        placeName = retSel.options[retSel.selectedIndex].dataset.name;
+      } else {
+        const destSel = document.getElementById("destSelect");
+        placeCost = Number(destSel.value);
+        placeName = destSel.options[destSel.selectedIndex].dataset.name;
+      }
+
+      const busSel = document.getElementById("busSelect");
+      const busCost = Number(busSel.value);
+      const busName = busSel.options[busSel.selectedIndex].dataset.name;
+
+      const giftSel = document.getElementById("giftSelect");
+      const giftCost = Number(giftSel.value);
+      const giftName = giftSel.options[giftSel.selectedIndex].dataset.name;
+
+      const contrib = Math.max(0, Number(document.getElementById("collectedContribution").value) || 0);
+
+      currentTotalGross = placeCost + busCost + giftCost;
+      currentCalculatedNet = Math.max(0, currentTotalGross - contrib);
+
+      document.getElementById("totalCostDisplay").textContent = currentTotalGross.toLocaleString() + " ج.ك";
+      document.getElementById("contribDisplay").textContent = `-${contrib.toLocaleString()} ج.ك`;
+      document.getElementById("netCostDisplay").textContent = currentCalculatedNet.toLocaleString() + " ج.ك";
+
+      currentSummaryName = `${type}: ${placeName} + ${busName}` + (giftCost > 0 ? ` + ${giftName}` : '');
     }
 
-    function buyItem(idx) {
+    function finalizeBooking() {
       const teamKey = document.getElementById("teamTargetSelect").value;
       const teamName = document.getElementById("teamTargetSelect").selectedOptions[0]?.text;
       const quarter = document.getElementById("quarterTargetSelect").value;
-      const slot = document.getElementById("slotTargetSelect").value;
+      const slot = document.getElementById("tripTypeSelect").value;
       const statusEl = document.getElementById("saleStatus");
       statusEl.style.display = "block";
 
-      if (!teamKey) { statusEl.style.color = "#ff0844"; statusEl.textContent = "⚠️ اختر الفريق أولاً!"; return; }
+      if (!teamKey) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⚠️ اختر الفريق أولاً من الأعلى!";
+        return;
+      }
 
-      const item = catalog[idx];
       const teamRef = db.ref('teams/' + teamKey);
+
       teamRef.once('value').then(snapshot => {
         const data = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
-        const bal = Number(data.balance || 0);
-
-        if (bal < item.cost) {
+        
+        // التحقق من تكرار حجز نفس الرحلة
+        const existingPlan = (data.plan && data.plan[quarter]) || [];
+        if (existingPlan.some(p => p.slot === slot)) {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = `❌ رصيد ${teamName} (${bal.toLocaleString()} ج.ك) لا يكفي لشراء [${item.name}]!`;
+          statusEl.textContent = `⚠️ تم حجز [${slot}] لـ ${teamName} مسبقاً في هذا الموسم!`;
           return;
         }
 
-        data.balance = bal - item.cost;
+        const bal = Number(data.balance || 0);
+
+        if (bal < currentCalculatedNet) {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = `❌ رصيد ${teamName} (${bal.toLocaleString()} ج.ك) لا يكفي لصافي تكلفة الحجز (${currentCalculatedNet.toLocaleString()} ج.ك)!`;
+          return;
+        }
+
+        data.balance = bal - currentCalculatedNet;
         if (!data.plan) data.plan = {};
         if (!data.plan[quarter]) data.plan[quarter] = [];
-        data.plan[quarter].push({ name: `${slot} : ${item.name}`, cost: item.cost, desk: "trips", slot: slot });
+
+        data.plan[quarter].push({
+          name: currentSummaryName,
+          cost: currentCalculatedNet,
+          desk: "trips",
+          slot: slot
+        });
 
         if (!data.purchases) data.purchases = [];
-        data.purchases.push({ item_name: `${item.name} [${slot}]`, cost: item.cost, quarter: quarter, time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) });
+        data.purchases.push({
+          item_name: currentSummaryName,
+          cost: currentCalculatedNet,
+          quarter: quarter,
+          time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+        });
 
         teamRef.set(data).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم حجز [${item.name}] لـ ${teamName} في ${slot}!`;
+          statusEl.textContent = `✅ تم اعتماد وحجز [${slot}] بنجاح لـ ${teamName}! الصافي المخصوم: ${currentCalculatedNet.toLocaleString()} ج.ك`;
+        }).catch(err => {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "❌ خطأ أثناء الحفظ: " + err.message;
         });
       });
     }
