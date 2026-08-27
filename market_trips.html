@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>مكتب الرحلات والخلوة | Trip Builder</title>
+  <title>مكتب الرحلات والخلوة السنوية | Ministry Trips</title>
 
   <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
 
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-    
+
     body {
       background: #070b19;
       color: #fff;
@@ -25,7 +25,7 @@
 
     .container {
       width: 100%;
-      max-width: 600px;
+      max-width: 620px;
     }
 
     .card-box {
@@ -38,8 +38,16 @@
       margin-bottom: 16px;
     }
 
-    h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
-    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 14px; }
+    h2 {
+      color: #00f2fe;
+      margin-bottom: 6px;
+      font-weight: 900;
+    }
+    p.desc {
+      color: #94a3b8;
+      font-size: 0.88rem;
+      margin-bottom: 14px;
+    }
 
     .rule-banner {
       background: rgba(56, 189, 248, 0.1);
@@ -47,10 +55,26 @@
       color: #bae6fd;
       border-radius: 12px;
       padding: 10px 14px;
-      font-size: 0.8rem;
-      line-height: 1.4;
+      font-size: 0.82rem;
+      line-height: 1.45;
       text-align: right;
       margin-bottom: 16px;
+    }
+
+    .frozen-warning-box {
+      background: rgba(255, 8, 68, 0.2);
+      border: 2px solid #ff0844;
+      border-radius: 12px;
+      padding: 12px;
+      margin-bottom: 14px;
+      text-align: right;
+      color: #fecaca;
+      animation: alertPulse 1.5s infinite;
+    }
+    @keyframes alertPulse {
+      0% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
+      50% { box-shadow: 0 0 18px rgba(255, 8, 68, 0.8); }
+      100% { box-shadow: 0 0 5px rgba(255, 8, 68, 0.4); }
     }
 
     input, select {
@@ -66,8 +90,14 @@
       text-align: center;
       outline: none;
     }
-    select option { background: #0f172a; color: #fff; }
-    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+    select option {
+      background: #0f172a;
+      color: #fff;
+    }
+    input:focus, select:focus {
+      border-color: #00f2fe;
+      box-shadow: 0 0 10px rgba(0, 242, 254, 0.4);
+    }
 
     .desk-badge {
       background: rgba(0, 242, 254, 0.1);
@@ -81,32 +111,67 @@
       margin-bottom: 12px;
     }
 
+    .live-balance-tag {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px dashed #00f2fe;
+      color: #38bdf8;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      margin-bottom: 12px;
+      display: inline-block;
+    }
+
     .step-section {
       background: rgba(30, 41, 59, 0.6);
       border: 1px solid rgba(255, 255, 255, 0.08);
       border-radius: 14px;
-      padding: 12px;
+      padding: 12px 14px;
       margin-bottom: 12px;
       text-align: right;
     }
     .step-header {
-      font-size: 0.85rem;
+      font-size: 0.86rem;
       font-weight: 900;
       color: #38bdf8;
       margin-bottom: 8px;
+    }
+
+    .auto-calc-badge {
+      background: rgba(34, 197, 94, 0.15);
+      border: 1px solid #22c55e;
+      color: #4ade80;
+      padding: 5px 12px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-top: 4px;
     }
 
     .calculation-box {
       background: linear-gradient(135deg, rgba(0, 242, 254, 0.1), rgba(79, 172, 254, 0.05));
       border: 2px solid #00f2fe;
       border-radius: 14px;
-      padding: 12px;
+      padding: 14px;
       margin: 14px 0;
       text-align: right;
-      font-size: 0.88rem;
+      font-size: 0.9rem;
     }
-    .calc-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
-    .calc-net { font-size: 1.15rem; font-weight: 900; color: #00f2fe; border-top: 1px dashed rgba(0, 242, 254, 0.4); padding-top: 6px; margin-top: 6px; }
+    .calc-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
+    .calc-net {
+      font-size: 1.18rem;
+      font-weight: 900;
+      color: #00f2fe;
+      border-top: 1px dashed rgba(0, 242, 254, 0.4);
+      padding-top: 8px;
+      margin-top: 6px;
+    }
 
     .btn-buy {
       width: 100%;
@@ -122,32 +187,20 @@
       transition: transform 0.2s;
     }
     .btn-buy:active { transform: scale(0.97); }
-
-    .live-balance-tag {
-      background: rgba(0, 242, 254, 0.15);
-      border: 1px dashed #00f2fe;
-      color: #38bdf8;
-      padding: 6px 12px;
-      border-radius: 10px;
-      font-size: 0.85rem;
-      font-weight: 900;
-      margin-bottom: 12px;
-      display: inline-block;
+    .btn-buy:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+      background: #64748b !important;
+      color: #cbd5e1 !important;
+      box-shadow: none;
     }
 
-    .auto-calc-badge {
-      background: rgba(34, 197, 94, 0.15);
-      border: 1px solid #22c55e;
-      color: #4ade80;
-      padding: 4px 10px;
-      border-radius: 8px;
-      font-size: 0.78rem;
-      font-weight: 800;
-      display: inline-block;
-      margin-top: 4px;
+    .msg {
+      margin-top: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      display: none;
     }
-
-    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
     .hidden { display: none; }
   </style>
 </head>
@@ -155,9 +208,9 @@
 
   <div class="container">
     
-    <!-- 1. شاشة الدخول -->
+    <!-- 1. شاشة تسجيل الدخول -->
     <div class="card-box" id="loginScreen">
-      <div class="desk-badge">🚌 مكتب الرحلات والخلوة</div>
+      <div class="desk-badge">🚌 مكتب الرحلات والخلوة السنوية</div>
       <h2>تسجيل دخول المكتب</h2>
       <p class="desc">أدخل كلمة سر مكتب الرحلات (trip202)</p>
 
@@ -166,12 +219,18 @@
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
-    <!-- 2. واجهة بناء الرحلة التفاعلية -->
+    <!-- 2. واجهة بناء الرحلات التفاعلية -->
     <div id="marketScreen" class="hidden">
       
       <div class="card-box">
         <div class="desk-badge">🚌 حاسبة تعاقدات الرحلات والخلوات</div>
+        <h2 style="font-size: 1.25rem;">إتمام حجز الرحلات والخلوات</h2>
         
+        <div id="freezeWarning" class="frozen-warning-box hidden">
+          ⛔ <b>حساب هذا الفريق مُجمد حالياً بسبب ضربة روحية!</b><br>
+          🙏 <span id="freezeConditionText">المطلوب لفك الحظر: صلاة جماعية</span>
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
@@ -199,9 +258,9 @@
 
         <div id="liveBalanceBox" class="live-balance-tag hidden">الرصيد المتاح: <span id="currentTeamBalanceDisplay">0</span> ج.ك</div>
 
-        <!-- الخطوة 0: نوع الحجز -->
+        <!-- نوع الحجز المستهدف -->
         <div class="step-section">
-          <div class="step-header">🎯 نوع الحجز:</div>
+          <div class="step-header">🎯 نوع الحجز المستهدف:</div>
           <select id="tripTypeSelect" onchange="handleTypeChange()">
             <option value="رحلة الشهر (1)">🚌 رحلة الشهر الأول</option>
             <option value="رحلة الشهر (2)">🚌 رحلة الشهر الثاني</option>
@@ -210,34 +269,34 @@
           </select>
         </div>
 
-        <!-- الخطوة 1: الوجهة -->
+        <!-- الخطوة 1: اختيار الوجهة والمسافة -->
         <div class="step-section" id="destSection">
           <div class="step-header">📍 الخطوة ١: اختيار المكان والمسافة (رسوم الدخول والخدمات):</div>
           <select id="destSelect" onchange="calculateTotal()">
-            <option value="2000" data-cat="قريبة" data-name="مكان قريب (مارمينا / النطرون / خادم الدير)">قريبة: مارمينا / النطرون (2,000 ج.ك)</option>
-            <option value="4500" data-cat="متوسطة" data-name="مكان متوسط (الخطاطبة / مقار / وادي النطرون البعيد)">متوسطة: الخطاطبة / مقار (4,500 ج.ك)</option>
-            <option value="7500" data-cat="بعيدة" data-name="مكان بعيد (القاهرة / البحر الأحمر / الإسماعيلية)">بعيدة: القاهرة / البحر الأحمر (7,500 ج.ك)</option>
-            <option value="12000" data-cat="بعيدة جداً" data-name="مكان بعيد جداً (أديرة الصعيد / الأقصر والفيوم)">بعيدة جداً: أديرة الصعيد / الأقصر (12,000 ج.ك)</option>
+            <option value="2000" data-name="مكان قريب (مارمينا / النطرون / خادم الدير)">قريبة: مارمينا / النطرون (2,000 ج.ك)</option>
+            <option value="4500" data-name="مكان متوسط (الخطاطبة / مقار / وادي النطرون البعيد)">متوسطة: الخطاطبة / مقار (4,500 ج.ك)</option>
+            <option value="7500" data-name="مكان بعيد (القاهرة / البحر الأحمر / الإسماعيلية)">بعيدة: القاهرة / البحر الأحمر (7,500 ج.ك)</option>
+            <option value="12000" data-name="مكان بعيد جداً (أديرة الصعيد / الأقصر والفيوم)">بعيدة جداً: أديرة الصعيد / الأقصر (12,000 ج.ك)</option>
           </select>
         </div>
 
-        <!-- خيارات الخلوة في الصيف -->
+        <!-- خيارات بيت الخلوة والإعاشة في الصيف -->
         <div class="step-section hidden" id="retreatSection">
           <div class="step-header">🏡 بيت الخلوة والإعاشة (3 أيام):</div>
           <select id="retreatSelect" onchange="calculateTotal()">
-            <option value="30000" data-cat="خلوة دير" data-name="بيت دير روحي + وجبات التوفير">بيت دير روحي + إعاشة توفير (30,000 ج.ك)</option>
-            <option value="60000" data-cat="خلوة مؤتمرات" data-name="بيت مؤتمرات مجهز + وجبات بيتي متوازنة">بيت مؤتمرات مجهز + وجبات بيتي (60,000 ج.ك)</option>
-            <option value="110000" data-cat="خلوة منتجع VIP" data-name="منتجع فندقي وملاعب + بوفيه مفتوح">منتجع فندقي فاخر + بوفيه مفتوح (110,000 ج.ك)</option>
+            <option value="30000" data-name="بيت دير روحي + إعاشة توفير">بيت دير روحي + إعاشة توفير (30,000 ج.ك)</option>
+            <option value="60000" data-name="بيت مؤتمرات مجهز + وجبات بيتي متوازنة">بيت مؤتمرات مجهز + وجبات بيتي متوازنة (60,000 ج.ك)</option>
+            <option value="110000" data-name="منتجع فندقي فاخر وملاعب + بوفيه مفتوح">منتجع فندقي فاخر وملاعب + بوفيه مفتوح (110,000 ج.ك)</option>
           </select>
         </div>
 
-        <!-- الخطوة 2: الأتوبيس وعدد الكراسي -->
+        <!-- الخطوة 2: نوع الأتوبيس وسعة الكراسي -->
         <div class="step-section" id="busSection">
           <div class="step-header">🚍 الخطوة ٢: نوع الأتوبيس وسعة الكراسي:</div>
           <select id="busSelect" onchange="calculateTotal()">
-            <option value="4000" data-seats="28" data-name="ميني باص عادي 28 راكب">ميني باص عادي (28 راكب) - 4,000 ج.ك</option>
-            <option value="7000" data-seats="28" data-name="ميني باص سياحي مكيف 28 راكب">ميني باص سياحي مكيف (28 راكب) - 7,000 ج.ك</option>
-            <option value="12000" data-seats="50" data-name="أتوبيس مرسيدس سياحي مكيف 50 راكب">أتوبيس مرسيدس سياحي مكيف (50 راكب) - 12,000 ج.ك</option>
+            <option value="4000" data-seats="28" data-name="ميني باص عادي (28 راكب)">ميني باص عادي (28 راكب) - 4,000 ج.ك</option>
+            <option value="7000" data-seats="28" data-name="ميني باص سياحي مكيف (28 راكب)">ميني باص سياحي مكيف (28 راكب) - 7,000 ج.ك</option>
+            <option value="12000" data-seats="50" data-name="أتوبيس مرسيدس سياحي مكيف (50 راكب)">أتوبيس مرسيدس سياحي مكيف (50 راكب) - 12,000 ج.ك</option>
           </select>
         </div>
 
@@ -247,12 +306,12 @@
           <select id="giftSelect" onchange="calculateTotal()">
             <option value="0" data-name="بدون هدايا إضافية">بدون هدايا إضافية (0 ج.ك)</option>
             <option value="1500" data-name="تذكارات وصور وميداليات الرحلة">تذكارات وصور وميدالية للرحلة (1,500 ج.ك)</option>
-            <option value="3500" data-name="وجبات سناكس وعصائر بالطريق">سناكس وباتيه وعصائر في الأتوبيس (3,500 ج.ك)</option>
-            <option value="6000" data-name="باقة تذكار مميز + سناكس متكامل">تذكار براند + سناكس متكامل (6,000 ج.ك)</option>
+            <option value="3500" data-name="وجبات سناكس وباتيه وعصائر بالطريق">سناكس وباتيه وعصائر في الأتوبيس (3,500 ج.ك)</option>
+            <option value="6000" data-name="باقة تذكار مميز براند + سناكس متكامل">تذكار براند + سناكس متكامل (6,000 ج.ك)</option>
           </select>
         </div>
 
-        <!-- الخطوة 4: تسعير تذكرة الفرد والضرب في عدد الكراسي -->
+        <!-- الخطوة 4: سعر تذكرة اشتراك الفرد والضرب في الكراسي -->
         <div class="step-section">
           <div class="step-header">💵 الخطوة ٤: سعر تذكرة اشتراك الفرد (يُضرب تلقائياً في عدد الكراسي):</div>
           <input type="number" id="ticketPriceInput" placeholder="أدخل سعر اشتراك الفرد (مثال: 150)" value="0" oninput="calculateTotal()">
@@ -261,14 +320,14 @@
           </div>
         </div>
 
-        <!-- ملخص الحساب -->
+        <!-- ملخص الحساب المالي المباشر -->
         <div class="calculation-box">
           <div class="calc-row"><span>إجمالي تكلفة الرحلة:</span><b id="totalCostDisplay">0 ج.ك</b></div>
           <div class="calc-row" style="color: #4ade80;"><span>إجمالي اشتراكات المخدومين (خصم):</span><b id="contribDisplay">-0 ج.ك</b></div>
           <div class="calc-row calc-net"><span>الصافي المطلوب خصمه من محفظة الفريق:</span><b id="netCostDisplay">0 ج.ك</b></div>
         </div>
 
-        <button class="btn-buy" onclick="finalizeBooking()">🛒 اعتماد وحجز الرحلة</button>
+        <button class="btn-buy" id="btnSubmitTrip" onclick="finalizeBooking()">🛒 اعتماد وحجز الرحلة</button>
         <div id="saleStatus" class="msg"></div>
 
       </div>
@@ -291,13 +350,23 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
+    let isTeamFrozen = false;
+    let currentCalculatedNet = 0;
+    let currentTotalGross = 0;
+    let currentSummaryName = "";
+    let totalCollectedContributions = 0;
+
     function loginDesk() {
-      if (document.getElementById("servantPassInput").value.trim().toLowerCase() !== "trip202") {
+      const pass = document.getElementById("servantPassInput").value.trim().toLowerCase();
+      if (pass !== "trip202") {
         document.getElementById("loginError").style.display = "block";
         return;
       }
+
+      document.getElementById("loginError").style.display = "none";
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
+
       updateQuarterRules();
       calculateTotal();
     }
@@ -308,7 +377,7 @@
       const retreatOpt = document.getElementById("retreatOption");
 
       if (q === "Q4") {
-        banner.innerHTML = "☀️ <b>موسم الصيف (Q4):</b> متاح حجز الخلوة السنوية الصيفية بالإضافة لرحلات الشهور، ولا يُشترط مسافة بعيدة.";
+        banner.innerHTML = "☀️ <b>موسم الصيف (Q4):</b> متاح حجز الخلوة السنوية الصيفية بالإضافة لرحلات الشهور، ولا يُشترط مسافة بعيدة إجبارية.";
         retreatOpt.disabled = false;
       } else {
         banner.innerHTML = `📌 <b>شرط الموسم (${q}):</b> 3 رحلات (رحلة شهرياً) ولا توجد خلوة، مع **ضرورة أن تكون رحلة واحدة على الأقل متوسطة أو بعيدة**.`;
@@ -321,9 +390,7 @@
     }
 
     function handleTypeChange() {
-      const type = document.getElementById("tripTypeSelect").value;
-      const isRetreat = type === "الخلوة السنوية الصيفية";
-      
+      const isRetreat = document.getElementById("tripTypeSelect").value === "الخلوة السنوية الصيفية";
       document.getElementById("destSection").classList.toggle("hidden", isRetreat);
       document.getElementById("retreatSection").classList.toggle("hidden", !isRetreat);
       calculateTotal();
@@ -332,16 +399,28 @@
     function fetchCurrentTeamBalance() {
       const teamKey = document.getElementById("teamTargetSelect").value;
       if (!teamKey) return;
-      db.ref('teams/' + teamKey + '/balance').on('value', snap => {
-        document.getElementById("currentTeamBalanceDisplay").textContent = Number(snap.val() || 0).toLocaleString();
+
+      db.ref('teams/' + teamKey).on('value', snap => {
+        const tData = snap.val() || {};
+        const bal = Number(tData.balance || 0);
+        document.getElementById("currentTeamBalanceDisplay").textContent = bal.toLocaleString();
         document.getElementById("liveBalanceBox").classList.remove("hidden");
+
+        const freezeWarning = document.getElementById("freezeWarning");
+        const attack = tData.activeAttack;
+
+        if (attack && attack.solution && attack.solution.trim() !== "") {
+          isTeamFrozen = true;
+          freezeWarning.classList.remove("hidden");
+          document.getElementById("freezeConditionText").textContent = `المطلوب لفك الحظر: ${attack.solution}`;
+        } else {
+          isTeamFrozen = false;
+          freezeWarning.classList.add("hidden");
+        }
+
+        document.getElementById("btnSubmitTrip").disabled = isTeamFrozen;
       });
     }
-
-    let currentCalculatedNet = 0;
-    let currentTotalGross = 0;
-    let currentSummaryName = "";
-    let totalCollectedContributions = 0;
 
     function calculateTotal() {
       const type = document.getElementById("tripTypeSelect").value;
@@ -360,7 +439,6 @@
         placeName = destSel.options[destSel.selectedIndex].dataset.name;
       }
 
-      // قراءة الأتوبيس وعدد الكراسي
       const busSel = document.getElementById("busSelect");
       const busCost = Number(busSel.value);
       const busSeats = Number(busSel.options[busSel.selectedIndex].dataset.seats || 28);
@@ -370,7 +448,6 @@
       const giftCost = Number(giftSel.value);
       const giftName = giftSel.options[giftSel.selectedIndex].dataset.name;
 
-      // حساب الاشتراكات: سعر التذكرة × عدد الكراسي
       const ticketPrice = Math.max(0, Number(document.getElementById("ticketPriceInput").value) || 0);
       totalCollectedContributions = ticketPrice * busSeats;
 
@@ -384,7 +461,7 @@
       document.getElementById("contribDisplay").textContent = `-${totalCollectedContributions.toLocaleString()} ج.ك`;
       document.getElementById("netCostDisplay").textContent = currentCalculatedNet.toLocaleString() + " ج.ك";
 
-      currentSummaryName = `${type}: ${placeName} + ${busName} (${busSeats} راكب)` + 
+      currentSummaryName = `${type}: ${placeName} + ${busName}` + 
         (giftCost > 0 ? ` + ${giftName}` : '') + 
         ` [اشتراك: ${ticketPrice} ج.ك/فرد]`;
     }
@@ -403,12 +480,26 @@
         return;
       }
 
+      if (isTeamFrozen) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⛔ حساب الفريق مُجمد بسبب حرب روحية! نفذوا شرط الصلاة أولاً لفك الحظر.";
+        return;
+      }
+
+      statusEl.style.color = "#f1c40f";
+      statusEl.textContent = "جاري التحقق وإتمام الحجز...";
+
       const teamRef = db.ref('teams/' + teamKey);
 
       teamRef.once('value').then(snapshot => {
         const data = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
         
-        // التحقق من تكرار حجز نفس الرحلة في نفس الربع
+        if (data.activeAttack && data.activeAttack.solution && data.activeAttack.solution.trim() !== "") {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "⛔ لا يمكن إتمام الحجز، الحساب مُجمد حالياً!";
+          return;
+        }
+
         const existingPlan = (data.plan && data.plan[quarter]) || [];
         if (existingPlan.some(p => p.slot === slot)) {
           statusEl.style.color = "#ff0844";
@@ -420,11 +511,12 @@
 
         if (bal < currentCalculatedNet) {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = `❌ رصيد ${teamName} (${bal.toLocaleString()} ج.ك) لا يكفي لصافي تكلفة الحجز (${currentCalculatedNet.toLocaleString()} ج.ك)!`;
+          statusEl.textContent = `❌ رصيد ${teamName} (${bal.toLocaleString()} ج.ك) لا يكفي لصافي التكلفة المطلوبة (${currentCalculatedNet.toLocaleString()} ج.ك)!`;
           return;
         }
 
-        data.balance = bal - currentCalculatedNet;
+        const newBalance = bal - currentCalculatedNet;
+
         if (!data.plan) data.plan = {};
         if (!data.plan[quarter]) data.plan[quarter] = [];
 
@@ -443,12 +535,14 @@
           time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
         });
 
+        data.balance = newBalance;
+
         teamRef.set(data).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم اعتماد وحجز [${slot}] بنجاح لـ ${teamName}! الصافي المخصوم: ${currentCalculatedNet.toLocaleString()} ج.ك (بعد خصم اشتراك ${totalCollectedContributions.toLocaleString()} ج.ك)`;
+          statusEl.textContent = `✅ تم بنجاح حجز [${slot}] لـ ${teamName}! الصافي المخصوم: ${currentCalculatedNet.toLocaleString()} ج.ك (بعد خصم اشتراكات ${totalCollectedContributions.toLocaleString()} ج.ك)`;
         }).catch(err => {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = "❌ خطأ أثناء الحفظ: " + err.message;
+          statusEl.textContent = "❌ خطأ في الاتصال: " + err.message;
         });
       });
     }
