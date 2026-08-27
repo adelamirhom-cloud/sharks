@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>مكتب الهدايا والأنشطة | Ministry Events</title>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+    body { background: #070b19; color: #fff; display: flex; justify-content: center; min-height: 100vh; padding: 16px; }
+    .container { width: 100%; max-width: 650px; }
+    .card-box { background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(0, 242, 254, 0.3); border-radius: 20px; padding: 22px 18px; text-align: center; margin-bottom: 16px; }
+    h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
+    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 18px; }
+    input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 242, 254, 0.3); background: rgba(255, 255, 255, 0.06); color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; text-align: center; outline: none; }
+    select option { background: #0f172a; color: #fff; }
+    .desk-badge { background: rgba(0, 242, 254, 0.1); border: 1px solid #00f2fe; color: #00f2fe; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; display: inline-block; margin-bottom: 12px; }
+    .live-balance-tag { background: rgba(0, 242, 254, 0.15); border: 1px dashed #00f2fe; color: #38bdf8; padding: 8px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 900; margin-top: 8px; display: inline-block; }
+    .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px; text-align: right; }
+    .item-square { background: rgba(30, 41, 59, 0.7); border: 1.5px solid rgba(0, 242, 254, 0.2); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
+    .item-title { font-size: 0.95rem; font-weight: 900; color: #f1f5f9; margin-bottom: 4px; }
+    .item-info { font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px; line-height: 1.3; }
+    .item-price-tag { font-size: 1.1rem; font-weight: 900; color: #00f2fe; margin-bottom: 10px; text-align: left; direction: ltr; }
+    .btn-buy { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #070b19; }
+    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .hidden { display: none; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="card-box" id="loginScreen">
+      <div class="desk-badge">🎁 مكتب الهدايا والأنشطة والاحتفالات</div>
+      <h2>تسجيل دخول المكتب</h2>
+      <p class="desc">أدخل كلمة سر مكتب الهدايا للدخول</p>
+      <input type="password" id="servantPassInput" placeholder="كلمة السر...">
+      <button class="btn-buy" style="padding: 13px;" onclick="loginDesk()">دخول المكتب ↵</button>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
+    </div>
+
+    <div id="marketScreen" class="hidden">
+      <div class="card-box">
+        <div class="desk-badge">🎁 مكتب الهدايا والمناسبات والأنشطة</div>
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+          <div>
+            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
+            <select id="teamTargetSelect" onchange="fetchCurrentTeamBalance()">
+              <option value="" disabled selected>-- اختر الفريق --</option>
+              <option value="team_virgin_mary">فريق السيدة العذراء</option>
+              <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
+              <option value="team_st_mercurius">فريق القديس ابو سيفين</option>
+              <option value="team_anba_rois">فريق الانبا رويس</option>
+            </select>
+          </div>
+          <div>
+            <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">٢. الربع السنوي:</div>
+            <select id="quarterTargetSelect">
+              <option value="Q1">الربع الأول (Q1 - الخريف)</option>
+              <option value="Q2">الربع الثاني (Q2 - الشتاء)</option>
+              <option value="Q3">الربع الثالث (Q3 - الربيع)</option>
+              <option value="Q4">الربع الرابع (Q4 - الصيف)</option>
+            </select>
+          </div>
+        </div>
+        <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px;">٣. نوع المناسبة المستهدفة:</div>
+        <select id="slotTargetSelect">
+          <option value="مواليد الشهر (1)">🎂 أعياد ميلاد الشهر الأول</option>
+          <option value="مواليد الشهر (2)">🎂 أعياد ميلاد الشهر الثاني</option>
+          <option value="مواليد الشهر (3)">🎂 أعياد ميلاد الشهر الثالث</option>
+          <option value="هدية المناسبة الكبرى">🎄 هدية المناسبة / العيد</option>
+          <option value="كرنفال وفعالية الموسم">🎯 كرنفال ومهرجان الموسم</option>
+        </select>
+        <div id="liveBalanceBox" class="live-balance-tag hidden">الرصيد المتاح: <span id="currentTeamBalanceDisplay">0</span> ج.ك</div>
+        <div id="saleStatus" class="msg"></div>
+      </div>
+      <div class="market-grid" id="itemsGrid"></div>
+    </div>
+  </div>
+
+  <script>
+    const firebaseConfig = { apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM", authDomain: "maze-d8572.firebaseapp.com", databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com", projectId: "maze-d8572", storageBucket: "maze-d8572.firebasestorage.app", messagingSenderId: "133228040813", appId: "1:133228040813:web:67eac572b15f952e99e564" };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    const catalog = [
+      { name: "هدايا أعياد ميلاد الدفعة (شهر فردي - اقتصادي)", info: "نوت بوك أنيق + قلم وميدالية", cost: 1500 },
+      { name: "هدايا أعياد ميلاد الدفعة (شهر فردي - فاخر)", info: "هدايا براند مخصصة بالاسم لمواليد الشهر", cost: 3500 },
+      { name: "هدايا مناسبة العيد (رمزية)", info: "كارت معايدة وشيكولاتة وإكسسوار", cost: 8000 },
+      { name: "هدايا مناسبة العيد (براند وهودي)", info: "هودي شتوي مطبوع + ماج حراري وشنطة", cost: 25000 },
+      { name: "مسابقة وتحدي أسبوعي بالقاعة", info: "ألعاب تفاعلية ومسابقات ذكاء داخل الاجتماع", cost: 1000 },
+      { name: "مهرجان تيلي ماتش وكرنفال ألعاب الموسم", info: "ألعاب مائية ومسابقات حركية وصوتيات", cost: 15000 }
+    ];
+
+    function loginDesk() {
+      if (document.getElementById("servantPassInput").value.trim().toLowerCase() !== "event303") {
+        document.getElementById("loginError").style.display = "block";
+        return;
+      }
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("marketScreen").classList.remove("hidden");
+      renderGrid();
+    }
+
+    function fetchCurrentTeamBalance() {
+      const teamKey = document.getElementById("teamTargetSelect").value;
+      if (!teamKey) return;
+      db.ref('teams/' + teamKey + '/balance').on('value', snap => {
+        document.getElementById("currentTeamBalanceDisplay").textContent = Number(snap.val() || 0).toLocaleString();
+        document.getElementById("liveBalanceBox").classList.remove("hidden");
+      });
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById("itemsGrid");
+      grid.innerHTML = "";
+      catalog.forEach((item, index) => {
+        const box = document.createElement("div");
+        box.className = "item-square";
+        box.innerHTML = `
+          <div><div class="item-title">${item.name}</div><div class="item-info">${item.info}</div></div>
+          <div><div class="item-price-tag">${item.cost.toLocaleString()} ج.ك</div>
+          <button class="btn-buy" onclick="buyItem(${index})">🛒 اعتماد وحجز</button></div>
+        `;
+        grid.appendChild(box);
+      });
+    }
+
+    function buyItem(idx) {
+      const teamKey = document.getElementById("teamTargetSelect").value;
+      const teamName = document.getElementById("teamTargetSelect").selectedOptions[0]?.text;
+      const quarter = document.getElementById("quarterTargetSelect").value;
+      const slot = document.getElementById("slotTargetSelect").value;
+      const statusEl = document.getElementById("saleStatus");
+      statusEl.style.display = "block";
+
+      if (!teamKey) { statusEl.style.color = "#ff0844"; statusEl.textContent = "⚠️ اختر الفريق أولاً!"; return; }
+
+      const item = catalog[idx];
+      const teamRef = db.ref('teams/' + teamKey);
+      teamRef.once('value').then(snapshot => {
+        const data = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
+        const bal = Number(data.balance || 0);
+
+        if (bal < item.cost) {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = `❌ رصيد ${teamName} (${bal.toLocaleString()} ج.ك) لا يكفي لشراء [${item.name}]!`;
+          return;
+        }
+
+        data.balance = bal - item.cost;
+        if (!data.plan) data.plan = {};
+        if (!data.plan[quarter]) data.plan[quarter] = [];
+        data.plan[quarter].push({ name: `${slot} : ${item.name}`, cost: item.cost, desk: "events", slot: slot });
+
+        if (!data.purchases) data.purchases = [];
+        data.purchases.push({ item_name: `${item.name} [${slot}]`, cost: item.cost, quarter: quarter, time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) });
+
+        teamRef.set(data).then(() => {
+          statusEl.style.color = "#2ecc71";
+          statusEl.textContent = `✅ تم حجز [${item.name}] لـ ${teamName} في ${slot}!`;
+        });
+      });
+    }
+  </script>
+</body>
+</html>
