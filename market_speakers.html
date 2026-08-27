@@ -4,47 +4,203 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>مكتب المتكلمين والمحتوى | Ministry Speakers</title>
+
+  <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
     @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
-    body { background: #070b19; color: #fff; display: flex; justify-content: center; min-height: 100vh; padding: 16px; }
-    .container { width: 100%; max-width: 650px; }
-    .card-box { background: rgba(15, 23, 42, 0.95); border: 1.5px solid rgba(0, 242, 254, 0.3); border-radius: 20px; padding: 22px 18px; text-align: center; margin-bottom: 16px; }
+    
+    body {
+      background: #070b19;
+      color: #fff;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+      padding: 16px;
+    }
+
+    .container {
+      width: 100%;
+      max-width: 650px;
+    }
+
+    .card-box {
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
+      border-radius: 20px;
+      padding: 22px 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
     h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
-    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 18px; }
-    input, select { width: 100%; padding: 12px; border-radius: 12px; border: 1px solid rgba(0, 242, 254, 0.3); background: rgba(255, 255, 255, 0.06); color: #fff; font-size: 0.95rem; font-weight: 700; margin-bottom: 12px; text-align: center; outline: none; }
+    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 14px; }
+
+    .disclaimer-box {
+      background: rgba(241, 196, 15, 0.1);
+      border: 1px dashed #f1c40f;
+      color: #fef08a;
+      border-radius: 12px;
+      padding: 10px 14px;
+      font-size: 0.82rem;
+      line-height: 1.5;
+      text-align: right;
+      margin-bottom: 16px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(255, 255, 255, 0.06);
+      color: #fff;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
+      text-align: center;
+      outline: none;
+    }
     select option { background: #0f172a; color: #fff; }
-    .desk-badge { background: rgba(0, 242, 254, 0.1); border: 1px solid #00f2fe; color: #00f2fe; padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 800; display: inline-block; margin-bottom: 12px; }
-    .live-balance-tag { background: rgba(0, 242, 254, 0.15); border: 1px dashed #00f2fe; color: #38bdf8; padding: 8px 14px; border-radius: 10px; font-size: 0.95rem; font-weight: 900; margin-top: 8px; display: inline-block; }
-    .market-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 14px; margin-top: 16px; text-align: right; }
-    .item-square { background: rgba(30, 41, 59, 0.7); border: 1.5px solid rgba(0, 242, 254, 0.2); border-radius: 16px; padding: 14px; display: flex; flex-direction: column; justify-content: space-between; }
-    .item-square.vip-custom { border-color: #f1c40f; background: linear-gradient(135deg, rgba(241, 196, 15, 0.1), rgba(30, 41, 59, 0.8)); }
-    .item-title { font-size: 0.95rem; font-weight: 900; color: #f1f5f9; margin-bottom: 4px; }
-    .item-info { font-size: 0.78rem; color: #94a3b8; margin-bottom: 10px; line-height: 1.3; }
-    .item-price-tag { font-size: 1.1rem; font-weight: 900; color: #00f2fe; margin-bottom: 10px; text-align: left; direction: ltr; }
-    .item-square.vip-custom .item-price-tag { color: #f1c40f; }
-    .btn-buy { width: 100%; padding: 10px; border: none; border-radius: 10px; font-size: 0.95rem; font-weight: 900; cursor: pointer; background: linear-gradient(135deg, #00f2fe, #4facfe); color: #070b19; }
-    .item-square.vip-custom .btn-buy { background: linear-gradient(135deg, #f1c40f, #e67e22); color: #000; }
+    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+    .desk-badge {
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid #00f2fe;
+      color: #00f2fe;
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    .live-balance-tag {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px dashed #00f2fe;
+      color: #38bdf8;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    /* نظام المجموعات المنسدلة */
+    .groups-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      margin-top: 16px;
+      text-align: right;
+    }
+
+    .speaker-group-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1.5px solid rgba(0, 242, 254, 0.2);
+      border-radius: 16px;
+      overflow: hidden;
+      transition: all 0.25s ease;
+    }
+    .speaker-group-card.active-group {
+      border-color: #00f2fe;
+      box-shadow: 0 8px 25px rgba(0, 242, 254, 0.15);
+    }
+    .speaker-group-card.vip-custom {
+      border-color: #f1c40f;
+      background: linear-gradient(135deg, rgba(241, 196, 15, 0.08), rgba(30, 41, 59, 0.85));
+    }
+
+    .group-header {
+      padding: 14px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .group-title-box { display: flex; flex-direction: column; }
+    .group-title { font-size: 1rem; font-weight: 900; color: #f1f5f9; }
+    .group-subtitle { font-size: 0.78rem; color: #94a3b8; margin-top: 2px; }
+    .group-cost { font-size: 1.1rem; font-weight: 900; color: #00f2fe; direction: ltr; }
+    .speaker-group-card.vip-custom .group-cost { color: #f1c40f; }
+
+    .group-body {
+      padding: 0 16px 16px 16px;
+      border-top: 1px dashed rgba(255, 255, 255, 0.1);
+      display: none;
+      animation: fadeIn 0.3s ease;
+    }
+    .speaker-group-card.active-group .group-body { display: block; }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .select-label {
+      font-size: 0.82rem;
+      color: #38bdf8;
+      font-weight: 700;
+      margin: 12px 0 6px 0;
+    }
+
+    .btn-buy {
+      width: 100%;
+      padding: 11px;
+      border: none;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      cursor: pointer;
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      margin-top: 8px;
+      transition: transform 0.2s;
+    }
+    .speaker-group-card.vip-custom .btn-buy {
+      background: linear-gradient(135deg, #f1c40f, #e67e22);
+      color: #000;
+    }
+    .btn-buy:active { transform: scale(0.96); }
+
     .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
     .hidden { display: none; }
   </style>
 </head>
 <body>
+
   <div class="container">
+    
+    <!-- 1. شاشة الدخول -->
     <div class="card-box" id="loginScreen">
       <div class="desk-badge">🎙️ مكتب المتكلمين والمحتوى</div>
       <h2>تسجيل دخول المكتب</h2>
-      <p class="desc">أدخل كلمة سر مكتب المتكلمين للدخول</p>
+      <p class="desc">أدخل كلمة سر مكتب المتكلمين (speak101)</p>
+
       <input type="password" id="servantPassInput" placeholder="كلمة السر...">
       <button class="btn-buy" style="padding: 13px;" onclick="loginDesk()">دخول المكتب ↵</button>
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
+    <!-- 2. واجهة الحجز والمجموعات -->
     <div id="marketScreen" class="hidden">
-      <div class="card-box">
+      
+      <div class="card-box" style="margin-bottom: 14px;">
         <div class="desk-badge">🎙️ مكتب المتكلمين (12 أسبوعاً لكل ربع)</div>
+        <h2 style="font-size: 1.25rem;">إتمام حجز المتكلمين</h2>
+        
+        <div class="disclaimer-box">
+          📌 <b>تنويه هام:</b> المبالغ الموضحة ليست مقابلاً للكلمة أو التعليم الروحي؛ فخدام الكنيسة والآباء لا يتقاضون مقابلاً، بل هي تقديرات رمزية لتغطية تكاليف الانتقالات، هدايا التقدير، وتجهيزات القاعة والمحتوى.
+        </div>
+
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
@@ -56,6 +212,7 @@
               <option value="team_anba_rois">فريق الانبا رويس</option>
             </select>
           </div>
+
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">٢. الربع السنوي:</div>
             <select id="quarterTargetSelect">
@@ -66,117 +223,293 @@
             </select>
           </div>
         </div>
+
         <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px;">٣. الأسبوع المستهدف:</div>
         <select id="slotTargetSelect"></select>
+
         <div id="liveBalanceBox" class="live-balance-tag hidden">الرصيد المتاح: <span id="currentTeamBalanceDisplay">0</span> ج.ك</div>
         <div id="saleStatus" class="msg"></div>
       </div>
-      <div class="market-grid" id="itemsGrid"></div>
+
+      <!-- قائمة المجموعات المنسدلة -->
+      <div class="groups-list" id="speakerGroupsContainer"></div>
+
     </div>
+
   </div>
 
   <script>
-    const firebaseConfig = { apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM", authDomain: "maze-d8572.firebaseapp.com", databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com", projectId: "maze-d8572", storageBucket: "maze-d8572.firebasestorage.app", messagingSenderId: "133228040813", appId: "1:133228040813:web:67eac572b15f952e99e564" };
+    const firebaseConfig = {
+      apiKey: "AIzaSyCuaEafr-MAWy9U85XGN-tyNf-x5cn1JeM",
+      authDomain: "maze-d8572.firebaseapp.com",
+      databaseURL: "https://maze-d8572-default-rtdb.firebaseio.com",
+      projectId: "maze-d8572",
+      storageBucket: "maze-d8572.firebasestorage.app",
+      messagingSenderId: "133228040813",
+      appId: "1:133228040813:web:67eac572b15f952e99e564"
+    };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    const catalog = [
-      { name: "خادم محلي / أمين الخدمة", info: "خادم من أسرة المرحلة لموضوع محلي (أسبوع فردي)", cost: 0 },
-      { name: "كاهن من الكنيسة أو الإيبارشية", info: "محاضرة طقسية وعقائدية متخصصة (أسبوع فردي)", cost: 2500 },
-      { name: "خادم شباب وميديا معروف", info: "لقاء شبابي وترانيم وميديا هادفة (أسبوع فردي)", cost: 5000 },
-      { name: "متخصص نفسي وتربوي مشهور", info: "ندوة علاقات وتعديل سلوك وصحة نفسية (أسبوع فردي)", cost: 8000 },
-      { name: "متكلم VIP قامة كنسية كبيرة", info: "لقاء قامة كنسية كبيرة د. مجدي / أبونا داود (أسبوع فردي)", cost: 12000 },
-      { name: "👑 طلب متكلم خاص بالاسم (VIP Custom)", isCustom: true, info: "تحديد أي شخصية بالاسم (الأعلى سعراً)", cost: 20000 }
+    // كتالوج المجموعات والأسماء
+    const speakerGroups = [
+      {
+        id: "local_servants",
+        categoryTitle: "خدام أسرة المرحلة والخدمة المحلية",
+        subtitle: "خدام من أسرة ثانوي بالكنيسة",
+        cost: 0,
+        options: [
+          "أ. مينا ميخائيل",
+          "أ. رامز أشرف",
+          "أ. رأفت سمير",
+          "أ. فادي صبحي",
+          "أ. عادل أميرهم",
+          "أ. يوسف أيمن",
+          "أ. بيشوي سامي",
+          "خادم آخر من أسرة الخدمة"
+        ]
+      },
+      {
+        id: "church_priests",
+        categoryTitle: "آباء كهنة من الكنيسة والإيبارشية",
+        subtitle: "لقاءات طقسية وعقائدية وروحية مع الآباء",
+        cost: 2500,
+        options: [
+          "أبونا فام",
+          "أبونا مرقس",
+          "أبونا بافلوس",
+          "أبونا أوغسطينوس",
+          "أب كاهن آخر من الإيبارشية"
+        ]
+      },
+      {
+        id: "youth_worship",
+        categoryTitle: "خدام شباب ومرنمين وميديا",
+        subtitle: "فقرات ترانيم وتسبيح وموضوعات شبابية تفاعلية",
+        cost: 5000,
+        options: [
+          "أ. روفائيل طانويس",
+          "المرنمة يوستينا سمير",
+          "د. بيتر",
+          "خادم شباب / مرنم آخر"
+        ]
+      },
+      {
+        id: "psycho_expert",
+        categoryTitle: "متخصص نفسي وتربوي مشهور",
+        subtitle: "ندوات علاقات وصحة نفسية وسلوك مراهقين",
+        cost: 8000,
+        options: [
+          "د. ممدوح ناشد (استشاري نفسي)",
+          "د. نيفين فوزي (استشاري علاقات أسرية)",
+          "د. أسامة يوسف (تربوي وتعديل سلوك)",
+          "استشاري نفسي وتربوي آخر"
+        ]
+      },
+      {
+        id: "vip_clergymen",
+        categoryTitle: "متكلم VIP (قامات وآباء أساقفة)",
+        subtitle: "لقاءات كبرى للمرحلة مع قامات كنسية معروفة",
+        cost: 12000,
+        options: [
+          "أبونا بولس جورج",
+          "أبونا داود لمعي",
+          "أبونا يعقوب عياد",
+          "الأنبا روفائيل",
+          "الأنبا أغاثون",
+          "الأنبا أبانوب",
+          "الأنبا بافلي"
+        ]
+      },
+      {
+        id: "custom_choice",
+        categoryTitle: "👑 طلب متكلم خاص بالاسم (VIP Custom)",
+        subtitle: "تحديد أي شخصية أو قامة عامة بالاسم (الأعلى سعراً)",
+        cost: 20000,
+        isCustom: true
+      }
     ];
 
     function loginDesk() {
-      if (document.getElementById("servantPassInput").value.trim().toLowerCase() !== "speak101") {
+      const pass = document.getElementById("servantPassInput").value.trim().toLowerCase();
+      if (pass !== "speak101") {
         document.getElementById("loginError").style.display = "block";
         return;
       }
+
       document.getElementById("loginScreen").classList.add("hidden");
       document.getElementById("marketScreen").classList.remove("hidden");
-      
+
+      populateWeeks();
+      renderGroups();
+    }
+
+    function populateWeeks() {
       const slotSelect = document.getElementById("slotTargetSelect");
+      slotSelect.innerHTML = "";
       for (let i = 1; i <= 12; i++) {
         const opt = document.createElement("option");
         opt.value = `الأسبوع (${i})`;
         opt.textContent = `📅 الأسبوع رقم ${i}`;
         slotSelect.appendChild(opt);
       }
-      renderGrid();
     }
 
     function fetchCurrentTeamBalance() {
       const teamKey = document.getElementById("teamTargetSelect").value;
+      const box = document.getElementById("liveBalanceBox");
+      const display = document.getElementById("currentTeamBalanceDisplay");
+
       if (!teamKey) return;
       db.ref('teams/' + teamKey + '/balance').on('value', snap => {
-        document.getElementById("currentTeamBalanceDisplay").textContent = Number(snap.val() || 0).toLocaleString();
-        document.getElementById("liveBalanceBox").classList.remove("hidden");
+        const bal = Number(snap.val() || 0);
+        display.textContent = bal.toLocaleString();
+        box.classList.remove("hidden");
       });
     }
 
-    function renderGrid() {
-      const grid = document.getElementById("itemsGrid");
-      grid.innerHTML = "";
-      catalog.forEach((item, index) => {
-        const box = document.createElement("div");
-        box.className = `item-square ${item.isCustom ? 'vip-custom' : ''}`;
-        box.innerHTML = `
-          <div><div class="item-title">${item.name}</div><div class="item-info">${item.info}</div></div>
-          <div><div class="item-price-tag">${item.cost.toLocaleString()} ج.ك</div>
-          <button class="btn-buy" onclick="buyItem(${index})">🛒 اعتماد وحجز</button></div>
+    function renderGroups() {
+      const container = document.getElementById("speakerGroupsContainer");
+      container.innerHTML = "";
+
+      speakerGroups.forEach((group, index) => {
+        const card = document.createElement("div");
+        card.className = `speaker-group-card ${group.isCustom ? 'vip-custom' : ''}`;
+        card.id = `group_card_${index}`;
+
+        let innerOptionsHtml = "";
+        if (group.isCustom) {
+          innerOptionsHtml = `
+            <div class="select-label">اكتب اسم المتكلم أو الشخصية المطلوبة:</div>
+            <input type="text" id="customSpeakerInput_${index}" placeholder="اكتب الاسم هنا...">
+            <button class="btn-buy" onclick="buyFromGroup(${index})">🛒 اعتماد وحجز الاسم المخصص</button>
+          `;
+        } else {
+          let optsList = group.options.map(opt => `<option value="${opt}">${opt}</option>`).join('');
+          innerOptionsHtml = `
+            <div class="select-label">اختر الاسم من القائمة:</div>
+            <select id="selectSpeaker_${index}">
+              ${optsList}
+            </select>
+            <button class="btn-buy" onclick="buyFromGroup(${index})">🛒 اعتماد وحجز هذا المتكلم</button>
+          `;
+        }
+
+        card.innerHTML = `
+          <div class="group-header" onclick="toggleGroupAccordion(${index})">
+            <div class="group-title-box">
+              <span class="group-title">${group.categoryTitle}</span>
+              <span class="group-subtitle">${group.subtitle}</span>
+            </div>
+            <div class="group-cost">${group.cost.toLocaleString()} ج.ك</div>
+          </div>
+          <div class="group-body">
+            ${innerOptionsHtml}
+          </div>
         `;
-        grid.appendChild(box);
+
+        container.appendChild(card);
       });
     }
 
-    function buyItem(idx) {
-      const teamKey = document.getElementById("teamTargetSelect").value;
-      const teamName = document.getElementById("teamTargetSelect").selectedOptions[0]?.text;
+    function toggleGroupAccordion(index) {
+      const card = document.getElementById(`group_card_${index}`);
+      const isActive = card.classList.contains("active-group");
+      
+      // إغلاق باقي الكروت لفتح الكارت المطلوب فقط
+      document.querySelectorAll('.speaker-group-card').forEach(c => c.classList.remove("active-group"));
+      
+      if (!isActive) {
+        card.classList.add("active-group");
+      }
+    }
+
+    function buyFromGroup(groupIndex) {
+      const teamSelect = document.getElementById("teamTargetSelect");
+      const teamKey = teamSelect.value;
+      const teamName = teamSelect.options[teamSelect.selectedIndex]?.text;
       const quarter = document.getElementById("quarterTargetSelect").value;
       const slot = document.getElementById("slotTargetSelect").value;
       const statusEl = document.getElementById("saleStatus");
+
       statusEl.style.display = "block";
 
-      if (!teamKey) { statusEl.style.color = "#ff0844"; statusEl.textContent = "⚠️ اختر الفريق أولاً!"; return; }
-
-      const item = catalog[idx];
-      let finalName = item.name;
-      if (item.isCustom) {
-        const customName = prompt("اكتب اسم المتكلم أو الشخصية المطلوبة بالكامل:");
-        if (!customName || !customName.trim()) { statusEl.style.color = "#ff0844"; statusEl.textContent = "⚠️ تم الإلغاء: لم يُكتب اسم المتكلم!"; return; }
-        finalName = `متكلم خاص: ${customName.trim()}`;
+      if (!teamKey) {
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "⚠️ برجاء اختيار الفريق أولاً من الأعلى!";
+        return;
       }
 
+      const group = speakerGroups[groupIndex];
+      let selectedPerson = "";
+
+      if (group.isCustom) {
+        const inputVal = document.getElementById(`customSpeakerInput_${groupIndex}`).value.trim();
+        if (!inputVal) {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "⚠️ برجاء كتابة اسم المتكلم أولاً!";
+          return;
+        }
+        selectedPerson = `متكلم خاص: ${inputVal}`;
+      } else {
+        selectedPerson = document.getElementById(`selectSpeaker_${groupIndex}`).value;
+      }
+
+      statusEl.style.color = "#f1c40f";
+      statusEl.textContent = "جاري التحقق وإتمام الحجز...";
+
       const teamRef = db.ref('teams/' + teamKey);
+
       teamRef.once('value').then(snapshot => {
-        const data = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
-        const existingPlan = (data.plan && data.plan[quarter]) || [];
-        if (existingPlan.some(p => p.slot === slot || (p.name && p.name.includes(slot)))) {
+        const teamData = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
+        
+        // التحقق من عدم حجز الأسبوع مسبقاً
+        const existingPlan = (teamData.plan && teamData.plan[quarter]) || [];
+        const alreadyBooked = existingPlan.find(p => p.slot === slot || (p.name && p.name.includes(slot)));
+        
+        if (alreadyBooked) {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = `⚠️ [${slot}] محجوز مسبقاً لـ ${teamName}!`;
+          statusEl.textContent = `⚠️ تم حجز [${slot}] لـ ${teamName} مسبقاً! لا يمكن حجز أكثر من متكلم لنفس الأسبوع.`;
           return;
         }
 
-        const bal = Number(data.balance || 0);
-        if (bal < item.cost) {
+        const currentBalance = Number(teamData.balance || 0);
+
+        if (currentBalance < group.cost) {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = `❌ رصيد ${teamName} (${bal.toLocaleString()} ج.ك) لا يكفي لشراء [${finalName}]!`;
+          statusEl.textContent = `❌ رصيد ${teamName} (${currentBalance.toLocaleString()} ج.ك) لا يكفي لحجز [${selectedPerson}] بسعر ${group.cost.toLocaleString()} ج.ك!`;
           return;
         }
 
-        data.balance = bal - item.cost;
-        if (!data.plan) data.plan = {};
-        if (!data.plan[quarter]) data.plan[quarter] = [];
-        data.plan[quarter].push({ name: `${slot} : ${finalName}`, cost: item.cost, desk: "speakers", slot: slot });
+        const newBalance = currentBalance - group.cost;
+        
+        if (!teamData.plan) teamData.plan = {};
+        if (!teamData.plan[quarter]) teamData.plan[quarter] = [];
+        
+        teamData.plan[quarter].push({
+          name: `${slot} : ${selectedPerson}`,
+          cost: group.cost,
+          desk: "speakers",
+          slot: slot
+        });
 
-        if (!data.purchases) data.purchases = [];
-        data.purchases.push({ item_name: `${finalName} [${slot}]`, cost: item.cost, quarter: quarter, time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' }) });
+        if (!teamData.purchases) teamData.purchases = [];
+        teamData.purchases.push({
+          item_name: `${selectedPerson} [${slot}]`,
+          cost: group.cost,
+          quarter: quarter,
+          time: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
+        });
 
-        teamRef.set(data).then(() => {
+        teamData.balance = newBalance;
+
+        teamRef.set(teamData).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم حجز [${finalName}] لـ ${teamName} في ${slot}!`;
+          statusEl.textContent = `✅ تم بنجاح حجز [${selectedPerson}] لـ ${teamName} في ${slot}! الرصيد المتبقي: ${newBalance.toLocaleString()} ج.ك`;
+        }).catch(err => {
+          statusEl.style.color = "#ff0844";
+          statusEl.textContent = "❌ خطأ في الاتصال: " + err.message;
         });
       });
     }
