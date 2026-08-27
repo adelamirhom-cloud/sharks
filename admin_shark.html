@@ -2,70 +2,217 @@
 <html lang="ar" dir="rtl">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>تصفير نظام الشاركس | Admin Reset</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>لوحة الأدمن والتحكيم | Shark Tank Admin</title>
+
+  <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-database-compat.js"></script>
+
   <style>
-    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;700;900&display=swap');
+    @import url('https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap');
     * { box-sizing: border-box; font-family: 'Cairo', sans-serif; margin: 0; padding: 0; }
+
     body {
-      background: #060813;
+      background: radial-gradient(circle at top, #0f172a, #030712);
       color: #fff;
       display: flex;
       justify-content: center;
-      align-items: center;
+      align-items: flex-start;
       min-height: 100vh;
-      padding: 20px;
+      padding: 16px;
     }
+
+    .container {
+      width: 100%;
+      max-width: 680px;
+    }
+
     .card {
-      background: rgba(18, 24, 41, 0.95);
-      border: 1.5px solid rgba(255, 8, 68, 0.4);
+      background: rgba(15, 23, 42, 0.95);
+      border: 1.5px solid rgba(0, 242, 254, 0.3);
       border-radius: 20px;
-      padding: 30px 24px;
-      max-width: 420px;
-      width: 100%;
+      padding: 22px 18px;
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 20px rgba(0, 242, 254, 0.15);
       text-align: center;
-      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.8), 0 0 25px rgba(255, 8, 68, 0.15);
+      margin-bottom: 16px;
     }
-    h2 { color: #ff0844; margin-bottom: 12px; font-weight: 900; }
-    input[type="password"] {
+
+    h2 { color: #00f2fe; margin-bottom: 6px; font-weight: 900; }
+    p.desc { color: #94a3b8; font-size: 0.88rem; margin-bottom: 16px; }
+
+    input, select {
       width: 100%;
-      padding: 14px;
+      padding: 12px;
       border-radius: 12px;
-      border: 1px solid rgba(255, 8, 68, 0.4);
-      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(0, 242, 254, 0.3);
+      background: rgba(255, 255, 255, 0.06);
       color: #fff;
-      font-size: 1.1rem;
+      font-size: 0.95rem;
+      font-weight: 700;
+      margin-bottom: 12px;
       text-align: center;
       outline: none;
-      margin: 15px 0;
     }
-    button {
+    input:focus, select:focus { border-color: #00f2fe; box-shadow: 0 0 10px rgba(0, 242, 254, 0.4); }
+
+    .btn-admin {
       width: 100%;
-      padding: 14px;
+      padding: 13px;
       border: none;
       border-radius: 12px;
-      font-size: 1.1rem;
+      font-size: 1rem;
       font-weight: 900;
       cursor: pointer;
-      background: linear-gradient(135deg, #ff0844, #c0392b);
+      background: linear-gradient(135deg, #00f2fe, #4facfe);
+      color: #070b19;
+      box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+      transition: transform 0.2s;
+      margin-bottom: 10px;
+    }
+    .btn-summary {
+      background: linear-gradient(135deg, #f1c40f, #e67e22);
+      color: #000;
+      box-shadow: 0 0 15px rgba(241, 196, 15, 0.35);
+      font-size: 1.05rem;
+      padding: 14px;
+    }
+    .btn-danger {
+      background: linear-gradient(135deg, #ff0844, #991b1b);
       color: #fff;
-      box-shadow: 0 0 20px rgba(255, 8, 68, 0.4);
+      box-shadow: 0 0 15px rgba(255, 8, 68, 0.35);
     }
     button:active { transform: scale(0.97); }
-    .status { margin-top: 16px; font-weight: 700; font-size: 0.95rem; }
+
+    .badge-admin {
+      background: rgba(0, 242, 254, 0.1);
+      border: 1px solid #00f2fe;
+      color: #00f2fe;
+      padding: 4px 14px;
+      border-radius: 20px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      display: inline-block;
+      margin-bottom: 12px;
+    }
+
+    /* كروت تقرير التقييم */
+    .evaluation-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 14px;
+      text-align: right;
+    }
+
+    .eval-card {
+      background: rgba(30, 41, 59, 0.7);
+      border: 1.5px solid rgba(0, 242, 254, 0.2);
+      border-radius: 16px;
+      padding: 16px;
+    }
+    .eval-card.top-rank {
+      border-color: #f1c40f;
+      background: linear-gradient(135deg, rgba(241, 196, 15, 0.08), rgba(30, 41, 59, 0.85));
+    }
+
+    .eval-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      padding-bottom: 8px;
+    }
+    .eval-team-name { font-size: 1.15rem; font-weight: 900; color: #38bdf8; }
+    .eval-score-badge {
+      background: rgba(241, 196, 15, 0.2);
+      border: 1px solid #f1c40f;
+      color: #f1c40f;
+      padding: 4px 10px;
+      border-radius: 10px;
+      font-weight: 900;
+      font-size: 0.85rem;
+    }
+
+    .stat-metric-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+    .metric-box {
+      background: rgba(255, 255, 255, 0.04);
+      border-radius: 10px;
+      padding: 8px;
+      text-align: center;
+    }
+    .metric-label { font-size: 0.72rem; color: #94a3b8; margin-bottom: 2px; }
+    .metric-val { font-size: 0.95rem; font-weight: 900; color: #fff; }
+
+    .eval-section-title {
+      font-size: 0.82rem;
+      font-weight: 800;
+      color: #38bdf8;
+      margin: 8px 0 4px 0;
+    }
+    .eval-item-tag {
+      display: inline-block;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 0.75rem;
+      color: #cbd5e1;
+      margin: 2px;
+    }
+
+    .msg { margin-top: 12px; font-weight: 700; font-size: 0.9rem; display: none; }
+    .hidden { display: none; }
   </style>
 </head>
 <body>
 
-  <div class="card">
-    <h2>⚠️ تصفير نظام Shark Tank</h2>
-    <p style="color: #aaa; font-size: 0.88rem;">أدخل كلمة السر لتصفير محافظ الشاركس وحسابات الفرق بالكامل</p>
+  <div class="container">
     
-    <input type="password" id="adminPass" placeholder="كلمة السر...">
-    <button onclick="resetSharkSystem()">🔄 تصفير المنظومة بالكامل</button>
-    <div class="status" id="statusText"></div>
+    <!-- 1. شاشة تسجيل دخول الأدمن -->
+    <div class="card" id="loginScreen">
+      <div class="badge-admin">⚙️ الإدارة المركزية</div>
+      <h2>لوحة تحكم الأدمن</h2>
+      <p class="desc">أدخل رمز الأدمن للوصول لخيارات التحكم والتقييم (admin777)</p>
+
+      <input type="password" id="adminPassInput" placeholder="كلمة سر الأدمن...">
+      <button class="btn-admin" onclick="loginAdmin()">دخول لوحة الإدارة ↵</button>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
+    </div>
+
+    <!-- 2. لوحة الإدارة والتحكيم -->
+    <div id="adminPanel" class="hidden">
+      
+      <!-- أدوات التحكيم والتقييم للشاركس -->
+      <div class="card">
+        <div class="badge-admin">🏆 منصة تقييم وتتويج الشاركس</div>
+        <h2 style="font-size: 1.3rem;">تقرير إنجازات وتقييم الفرق</h2>
+        <p class="desc">استخراج ملخص كامل لكافة تحركات الفرق لحسم الفريق الفائز</p>
+
+        <button class="btn-admin btn-summary" onclick="generateSharkEvaluationReport()">📊 استخراج وتحديث تقرير التقييم الشامل</button>
+        <button class="btn-admin" style="background: rgba(255,255,255,0.08); color: #fff; border: 1px solid rgba(255,255,255,0.2);" onclick="window.print()">🖨️ طباعة التقرير للجنة التحكيم (Print)</button>
+      </div>
+
+      <!-- عرض نتائج التقييم للفرق الأربعة -->
+      <div id="evaluationResultsSection" class="evaluation-grid"></div>
+
+      <!-- قسم تصفير وضبط النظام -->
+      <div class="card" style="border-color: rgba(255, 8, 68, 0.4); margin-top: 20px;">
+        <h2 style="font-size: 1.15rem; color: #ff0844;">⚠️ إعادة ضبط وتصفير المنظومة</h2>
+        <p class="desc">تصفير كافة الأرصدة والتعاقدات وبدء خلوة جديدة من الصفر</p>
+
+        <button class="btn-admin btn-danger" onclick="resetEntireSystem()">🔄 تصفير كافة الفرق والبيانات بالكامل</button>
+        <div id="actionStatus" class="msg"></div>
+      </div>
+
+    </div>
+
   </div>
 
   <script>
@@ -78,32 +225,181 @@
       messagingSenderId: "133228040813",
       appId: "1:133228040813:web:67eac572b15f952e99e564"
     };
+
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    function resetSharkSystem() {
-      const pass = document.getElementById("adminPass").value.trim();
-      const status = document.getElementById("statusText");
+    const teamMeta = {
+      "team_virgin_mary": "فريق السيدة العذراء",
+      "team_archangel_michael": "فريق الملاك ميخائيل",
+      "team_st_mercurius": "فريق القديس ابو سيفين",
+      "team_anba_rois": "فريق الانبا رويس"
+    };
 
-      if (pass !== "avatege2019") {
-        status.style.color = "#ff0844";
-        status.textContent = "❌ كلمة السر غير صحيحة!";
+    function loginAdmin() {
+      const pass = document.getElementById("adminPassInput").value.trim().toLowerCase();
+      if (pass !== "admin777") {
+        document.getElementById("loginError").style.display = "block";
         return;
       }
+      document.getElementById("loginError").style.display = "none";
+      document.getElementById("loginScreen").classList.add("hidden");
+      document.getElementById("adminPanel").classList.remove("hidden");
 
-      status.style.color = "#f1c40f";
-      status.textContent = "جاري تصفير الحسابات والمحافظ...";
+      generateSharkEvaluationReport();
+    }
 
-      Promise.all([
-        db.ref('teams').remove(),
-        db.ref('sharks').remove()
-      ]).then(() => {
-        status.style.color = "#2ecc71";
-        status.textContent = "✅ تم تصفير جميع الاستثمارات ومشتريات الفرق بنجاح!";
-        document.getElementById("adminPass").value = "";
+    // استخراج تقرير إنجازات الفرق الكامل وتوليد نقاط التقييم
+    function generateSharkEvaluationReport() {
+      const container = document.getElementById("evaluationResultsSection");
+      container.innerHTML = '<div style="color:#f1c40f; text-align:center; padding:12px;">جاري تجميع إحصائيات الفرق وتحليل الأداء...</div>';
+
+      db.ref('teams').once('value').then(snapshot => {
+        const teamsData = snapshot.val() || {};
+        container.innerHTML = "";
+
+        let reports = [];
+
+        Object.keys(teamMeta).forEach(key => {
+          const t = teamsData[key] || {};
+          const name = teamMeta[key];
+          const balance = Number(t.balance || 0);
+
+          // 1. حساب الاستثمارات والمصروفات
+          const totalInvested = (t.investments || []).reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
+          const totalSpent = (t.purchases || []).reduce((sum, p) => sum + (Number(p.cost) || 0), 0);
+
+          // 2. حساب إنجاز المتكلمين (من أصل 48 أسبوعاً للعام كاملاً)
+          const plan = t.plan || {};
+          const allPlanItems = [...(plan.Q1 || []), ...(plan.Q2 || []), ...(plan.Q3 || []), ...(plan.Q4 || [])];
+          
+          const speakersBooked = allPlanItems.filter(i => i.desk === 'speakers' || (i.slot && i.slot.startsWith("الأسبوع ("))).length;
+          const tripsBooked = allPlanItems.filter(i => i.desk === 'trips').length;
+          const eventsBooked = allPlanItems.filter(i => i.desk === 'events').length;
+
+          // 3. خوارزمية احتساب نقاط التقييم الاسترشادية للشاركس (Evaluation Score)
+          // 40 نقطة لتغطية المتكلمين + 20 نقطة للرحلات + 20 نقطة للحفلات + 20 نقطة للإدارة المالية
+          const speakerScore = Math.min(40, Math.round((speakersBooked / 48) * 40));
+          const tripScore = Math.min(20, tripsBooked * 5);
+          const eventScore = Math.min(20, eventsBooked * 5);
+          const financeScore = totalInvested > 0 ? Math.min(20, Math.round((totalSpent / totalInvested) * 20)) : 0;
+          const totalScore = speakerScore + tripScore + eventScore + financeScore;
+
+          reports.push({
+            key,
+            name,
+            balance,
+            totalInvested,
+            totalSpent,
+            speakersBooked,
+            tripsBooked,
+            eventsBooked,
+            totalScore,
+            purchases: t.purchases || [],
+            plan
+          });
+        });
+
+        // ترتيب الفرق حسب النقاط تنازلياً
+        reports.sort((a, b) => b.totalScore - a.totalScore);
+
+        reports.forEach((rep, idx) => {
+          const card = document.createElement("div");
+          card.className = `eval-card ${idx === 0 ? 'top-rank' : ''}`;
+
+          // استخراج أسماء الرحلات والحفلات المحجوزة
+          let tripsAndEventsTags = [];
+          ['Q1', 'Q2', 'Q3', 'Q4'].forEach(q => {
+            const list = (rep.plan && rep.plan[q]) || [];
+            list.filter(i => i.desk !== 'speakers' && !(i.slot && i.slot.startsWith("الأسبوع ("))).forEach(item => {
+              tripsAndEventsTags.push(`<span class="eval-item-tag">[${q}] ${item.slot || item.name}</span>`);
+            });
+          });
+
+          card.innerHTML = `
+            <div class="eval-header">
+              <div style="display: flex; align-items: center; gap: 8px;">
+                <span style="font-size: 1.2rem;">${idx === 0 ? '🥇' : (idx === 1 ? '🥈' : (idx === 2 ? '🥉' : '🚩'))}</span>
+                <span class="eval-team-name">${rep.name}</span>
+              </div>
+              <div class="eval-score-badge">التقييم: ${rep.totalScore} / 100 نقطة</div>
+            </div>
+
+            <!-- المقاييس المالية -->
+            <div class="stat-metric-row">
+              <div class="metric-box">
+                <div class="metric-label">استثمارات الشاركس</div>
+                <div class="metric-val" style="color: #f1c40f;">${rep.totalInvested.toLocaleString()} ج.ك</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">المصروفات المنفذة</div>
+                <div class="metric-val" style="color: #ff0844;">${rep.totalSpent.toLocaleString()} ج.ك</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">الرصيد المتبقي</div>
+                <div class="metric-val" style="color: #00f2fe;">${rep.balance.toLocaleString()} ج.ك</div>
+              </div>
+            </div>
+
+            <!-- تفاصيل تنفيذ الخطة -->
+            <div class="stat-metric-row">
+              <div class="metric-box">
+                <div class="metric-label">المتكلمون (من 48)</div>
+                <div class="metric-val" style="color: #38bdf8;">${rep.speakersBooked} / 48 أسبوعاً</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">الرحلات المحجوزة</div>
+                <div class="metric-val" style="color: #a855f7;">${rep.tripsBooked} رحلات</div>
+              </div>
+              <div class="metric-box">
+                <div class="metric-label">الحفلات والمناسبات</div>
+                <div class="metric-val" style="color: #4ade80;">${rep.eventsBooked} فعاليات</div>
+              </div>
+            </div>
+
+            <!-- الأنشطة والرحلات المعتمدة -->
+            <div class="eval-section-title">🚌 الرحلات والفعاليات المعتمدة:</div>
+            <div>${tripsAndEventsTags.length > 0 ? tripsAndEventsTags.join(' ') : '<span style="font-size:0.75rem; color:#64748b;">لا توجد فعاليات معتمدة</span>'}</div>
+
+            <!-- تفاصيل الربع السنوي للمتكلمين -->
+            <div class="eval-section-title" style="margin-top: 8px;">🎙️ توزيع المتكلمين على الفصول:</div>
+            <div style="font-size: 0.78rem; color: #cbd5e1;">
+              🍂 الخريف: <b>${((rep.plan.Q1 || []).filter(i => i.desk === 'speakers')).length}/12</b> | 
+              ❄️ الشتاء: <b>${((rep.plan.Q2 || []).filter(i => i.desk === 'speakers')).length}/12</b> | 
+              🌱 الربيع: <b>${((rep.plan.Q3 || []).filter(i => i.desk === 'speakers')).length}/12</b> | 
+              ☀️ الصيف: <b>${((rep.plan.Q4 || []).filter(i => i.desk === 'speakers')).length}/12</b>
+            </div>
+          `;
+
+          container.appendChild(card);
+        });
+      });
+    }
+
+    // تصفير المنظومة بالكامل
+    function resetEntireSystem() {
+      const confirmReset = confirm("⚠️ تحذير نهائي: هل أنت متأكد من تصفير كافة بيانات الفرق، الأرصدة، والاستثمارات؟ لا يمكن التراجع بعد هذه الخطوة!");
+      if (!confirmReset) return;
+
+      const statusEl = document.getElementById("actionStatus");
+      statusEl.style.display = "block";
+      statusEl.style.color = "#f1c40f";
+      statusEl.textContent = "جاري تصفير المنظومة وإعادة الضبط...";
+
+      const initialTeamsData = {
+        team_virgin_mary: { balance: 0, investments: [], purchases: [], plan: { Q1: [], Q2: [], Q3: [], Q4: [] } },
+        team_archangel_michael: { balance: 0, investments: [], purchases: [], plan: { Q1: [], Q2: [], Q3: [], Q4: [] } },
+        team_st_mercurius: { balance: 0, investments: [], purchases: [], plan: { Q1: [], Q2: [], Q3: [], Q4: [] } },
+        team_anba_rois: { balance: 0, investments: [], purchases: [], plan: { Q1: [], Q2: [], Q3: [], Q4: [] } }
+      };
+
+      db.ref('teams').set(initialTeamsData).then(() => {
+        statusEl.style.color = "#2ecc71";
+        statusEl.textContent = "✅ تم تصفير المنظومة بالكامل بنجاح! جميع الفرق جاهزة لبدء جولات الاستثمار.";
+        generateSharkEvaluationReport();
       }).catch(err => {
-        status.style.color = "#ff0844";
-        status.textContent = "❌ خطأ أثناء التصفير: " + err.message;
+        statusEl.style.color = "#ff0844";
+        statusEl.textContent = "❌ حدث خطأ أثناء التصفير: " + err.message;
       });
     }
   </script>
