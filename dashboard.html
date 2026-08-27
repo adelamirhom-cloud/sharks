@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>بورصة استثمارات الخلوة | Live Leaderboard</title>
+  <title>بورصة استثمارات الخدمة | Live Leaderboard</title>
 
   <!-- Firebase Compatibility SDKs -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
@@ -36,14 +36,14 @@
     }
     .sub-title {
       color: #94a3b8;
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 700;
       margin-top: 4px;
     }
 
     .grid-teams {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
       gap: 20px;
       max-width: 1400px;
       margin: 0 auto;
@@ -79,6 +79,17 @@
       border-radius: 12px;
     }
 
+    .team-card.under-attack {
+      border-color: #ff0844;
+      animation: pulseAlert 2s infinite;
+    }
+
+    @keyframes pulseAlert {
+      0% { box-shadow: 0 0 10px rgba(255, 8, 68, 0.4); }
+      50% { box-shadow: 0 0 25px rgba(255, 8, 68, 0.8); }
+      100% { box-shadow: 0 0 10px rgba(255, 8, 68, 0.4); }
+    }
+
     .team-name {
       font-size: 1.35rem;
       font-weight: 900;
@@ -91,7 +102,7 @@
       display: flex;
       justify-content: space-between;
       margin-bottom: 8px;
-      font-size: 0.95rem;
+      font-size: 0.92rem;
       color: #cbd5e1;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
       padding-bottom: 6px;
@@ -104,14 +115,14 @@
     .quarters-indicator {
       display: flex;
       gap: 6px;
-      margin-top: 14px;
+      margin-top: 12px;
     }
     .q-pill {
       flex: 1;
       text-align: center;
-      padding: 6px 0;
+      padding: 6px 2px;
       border-radius: 8px;
-      font-size: 0.8rem;
+      font-size: 0.75rem;
       font-weight: 900;
       background: rgba(255, 255, 255, 0.05);
       color: #64748b;
@@ -122,18 +133,28 @@
       color: #2ecc71;
       border-color: #2ecc71;
     }
+
+    .attack-banner {
+      background: rgba(255, 8, 68, 0.15);
+      border: 1px dashed #ff0844;
+      color: #ff0844;
+      padding: 6px 10px;
+      border-radius: 8px;
+      font-size: 0.8rem;
+      font-weight: 800;
+      margin-top: 8px;
+      text-align: right;
+    }
   </style>
 </head>
 <body>
 
   <header>
     <h1>🦈 بورصة استثمارات الشاركس المباشرة</h1>
-    <div class="sub-title">المتابعة اللحظية لتمويل ومشتريات فرق خطة الخدمة السنوية</div>
+    <div class="sub-title">المتابعة اللحظية لتمويل ومشتريات خطط الفرق (12 أسبوعاً لكل موسم)</div>
   </header>
 
-  <div class="grid-teams" id="teamsDashboardGrid">
-    <!-- كروت الفرق تتولد ديناميكياً هنا -->
-  </div>
+  <div class="grid-teams" id="teamsDashboardGrid"></div>
 
   <script>
     const firebaseConfig = {
@@ -165,13 +186,15 @@
 
       let teamsList = Object.keys(teamMeta).map(key => {
         const teamData = data[key] || {};
+        
         let totalInvested = 0;
         if (teamData.investments) {
-          totalInvested = teamData.investments.reduce((sum, inv) => sum + (inv.amount || 0), 0);
+          totalInvested = teamData.investments.reduce((sum, inv) => sum + (Number(inv.amount) || 0), 0);
         }
+        
         let totalSpent = 0;
         if (teamData.purchases) {
-          totalSpent = teamData.purchases.reduce((sum, p) => sum + (p.cost || 0), 0);
+          totalSpent = teamData.purchases.reduce((sum, p) => sum + (Number(p.cost) || 0), 0);
         }
 
         const plan = teamData.plan || {};
@@ -183,10 +206,12 @@
         return {
           key: key,
           name: teamMeta[key],
-          currentBalance: teamData.balance || 0,
+          currentBalance: Number(teamData.balance || 0),
           totalInvested: totalInvested,
           totalSpent: totalSpent,
           itemsCount: (teamData.purchases || []).length,
+          activeAttack: teamData.activeAttack || null,
+          qCounts: { Q1: q1Count, Q2: q2Count, Q3: q3Count, Q4: q4Count },
           qStatus: {
             Q1: q1Count > 0,
             Q2: q2Count > 0,
@@ -196,13 +221,14 @@
         };
       });
 
-      // ترتيب الفرق حسب إجمالي الاستثمارات التي حصلوا عليها
+      // ترتيب الفرق حسب إجمالي الاستثمارات المجمعة
       teamsList.sort((a, b) => b.totalInvested - a.totalInvested);
 
       teamsList.forEach((team, index) => {
         const isLeader = index === 0 && team.totalInvested > 0;
+        const isAttacked = !!team.activeAttack;
         const card = document.createElement("div");
-        card.className = `team-card ${isLeader ? 'rank-1' : ''}`;
+        card.className = `team-card ${isLeader ? 'rank-1' : ''} ${isAttacked ? 'under-attack' : ''}`;
 
         card.innerHTML = `
           <div>
@@ -224,18 +250,20 @@
             </div>
 
             <div class="stat-row">
-              <span>عدد البنود المشتراة:</span>
+              <span>إجمالي البنود المنجزة:</span>
               <span class="stat-value">${team.itemsCount} بنود</span>
             </div>
+
+            ${isAttacked ? `<div class="attack-banner">🔥 أزمة نشطة: ${team.activeAttack.title}</div>` : ''}
           </div>
 
           <div>
-            <div style="font-size: 0.8rem; color: #94a3b8; text-align: right; margin-top: 10px;">اكتمال خطة الـ 4 مواسم:</div>
+            <div style="font-size: 0.8rem; color: #94a3b8; text-align: right; margin-top: 10px;">إنجاز الـ 4 مواسم:</div>
             <div class="quarters-indicator">
-              <div class="q-pill ${team.qStatus.Q1 ? 'done' : ''}">Q1 الخريف</div>
-              <div class="q-pill ${team.qStatus.Q2 ? 'done' : ''}">Q2 الشتاء</div>
-              <div class="q-pill ${team.qStatus.Q3 ? 'done' : ''}">Q3 الربيع</div>
-              <div class="q-pill ${team.qStatus.Q4 ? 'done' : ''}">Q4 الصيف</div>
+              <div class="q-pill ${team.qStatus.Q1 ? 'done' : ''}">Q1 (${team.qCounts.Q1})</div>
+              <div class="q-pill ${team.qStatus.Q2 ? 'done' : ''}">Q2 (${team.qCounts.Q2})</div>
+              <div class="q-pill ${team.qStatus.Q3 ? 'done' : ''}">Q3 (${team.qCounts.Q3})</div>
+              <div class="q-pill ${team.qStatus.Q4 ? 'done' : ''}">Q4 (${team.qCounts.Q4})</div>
             </div>
           </div>
         `;
