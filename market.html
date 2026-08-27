@@ -69,7 +69,19 @@
       margin-bottom: 12px;
     }
 
-    /* شبكة مربعات الكتالوج */
+    .live-balance-tag {
+      background: rgba(0, 242, 254, 0.15);
+      border: 1px dashed #00f2fe;
+      color: #38bdf8;
+      padding: 8px 14px;
+      border-radius: 10px;
+      font-size: 0.95rem;
+      font-weight: 900;
+      margin-top: 8px;
+      display: inline-block;
+    }
+
+    /* شبكة المربعات */
     .market-grid {
       display: grid;
       grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -137,14 +149,14 @@
 
   <div class="container">
     
-    <!-- 1. شاشة تسجيل الدخول -->
+    <!-- 1. تسجيل الدخول -->
     <div class="card-box" id="loginScreen">
       <h2>🏪 سوق تعاقدات الخدمة</h2>
-      <p class="desc">اختر مكتب التعاقدات المسؤول عنه وأدخل كلمة السر المخصصة</p>
+      <p class="desc">اختر مكتب التعاقدات وأدخل كلمة السر للدخول</p>
 
       <select id="deskSelect">
         <option value="" disabled selected>-- اختر مكتب التعاقد --</option>
-        <option value="speakers">🎙️ مكتب المتكلمين (مطلوب 12 أسبوعاً للربع)</option>
+        <option value="speakers">🎙️ مكتب المتكلمين (12 أسبوعاً لكل ربع)</option>
         <option value="trips">🚌 مكتب الرحلات وأتوبيسات الخلوة السنوية</option>
         <option value="events">🎁 مكتب الهدايا والاحتفالات والأنشطة</option>
       </select>
@@ -154,18 +166,18 @@
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة لهذا المكتب!</div>
     </div>
 
-    <!-- 2. شاشة الشراء المباشر بالأسبوع والمربعات -->
+    <!-- 2. واجهة الشراء واختيار الأسبوع/الشهر -->
     <div id="marketScreen" class="hidden">
       
       <div class="card-box" style="margin-bottom: 14px;">
         <div class="desk-badge" id="deskTitleDisplay">المكتب</div>
-        <h2 style="font-size: 1.25rem;">إتمام تعاقد فردي مفصل</h2>
-        <p class="desc" style="margin-bottom: 14px;">حدد الفريق والموسم ورقم الأسبوع/الشهر، ثم اختر البند للشراء</p>
+        <h2 style="font-size: 1.25rem;">إتمام تعاقد فردي مباشر</h2>
+        <p class="desc" style="margin-bottom: 10px;">حدد الفريق والموسم والخانة المستهدفة، ثم اختر البند لشرائه</p>
 
         <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
           <div>
             <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-bottom: 4px;">١. الفريق:</div>
-            <select id="teamTargetSelect">
+            <select id="teamTargetSelect" onchange="fetchCurrentTeamBalance()">
               <option value="" disabled selected>-- اختر الفريق --</option>
               <option value="team_virgin_mary">فريق السيدة العذراء</option>
               <option value="team_archangel_michael">فريق الملاك ميخائيل</option>
@@ -185,11 +197,10 @@
           </div>
         </div>
 
-        <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px;">٣. التوقيت المستهدف (أسبوع / شهر):</div>
-        <select id="slotTargetSelect">
-          <!-- يتغير ديناميكياً حسب نوع المكتب -->
-        </select>
+        <div style="text-align: right; font-size: 0.8rem; color: #cbd5e1; margin-top: 6px; margin-bottom: 4px;">٣. الخانة المستهدفة (أسبوع / شهر):</div>
+        <select id="slotTargetSelect"></select>
 
+        <div id="liveBalanceBox" class="live-balance-tag hidden">الرصيد المتاح بالمحفظة: <span id="currentTeamBalanceDisplay">0</span> ج.ك</div>
         <div id="saleStatus" class="msg"></div>
       </div>
 
@@ -220,23 +231,23 @@
       "events": "event303"
     };
 
-    // كتالوج فردي بالكامل بدون باندلز
+    // كتالوج فردي بالكامل
     const marketCatalog = {
       speakers: [
-        { name: "خادم محلي / أمين الخدمة", info: "خادم من أسرة المرحلة لموضوع محلي", cost: 0 },
-        { name: "كاهن من الكنيسة أو الإيبارشية", info: "محاضرة طقسية وعقائدية متخصصة", cost: 2500 },
-        { name: "خادم شباب وميديا معروف", info: "لقاء شبابي وترانيم وميديا هادفة", cost: 5000 },
-        { name: "متخصص نفسي وتربوي مشهور", info: "ندوة علاقات وتعديل سلوك وصحة نفسية", cost: 8000 },
-        { name: "متكلم VIP قامة كنسية كبيرة", info: "لقاء قامة كنسية كبيرة (د. مجدي / أبونا داود)", cost: 12000 }
+        { name: "خادم محلي / أمين الخدمة", info: "خادم من أسرة المرحلة لموضوع محلي (أسبوع فردي)", cost: 0 },
+        { name: "كاهن من الكنيسة أو الإيبارشية", info: "محاضرة طقسية وعقائدية متخصصة (أسبوع فردي)", cost: 2500 },
+        { name: "خادم شباب وميديا معروف", info: "لقاء شبابي وترانيم وميديا هادفة (أسبوع فردي)", cost: 5000 },
+        { name: "متخصص نفسي وتربوي مشهور", info: "ندوة علاقات وتعديل سلوك وصحة نفسية (أسبوع فردي)", cost: 8000 },
+        { name: "متكلم VIP قامة كنسية كبيرة", info: "لقاء قامة كنسية كبيرة د. مجدي / أبونا داود (أسبوع فردي)", cost: 12000 }
       ],
       trips: [
-        { name: "رحلة قريبة (مارمينا/النطرون) - عادي 28", info: "أتوبيس عادي بدون تكييف سعة 28 راكب", cost: 4000 },
-        { name: "رحلة قريبة (مارمينا/النطرون) - مكيف 28", info: "ميني باص مكيف سياحي سعة 28 راكب", cost: 6500 },
+        { name: "رحلة قريبة (مارمينا/النطرون) - عادي 28", info: "أتوبيس عادي بدون تكييف 28 راكب", cost: 4000 },
+        { name: "رحلة قريبة (مارمينا/النطرون) - مكيف 28", info: "ميني باص مكيف سياحي 28 راكب", cost: 6500 },
         { name: "رحلة قريبة (مارمينا/النطرون) - سياحي 50", info: "أتوبيس مرسيدس سياحي مكيف 50 راكب", cost: 10000 },
-        { name: "رحلة متوسطة (الخطاطبة/مقار) - عادي 28", info: "أتوبيس عادي سعة 28 راكب", cost: 6000 },
-        { name: "رحلة متوسطة (الخطاطبة/مقار) - مكيف 28", info: "ميني باص مكيف سعة 28 راكب", cost: 9500 },
-        { name: "رحلة متوسطة (الخطاطبة/مقار) - سياحي 50", info: "أتوبيس سياحي مكيف كبير سعة 50 راكب", cost: 14000 },
-        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - عادي 28", info: "أتوبيس 28 راكب للمسافات الطويلة", cost: 9000 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - عادي 28", info: "أتوبيس عادي 28 راكب", cost: 6000 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - مكيف 28", info: "ميني باص مكيف 28 راكب", cost: 9500 },
+        { name: "رحلة متوسطة (الخطاطبة/مقار) - سياحي 50", info: "أتوبيس سياحي مكيف كبير 50 راكب", cost: 14000 },
+        { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - عادي 28", info: "أتوبيس 28 راكب للمسافات البعيدة", cost: 9000 },
         { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - مكيف 28", info: "ميني باص مكيف 28 راكب", cost: 14000 },
         { name: "رحلة بعيدة (القاهرة/بورسعيد/البحر الأحمر) - سياحي 50", info: "أتوبيس سياحي فاخر 50 راكب", cost: 22000 },
         { name: "رحلة بعيدة جداً (أديرة الصعيد/الأقصر) - مكيف 28", info: "ميني باص مكيف حديث للسفر الطويل", cost: 22000 },
@@ -274,7 +285,7 @@
       selectedDesk = desk;
 
       const deskTitles = {
-        speakers: "🎙️ مكتب المتكلمين (مطلوب 12 أسبوعاً للربع)",
+        speakers: "🎙️ مكتب المتكلمين (12 أسبوعاً لكل ربع)",
         trips: "🚌 مكتب الرحلات وأتوبيسات الخلوة السنوية",
         events: "🎁 مكتب الهدايا والاحتفالات والأنشطة"
       };
@@ -317,6 +328,23 @@
       }
     }
 
+    function fetchCurrentTeamBalance() {
+      const teamKey = document.getElementById("teamTargetSelect").value;
+      const box = document.getElementById("liveBalanceBox");
+      const display = document.getElementById("currentTeamBalanceDisplay");
+
+      if (!teamKey) {
+        box.classList.add("hidden");
+        return;
+      }
+
+      db.ref('teams/' + teamKey + '/balance').on('value', snap => {
+        const bal = Number(snap.val() || 0);
+        display.textContent = bal.toLocaleString();
+        box.classList.remove("hidden");
+      });
+    }
+
     function renderMarketGrid() {
       const grid = document.getElementById("itemsGrid");
       grid.innerHTML = "";
@@ -340,7 +368,6 @@
       });
     }
 
-    // شراء مباشر ومؤكد بدون مشاكل الـ Transaction
     function buyItemDirect(itemIndex) {
       const teamSelect = document.getElementById("teamTargetSelect");
       const teamKey = teamSelect.value;
@@ -359,21 +386,26 @@
 
       const item = marketCatalog[selectedDesk][itemIndex];
       statusEl.style.color = "#f1c40f";
-      statusEl.textContent = "جاري التحقق من الرصيد والخصم...";
+      statusEl.textContent = "جاري التحقق وإتمام الخصم المباشر...";
 
       const teamRef = db.ref('teams/' + teamKey);
 
       teamRef.once('value').then(snapshot => {
         const teamData = snapshot.val() || { balance: 0, plan: { Q1: [], Q2: [], Q3: [], Q4: [] }, purchases: [] };
-        const currentBalance = Number(teamData.balance || 0);
+        
+        let currentBalance = 0;
+        if (teamData.balance !== undefined && teamData.balance !== null) {
+          currentBalance = Number(teamData.balance);
+        }
 
         if (currentBalance < item.cost) {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = `❌ رصيد ${teamName} (${currentBalance.toLocaleString()} ج.ك) لا يكفي لشراء [${item.name}] بسعر ${item.cost.toLocaleString()} ج.ك!`;
+          statusEl.textContent = `❌ رصيد ${teamName} الحالي (${currentBalance.toLocaleString()} ج.ك) لا يكفي لشراء [${item.name}] بسعر ${item.cost.toLocaleString()} ج.ك!`;
           return;
         }
 
-        const newBalance = currentBalance - item.cost;
+        const newBalance = currentBalance - Number(item.cost);
+        
         if (!teamData.plan) teamData.plan = { Q1: [], Q2: [], Q3: [], Q4: [] };
         if (!teamData.plan[quarter]) teamData.plan[quarter] = [];
         
@@ -396,10 +428,10 @@
 
         teamRef.set(teamData).then(() => {
           statusEl.style.color = "#2ecc71";
-          statusEl.textContent = `✅ تم بنجاح شراء [${item.name}] لـ ${teamName} وإضافته في ${slot}! الرصيد المتبقي: ${newBalance.toLocaleString()} ج.ك`;
+          statusEl.textContent = `✅ تم بنجاح شراء [${item.name}] لـ ${teamName} في ${slot}! الرصيد المتبقي: ${newBalance.toLocaleString()} ج.ك`;
         }).catch(err => {
           statusEl.style.color = "#ff0844";
-          statusEl.textContent = "❌ خطأ أثناء الحفظ: " + err.message;
+          statusEl.textContent = "❌ خطأ في الاتصال: " + err.message;
         });
       });
     }
