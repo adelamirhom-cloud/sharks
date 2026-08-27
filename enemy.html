@@ -97,7 +97,6 @@
       margin-bottom: 14px;
     }
 
-    /* كروت الرادار والتجسس */
     .radar-box {
       display: flex;
       flex-direction: column;
@@ -110,11 +109,10 @@
       border: 1px solid rgba(255, 8, 68, 0.25);
       border-radius: 12px;
       padding: 10px 14px;
-      transition: border-color 0.2s;
     }
     .radar-team-card.attacked {
       border-color: #ff0844;
-      background: rgba(255, 8, 68, 0.12);
+      background: rgba(255, 8, 68, 0.15);
     }
     .team-top-row {
       display: flex;
@@ -148,7 +146,7 @@
       <h2>👺 بوابة عدو الخير</h2>
       <p class="desc">أدخل رمز التحكم لفتح رادار الفرق وإطلاق التجارب والضربات</p>
 
-      <input type="password" id="enemyPassInput" placeholder="كلمة السر...">
+      <input type="password" id="enemyPassInput" placeholder="كلمة السر (evil666)...">
       <button class="btn-attack" onclick="loginEnemy()">دخول غرفة التحكم ↵</button>
       <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
@@ -233,7 +231,7 @@
     };
 
     function loginEnemy() {
-      const pass = document.getElementById("enemyPassInput").value.trim();
+      const pass = document.getElementById("enemyPassInput").value.trim().toLowerCase();
       const errorEl = document.getElementById("loginError");
 
       if (pass !== "evil666") {
@@ -248,7 +246,6 @@
       listenToRadarData();
     }
 
-    // متابعة بيانات ورادار الفرق لايف
     function listenToRadarData() {
       db.ref('teams').on('value', snapshot => {
         const data = snapshot.val() || {};
@@ -257,7 +254,7 @@
 
         Object.keys(teamMeta).forEach(key => {
           const tData = data[key] || {};
-          const balance = tData.balance || 0;
+          const balance = Number(tData.balance || 0);
           const itemsCount = (tData.purchases || []).length;
           const isAttacked = !!tData.activeAttack;
 
@@ -328,13 +325,12 @@
 
       const teamRef = db.ref('teams/' + teamKey);
 
-      teamRef.transaction(teamData => {
-        if (!teamData) {
-          teamData = { balance: 0, plan: {}, purchases: [] };
-        }
+      teamRef.once('value').then(snapshot => {
+        const teamData = snapshot.val() || { balance: 0, plan: {}, purchases: [] };
+        const currentBalance = Number(teamData.balance || 0);
 
         if (penalty > 0) {
-          teamData.balance = Math.max(0, (teamData.balance || 0) - penalty);
+          teamData.balance = Math.max(0, currentBalance - penalty);
           if (!teamData.purchases) teamData.purchases = [];
           teamData.purchases.push({
             item_name: `⚠️ ضربة عدو الخير: ${title}`,
@@ -351,10 +347,10 @@
           timestamp: new Date().toLocaleTimeString('ar-EG', { hour: '2-digit', minute: '2-digit' })
         };
 
-        return teamData;
-      }).then(() => {
-        statusEl.style.color = "#22c55e";
-        statusEl.textContent = `🔥 تم إطلاق [${title}] بنجاح ضد ${teamName}!`;
+        teamRef.set(teamData).then(() => {
+          statusEl.style.color = "#22c55e";
+          statusEl.textContent = `🔥 تم إطلاق [${title}] بنجاح ضد ${teamName}!`;
+        });
       }).catch(err => {
         statusEl.style.color = "#ff0844";
         statusEl.textContent = "❌ خطأ أثناء إطلاق الضربة: " + err.message;
