@@ -25,7 +25,7 @@
 
     .container {
       width: 100%;
-      max-width: 500px;
+      max-width: 520px;
     }
 
     .card {
@@ -89,7 +89,7 @@
       padding: 12px;
       margin-bottom: 16px;
       text-align: right;
-      max-height: 150px;
+      max-height: 140px;
       overflow-y: auto;
     }
     .history-title { font-size: 0.85rem; color: #94a3b8; font-weight: 700; margin-bottom: 8px; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 4px; }
@@ -121,7 +121,7 @@
     }
     .items-list { list-style: none; padding: 0; }
     .item-tag {
-      background: rgba(0, 242, 254, 0.1);
+      background: rgba(0, 242, 254, 0.08);
       border-right: 3px solid #00f2fe;
       padding: 6px 10px;
       border-radius: 6px;
@@ -140,10 +140,10 @@
 
   <div class="container">
     
-    <!-- 1. شاشة تسجيل دخول الفريق -->
+    <!-- 1. تسجيل الدخول -->
     <div class="card" id="loginScreen">
       <h2>🚩 دخول الفريق</h2>
-      <p class="desc">اختر اسم فريقك وأدخل كلمة السر للدخول إلى محفظتك وخطتك</p>
+      <p class="desc">اختر اسم فريقك وأدخل كلمة السر</p>
 
       <select id="teamSelect">
         <option value="" disabled selected>-- اختر الفريق --</option>
@@ -155,10 +155,10 @@
 
       <input type="password" id="teamPassInput" placeholder="كلمة السر الخاصة بالفريق...">
       <button onclick="loginTeam()">دخول لوحة الفريق ↵</button>
-      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة أو لم تختر الفريق!</div>
+      <div id="loginError" class="msg" style="color: #ff0844;">❌ كلمة السر غير صحيحة!</div>
     </div>
 
-    <!-- 2. لوحة التحكم الحية للفريق -->
+    <!-- 2. لوحة التحكم الحية -->
     <div id="dashboardScreen" class="hidden">
       
       <div class="wallet-card">
@@ -167,21 +167,21 @@
       </div>
 
       <div class="history-box">
-        <div class="history-title">📜 سجل المعاملات المالية المباشرة:</div>
+        <div class="history-title">📜 سجل المعاملات والتحويلات:</div>
         <div id="transactionsList">
           <div style="color: #64748b; font-size: 0.8rem; text-align: center;">لا توجد معاملات حتى الآن</div>
         </div>
       </div>
 
       <div class="card" style="padding: 16px;">
-        <h3 style="color: #00f2fe; font-size: 1.1rem; margin-bottom: 12px; font-weight: 900;">📋 خطة الـ 4 مواسم السنوية</h3>
+        <h3 style="color: #00f2fe; font-size: 1.1rem; margin-bottom: 12px; font-weight: 900;">📋 خطة الـ 4 مواسم (12 أسبوعاً لكل ربع)</h3>
         
         <div class="quarter-grid">
           <!-- Q1 -->
           <div class="quarter-card">
             <div class="quarter-header">
               <span>🍂 الربع الأول (Q1 - الخريف)</span>
-              <span style="font-size: 0.75rem; color: #94a3b8;">الانطلاق والبدايات</span>
+              <span id="badge_Q1" style="font-size: 0.75rem; color: #f1c40f;">0 بنود</span>
             </div>
             <ul class="items-list" id="list_Q1">
               <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
@@ -192,7 +192,7 @@
           <div class="quarter-card">
             <div class="quarter-header">
               <span>❄️ الربع الثاني (Q2 - الشتاء)</span>
-              <span style="font-size: 0.75rem; color: #94a3b8;">الميلاد ونصف السنة</span>
+              <span id="badge_Q2" style="font-size: 0.75rem; color: #f1c40f;">0 بنود</span>
             </div>
             <ul class="items-list" id="list_Q2">
               <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
@@ -203,7 +203,7 @@
           <div class="quarter-card">
             <div class="quarter-header">
               <span>🌱 الربع الثالث (Q3 - الربيع)</span>
-              <span style="font-size: 0.75rem; color: #94a3b8;">الصوم الكبير والقيامة</span>
+              <span id="badge_Q3" style="font-size: 0.75rem; color: #f1c40f;">0 بنود</span>
             </div>
             <ul class="items-list" id="list_Q3">
               <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
@@ -214,7 +214,7 @@
           <div class="quarter-card">
             <div class="quarter-header">
               <span>☀️ الربع الرابع (Q4 - الصيف)</span>
-              <span style="font-size: 0.75rem; color: #94a3b8;">الخلوة والمصيف</span>
+              <span id="badge_Q4" style="font-size: 0.75rem; color: #f1c40f;">0 بنود</span>
             </div>
             <ul class="items-list" id="list_Q4">
               <li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>
@@ -242,7 +242,6 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // كلمات سر الفرق المخصصة
     const teamPasswords = {
       "team_virgin_mary": "mary1212",
       "team_archangel_michael": "mike2019",
@@ -254,7 +253,7 @@
 
     function loginTeam() {
       const select = document.getElementById("teamSelect");
-      const pass = document.getElementById("teamPassInput").value.trim();
+      const pass = document.getElementById("teamPassInput").value.trim().toLowerCase();
       const teamKey = select.value;
       const errorEl = document.getElementById("loginError");
 
@@ -280,23 +279,21 @@
       teamRef.on('value', snapshot => {
         const data = snapshot.val() || {};
         
-        // 1. تحديث الرصيد
-        const balance = data.balance || 0;
-        document.getElementById("teamBalanceDisplay").textContent = Number(balance).toLocaleString() + " ج.ك";
+        const balance = Number(data.balance || 0);
+        document.getElementById("teamBalanceDisplay").textContent = balance.toLocaleString() + " ج.ك";
 
-        // 2. تحديث سجل الحركات المالية
         const txContainer = document.getElementById("transactionsList");
         txContainer.innerHTML = "";
         
         let allTransactions = [];
         if (data.investments) {
           data.investments.forEach(inv => {
-            allTransactions.push({ text: `استثمار من الشارك: ${inv.shark_name}`, amount: `+${inv.amount.toLocaleString()} ج.ك`, type: 'gain', time: inv.time });
+            allTransactions.push({ text: `استثمار من الشارك: ${inv.shark_name}`, amount: `+${Number(inv.amount).toLocaleString()} ج.ك`, type: 'gain', time: inv.time });
           });
         }
         if (data.purchases) {
           data.purchases.forEach(pur => {
-            allTransactions.push({ text: `شراء: ${pur.item_name} (${pur.quarter})`, amount: `-${pur.cost.toLocaleString()} ج.ك`, type: 'spend', time: pur.time });
+            allTransactions.push({ text: `شراء: ${pur.item_name} (${pur.quarter})`, amount: `-${Number(pur.cost).toLocaleString()} ج.ك`, type: 'spend', time: pur.time });
           });
         }
 
@@ -311,7 +308,6 @@
           });
         }
 
-        // 3. تحديث خطة الـ 4 مواسم
         renderQuarterList("Q1", (data.plan && data.plan.Q1) || []);
         renderQuarterList("Q2", (data.plan && data.plan.Q2) || []);
         renderQuarterList("Q3", (data.plan && data.plan.Q3) || []);
@@ -321,7 +317,11 @@
 
     function renderQuarterList(quarterId, items) {
       const ul = document.getElementById("list_" + quarterId);
+      const badge = document.getElementById("badge_" + quarterId);
       ul.innerHTML = "";
+      
+      badge.textContent = `${items.length} بنود`;
+
       if (items.length === 0) {
         ul.innerHTML = '<li style="color: #64748b; font-size: 0.8rem;">في انتظار الشراء من السوق...</li>';
       } else {
